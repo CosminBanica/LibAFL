@@ -164,6 +164,67 @@ pub fn common_signals() -> Vec<Signal> {
     ]
 }
 
+
+/// Writes the specified content to a file at the given file path and file name.
+/// If file already exists, append to it.
+/// Open file in append mode
+///
+/// # Arguments
+///
+/// * `file_path` - The path to the directory where the file will be created.
+/// * `file_name` - The name of the file to be created.
+/// * `content` - The content to be written to the file.
+#[cfg(all(feature = "std"))]
+pub fn write_to_file(file_path: &str, file_name: &str, content: &str) {
+    use std::io::Write;
+    use std::fs::OpenOptions;
+    use std::string::ToString;
+
+    // If .txt is not provided, add it
+    let file_name = if file_name.ends_with(".txt") {
+        file_name.to_string()
+    } else {
+        format!("{}.txt", file_name)
+    };
+
+    let path = format!("{}/{}", file_path, file_name);
+
+    // Try to open file in append mode, if it doesn't exist, create it
+    let mut file = OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open(path)
+        .unwrap();
+    
+    file.write_all(content.as_bytes()).unwrap();
+}
+
+/// Writes the specified content to a file at the given file path and file name, appending the thread id to the file name.
+/// This function is only available with the `std` feature enabled.
+/// # Arguments
+/// * `file_path` - The path to the directory where the file will be created.
+/// * `file_name` - The name of the file to be created.
+/// * `content` - The content to be written to the file.
+#[cfg(all(feature = "std", unix))]
+pub fn write_to_file_with_tid(file_path: &str, file_name: &str, content: &str) -> () {
+    use std::fs::File;
+    use std::io::Write;
+    use std::string::ToString;
+    use std::thread;
+
+    // If .txt is provided, remove it
+    let file_name = if file_name.ends_with(".txt") {
+        file_name.trim_end_matches(".txt").to_string()
+    } else {
+        file_name.to_string()
+    };
+
+    let tid = thread::current().id();
+    let path = format!("{}/{}-{:?}.txt", file_path, file_name, tid);
+    let mut file = File::create(path).unwrap();
+    file.write_all(content.as_bytes()).unwrap();
+}
+
 #[cfg(test)]
 pub mod test {
     use core::marker::PhantomData;
