@@ -6,6 +6,7 @@ use libafl::{
     monitors::Monitor,
     state::StdState,
     Error,
+    executors::write_to_file
 };
 use libafl_bolts::{core_affinity::CoreId, rands::StdRand, tuples::tuple_list};
 #[cfg(feature = "injections")]
@@ -13,11 +14,7 @@ use libafl_qemu::modules::injections::InjectionModule;
 use libafl_qemu::{
     elf::EasyElf,
     modules::{
-        asan::{init_qemu_with_asan, AsanModule},
-        asan_guest::{init_qemu_with_asan_guest, AsanGuestModule},
-        cmplog::CmpLogModule,
-        edges::EdgeCoverageModule,
-        QemuInstrumentationAddressRangeFilter,
+        asan::{init_qemu_with_asan, AsanModule}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, edges::EdgeCoverageModule, IsFilter, QemuInstrumentationAddressRangeFilter, drcov::DrCovModule
     },
     ArchExtras, GuestAddr, Qemu,
 };
@@ -70,6 +67,13 @@ impl<'a> Client<'a> {
     #[allow(clippy::similar_names)] // elf != self
     fn coverage_filter(&self, qemu: &Qemu) -> Result<QemuInstrumentationAddressRangeFilter, Error> {
         /* Conversion is required on 32-bit targets, but not on 64-bit ones */
+        // Manually add this range to exclude: "0x7f0000000000-0x7f0000001000"
+
+        let exclude_brutal = Some(vec![Range {
+            start: GuestAddr::from_str_radix("7f0000000000", 16)?,
+            end: GuestAddr::from_str_radix("7f0000001000", 16)?,
+        }]);
+
         if let Some(includes) = &self.options.include {
             #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
             let rules = includes
@@ -80,7 +84,7 @@ impl<'a> Client<'a> {
                 })
                 .collect::<Vec<Range<GuestAddr>>>();
             Ok(QemuInstrumentationAddressRangeFilter::AllowList(rules))
-        } else if let Some(excludes) = &self.options.exclude {
+        } else if let Some(excludes) = &exclude_brutal {
             #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
             let rules = excludes
                 .iter()
@@ -169,12 +173,22 @@ impl<'a> Client<'a> {
 
         let edge_coverage_module = EdgeCoverageModule::new(self.coverage_filter(&qemu)?);
 
+        let str_ranges = edge_coverage_module.get_address_filter().convert_to_string();
+        write_to_file("./tmp", "edge_filter", &str_ranges);
+
         let instance = Instance::builder()
             .options(self.options)
             .qemu(&qemu)
             .mgr(mgr)
             .core_id(core_id)
             .extra_tokens(extra_tokens);
+
+        let mut coverage_path = std::path::PathBuf::from("/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/tmp/drcov.log");
+        // Turn to PathBuf
+        let coverage_name = coverage_path.file_stem().unwrap().to_str().unwrap();
+        let coverage_extension = coverage_path.extension().unwrap_or_default().to_str().unwrap();
+        let core = core_id.0;
+        coverage_path.set_file_name(format!("{coverage_name}-{core:03}.{coverage_extension}"));
 
         if is_asan && is_cmplog {
             if let Some(injection_module) = injection_module {
@@ -224,7 +238,12 @@ impl<'a> Client<'a> {
                     tuple_list!(
                         edge_coverage_module,
                         AsanModule::default(asan.take().unwrap()),
-                        injection_module
+                        injection_module,
+                        DrCovModule::new(
+                            QemuInstrumentationAddressRangeFilter::None,
+                            coverage_path,
+                            false,
+                        ),
                     ),
                     state,
                 )
@@ -233,6 +252,11 @@ impl<'a> Client<'a> {
                     tuple_list!(
                         edge_coverage_module,
                         AsanModule::default(asan.take().unwrap()),
+                        DrCovModule::new(
+                            QemuInstrumentationAddressRangeFilter::None,
+                            coverage_path,
+                            false,
+                        ),
                     ),
                     state,
                 )

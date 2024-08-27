@@ -3,7 +3,7 @@
 use std::{borrow::Cow, env, fs, path::PathBuf, sync::Mutex};
 
 use hashbrown::{HashMap, HashSet};
-use libafl::{executors::ExitKind, inputs::UsesInput, observers::ObserversTuple};
+use libafl::{executors::ExitKind, inputs::UsesInput, observers::ObserversTuple, executors::write_to_file};
 use libc::{
     c_void, MAP_ANON, MAP_FAILED, MAP_FIXED, MAP_NORESERVE, MAP_PRIVATE, PROT_READ, PROT_WRITE,
 };
@@ -810,7 +810,13 @@ impl AsanModule {
 
     #[must_use]
     pub fn must_instrument(&self, addr: GuestAddr) -> bool {
+        let addr_str = format!("Should I instrument: {:#x}\n", addr);
+        write_to_file("./tmp", "dbg-must-instrument", &addr_str);
         self.filter.allowed(addr)
+    }
+
+    pub fn add_range_to_filter(&mut self, start: GuestAddr, end: GuestAddr) {
+        self.filter.add_range(start, end);
     }
 
     #[must_use]
