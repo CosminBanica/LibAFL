@@ -1,7 +1,7 @@
 use std::{path::PathBuf, sync::Mutex};
 
 use hashbrown::{hash_map::Entry, HashMap};
-use libafl::{executors::ExitKind, inputs::UsesInput, observers::ObserversTuple, HasMetadata};
+use libafl::{executors::ExitKind, inputs::UsesInput, observers::ObserversTuple, HasMetadata, executors::write_to_file};
 use libafl_qemu_sys::{GuestAddr, GuestUsize};
 use libafl_targets::drcov::{DrCovBasicBlock, DrCovWriter};
 use rangemap::RangeMap;
@@ -106,6 +106,8 @@ where
     {
         let qemu = emulator_modules.qemu();
 
+        write_to_file("./tmp", "drcov-first-exec", "First exec\n");
+
         for (i, (r, p)) in qemu
             .mappings()
             .filter_map(|m| {
@@ -131,6 +133,11 @@ where
     {
         let lengths_opt = DRCOV_LENGTHS.lock().unwrap();
         let lengths = lengths_opt.as_ref().unwrap();
+
+        write_to_file("./tmp", "drcov-post-exec", "Post exec\n");
+        let str_hitcounts = hitcounts_as_map_string();
+        write_to_file("./tmp", "drcov-hitcounts", &str_hitcounts);
+
         if self.full_trace {
             if DRCOV_IDS.lock().unwrap().as_ref().unwrap().len() > self.drcov_len {
                 let mut drcov_vec = Vec::<DrCovBasicBlock>::new();
@@ -219,6 +226,9 @@ where
     ET: EmulatorModuleTuple<S>,
 {
     let drcov_module = emulator_modules.get::<DrCovModule>().unwrap();
+
+    write_to_file("./tmp", "drcov-gen-unique-block-ids", "Gen unique block ids\n");
+
     if !drcov_module.must_instrument(pc) {
         return None;
     }
@@ -267,6 +277,9 @@ pub fn gen_block_lengths<ET, S>(
     ET: EmulatorModuleTuple<S>,
 {
     let drcov_module = emulator_modules.get::<DrCovModule>().unwrap();
+
+    write_to_file("./tmp", "drcov-gen-block-lengths", "Gen block lengths\n");
+
     if !drcov_module.must_instrument(pc) {
         return;
     }
@@ -286,7 +299,60 @@ pub fn exec_trace_block<ET, S>(
     ET: EmulatorModuleTuple<S>,
     S: Unpin + UsesInput + HasMetadata,
 {
+    write_to_file("./tmp", "drcov-exec-trace-block", "Exec trace block\n");
+
     if emulator_modules.get::<DrCovModule>().unwrap().full_trace {
         DRCOV_IDS.lock().unwrap().as_mut().unwrap().push(id);
     }
+}
+
+pub fn get_hitcount_for_pc(pc: GuestAddr) -> Option<u64> {
+    // Get the id for the pc
+    let binding = DRCOV_MAP.lock().unwrap();
+    let id = binding.as_ref().unwrap().get(&pc)?;
+
+    // Check that the id was in the map
+    if id == &0 {
+        return None;
+    }
+
+    // Get the number of times the id appears in DRCOV_IDS
+    let count = DRCOV_IDS.lock().unwrap().as_ref().unwrap().iter().filter(|&x| x == id).count();
+
+    Some(count as u64)
+}
+
+pub fn get_hitcount_for_id(id: u64) -> Option<u64> {
+    // Get the number of times the id appears in DRCOV_IDS
+    write_to_file("./tmp", "drcov-get-hitcount-for-id", "Get hitcount for id\n");
+    let binding = DRCOV_IDS.lock().unwrap();
+
+    write_to_file("./tmp", "drcov-get-hitcount-for-id", "Binding\n");
+
+    let itr = binding.as_ref().unwrap().iter();
+
+    write_to_file("./tmp", "drcov-get-hitcount-for-id", "Itr\n");
+
+    let flt = itr.filter(|&x| x == &id);
+    
+    write_to_file("./tmp", "drcov-get-hitcount-for-id", "Flt\n");
+
+    let count = flt.count();
+
+    write_to_file("./tmp", "drcov-get-hitcount-for-id", &format!("Count: {}\n", count));
+
+    Some(count as u64)
+}
+
+pub fn hitcounts_as_map_string() -> String {
+    let mut hitcounts = String::new();
+
+    write_to_file("./tmp", "drcov-hitcounts-as-map-string", "Hitcounts as map string\n");
+
+    for (pc, id) in DRCOV_MAP.lock().unwrap().as_ref().unwrap() {
+        let count = get_hitcount_for_id(id.clone()).unwrap();
+        hitcounts.push_str(&format!("{:x}: {}\n", pc, count));
+    }
+    hitcounts.push_str("\n");
+    hitcounts
 }

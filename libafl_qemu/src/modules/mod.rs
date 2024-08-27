@@ -239,6 +239,22 @@ where
             QemuFilterList::None => true,
         }
     }
+
+    fn add_range(&mut self, start: GuestAddr, end: GuestAddr) {
+        match self {
+            QemuFilterList::AllowList(allow_list) => allow_list.add_range(start, end),
+            QemuFilterList::DenyList(deny_list) => deny_list.add_range(start, end),
+            QemuFilterList::None => {}
+        }
+    }
+
+    fn convert_to_string(&self) -> String {
+        match self {
+            QemuFilterList::AllowList(allow_list) => allow_list.convert_to_string(),
+            QemuFilterList::DenyList(deny_list) => deny_list.convert_to_string(),
+            QemuFilterList::None => String::new(),
+        }
+    }
 }
 
 pub type QemuInstrumentationPagingFilter = QemuFilterList<HashSet<GuestPhysAddr>>;
@@ -251,6 +267,14 @@ where
 
     fn allowed(&self, paging_id: Self::FilterParameter) -> bool {
         paging_id.is_some_and(|pid| self.contains(&pid))
+    }
+
+    // Not implemented
+    fn add_range(&mut self, _start: GuestPhysAddr, _end: GuestPhysAddr) {}
+
+    // Convert to string
+    fn convert_to_string(&self) -> String {
+        String::new()
     }
 }
 
@@ -267,6 +291,22 @@ impl IsFilter for Vec<Range<GuestAddr>> {
         }
         false
     }
+
+    // Convert to string
+    fn convert_to_string(&self) -> String {
+        let mut s = String::new();
+        for rng in self {
+            s.push_str(&format!("{:x}-{:x} ", rng.start, rng.end));
+        }
+        // Add newline at the end
+        s.push('\n');
+        s
+    }
+
+    // Add a range to the filter
+    fn add_range(&mut self, start: GuestAddr, end: GuestAddr) {
+        self.push(Range { start, end });
+    }
 }
 
 pub trait HasInstrumentationFilter<F>
@@ -280,6 +320,10 @@ where
     fn update_filter(&mut self, filter: F, emu: &Qemu) {
         *self.filter_mut() = filter;
         emu.flush_jit();
+    }
+
+    fn add_range(&mut self, start: GuestAddr, end: GuestAddr) {
+        self.filter_mut().add_range(start, end);
     }
 }
 
@@ -312,6 +356,8 @@ pub trait IsFilter: Debug {
     type FilterParameter;
 
     fn allowed(&self, filter_parameter: Self::FilterParameter) -> bool;
+    fn add_range(&mut self, start: GuestAddr, end: GuestAddr);
+    fn convert_to_string(&self) -> String;
 }
 
 impl IsFilter for () {
@@ -319,6 +365,12 @@ impl IsFilter for () {
 
     fn allowed(&self, _filter_parameter: Self::FilterParameter) -> bool {
         true
+    }
+
+    fn add_range(&mut self, _start: GuestAddr, _end: GuestAddr) {}
+
+    fn convert_to_string(&self) -> String {
+        String::new()
     }
 }
 
