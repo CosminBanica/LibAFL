@@ -5,8 +5,7 @@ use libafl::{
     inputs::BytesInput,
     monitors::Monitor,
     state::StdState,
-    Error,
-    executors::write_to_file
+    Error
 };
 use libafl_bolts::{core_affinity::CoreId, rands::StdRand, tuples::tuple_list};
 #[cfg(feature = "injections")]
@@ -14,7 +13,7 @@ use libafl_qemu::modules::injections::InjectionModule;
 use libafl_qemu::{
     elf::EasyElf,
     modules::{
-        asan::{init_qemu_with_asan, AsanModule, QemuAsanOptions}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, drcov::DrCovModule, edges::EdgeCoverageModule, IsFilter, QemuInstrumentationAddressRangeFilter
+        asan::{init_qemu_with_asan, AsanModule, QemuAsanOptions}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, drcov::DrCovModule, edges::EdgeCoverageModule, QemuInstrumentationAddressRangeFilter
     },
     ArchExtras, GuestAddr, Qemu,
 };
@@ -289,6 +288,7 @@ impl<'a> Client<'a> {
                                 QemuInstrumentationAddressRangeFilter::None,
                                 coverage_path,
                                 false,
+                                true
                             ),
                         ),
                         state,
@@ -314,6 +314,7 @@ impl<'a> Client<'a> {
                                 QemuInstrumentationAddressRangeFilter::None,
                                 coverage_path,
                                 false,
+                                true
                             ),
                         ),
                         state,

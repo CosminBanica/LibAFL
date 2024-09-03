@@ -236,6 +236,7 @@ pub fn fuzz() {
                 QemuInstrumentationAddressRangeFilter::None,
                 cov_path,
                 false,
+                false,
             ));
 
             let emulator = Emulator::empty()

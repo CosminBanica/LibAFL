@@ -20,7 +20,7 @@ static DRCOV_IDS: Mutex<Option<Vec<u64>>> = Mutex::new(None);
 static DRCOV_MAP: Mutex<Option<HashMap<GuestAddr, u64>>> = Mutex::new(None);
 static DRCOV_LENGTHS: Mutex<Option<HashMap<GuestAddr, GuestUsize>>> = Mutex::new(None);
 
-// Hitcount map; key is the id, value is the number of times it was hit
+// Hitcount map; key is the id, value is the number of times the block was hit
 static HITCOUNTS: Mutex<Option<HashMap<u64, u64>>> = Mutex::new(None);
 
 #[cfg_attr(
@@ -48,6 +48,7 @@ pub struct DrCovModule {
     filename: PathBuf,
     full_trace: bool,
     drcov_len: usize,
+    use_hitcounts: bool,
 }
 
 impl DrCovModule {
@@ -57,6 +58,7 @@ impl DrCovModule {
         filter: QemuInstrumentationAddressRangeFilter,
         filename: PathBuf,
         full_trace: bool,
+        use_hitcounts: bool,
     ) -> Self {
         if full_trace {
             let _ = DRCOV_IDS.lock().unwrap().insert(vec![]);
@@ -71,6 +73,7 @@ impl DrCovModule {
             filename,
             full_trace,
             drcov_len: 0,
+            use_hitcounts,
         }
     }
 
@@ -88,7 +91,9 @@ impl DrCovModule {
 
 impl Drop for DrCovModule {
     fn drop(&mut self) {
-        self.save_hitcounts();
+        if self.use_hitcounts {
+            self.save_hitcounts();
+        }
     }
 }
 
@@ -316,12 +321,14 @@ pub fn exec_trace_block<ET, S>(
         DRCOV_IDS.lock().unwrap().as_mut().unwrap().push(id);
     }
 
-    match HITCOUNTS.lock().unwrap().as_mut().unwrap().entry(id) {
-        Entry::Occupied(mut e) => {
-            *e.get_mut() += 1;
-        }
-        Entry::Vacant(e) => {
-            e.insert(1);
+    if emulator_modules.get::<DrCovModule>().unwrap().use_hitcounts {
+        match HITCOUNTS.lock().unwrap().as_mut().unwrap().entry(id) {
+            Entry::Occupied(mut e) => {
+                *e.get_mut() += 1;
+            }
+            Entry::Vacant(e) => {
+                e.insert(1);
+            }
         }
     }
 }
@@ -355,8 +362,6 @@ pub fn hitcounts_as_map_string() -> String {
     let mut hitcounts = String::new();
 
     for (pc, id) in DRCOV_MAP.lock().unwrap().as_ref().unwrap() {
-        // let count = get_hitcount_for_id(id.clone()).unwrap();
-        // Do the above but with pattern matching in case it returns None
         let count = match get_hitcount_for_id(id.clone()) {
             Some(c) => c,
             None => 0,
