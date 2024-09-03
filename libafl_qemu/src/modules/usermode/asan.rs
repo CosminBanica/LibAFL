@@ -765,6 +765,9 @@ impl AsanModule {
             QemuAsanOptions::DetectLeaks => (false, true),
             QemuAsanOptions::SnapshotDetectLeaks => (true, true),
         };
+        let str_ranges = filter.convert_to_string();
+        write_to_file("./tmp", "asan_filter", &str_ranges);
+
         rt.set_snapshot_shadow(snapshot);
         Self {
             enabled: true,
@@ -811,9 +814,11 @@ impl AsanModule {
 
     #[must_use]
     pub fn must_instrument(&self, addr: GuestAddr) -> bool {
-        let addr_str = format!("Should I instrument: {:#x}\n", addr);
+        let boolean_val = self.filter.allowed(addr);
+
+        let addr_str = format!("Should I instrument: {:#x}? {} \n", addr, boolean_val);
         write_to_file("./tmp", "dbg-must-instrument", &addr_str);
-        self.filter.allowed(addr)
+        boolean_val
     }
 
     pub fn add_range_to_filter(&mut self, start: GuestAddr, end: GuestAddr) {

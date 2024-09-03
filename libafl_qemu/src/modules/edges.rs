@@ -1,7 +1,7 @@
 use std::{cell::UnsafeCell, cmp::max};
 
 use hashbrown::{hash_map::Entry, HashMap};
-use libafl::{inputs::UsesInput, HasMetadata, executors::write_to_file};
+use libafl::{inputs::UsesInput, HasMetadata};
 use libafl_qemu_sys::GuestAddr;
 #[cfg(emulation_mode = "systemmode")]
 use libafl_qemu_sys::GuestPhysAddr;
@@ -63,8 +63,6 @@ pub struct EdgeCoverageModule {
 impl EdgeCoverageModule {
     #[must_use]
     pub fn new(address_filter: QemuInstrumentationAddressRangeFilter) -> Self {
-        let range_str = address_filter.convert_to_string();
-        write_to_file("./tmp", "range", &range_str);
         Self {
             address_filter,
             use_hitcounts: true,

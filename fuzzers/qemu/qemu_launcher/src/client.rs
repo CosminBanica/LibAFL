@@ -1,4 +1,4 @@
-use std::{env, ops::Range};
+use std::{env, io::BufRead, ops::Range};
 
 use libafl::{
     corpus::{InMemoryOnDiskCorpus, OnDiskCorpus},
@@ -14,7 +14,7 @@ use libafl_qemu::modules::injections::InjectionModule;
 use libafl_qemu::{
     elf::EasyElf,
     modules::{
-        asan::{init_qemu_with_asan, AsanModule}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, edges::EdgeCoverageModule, IsFilter, QemuInstrumentationAddressRangeFilter, drcov::DrCovModule
+        asan::{init_qemu_with_asan, AsanModule, QemuAsanOptions}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, drcov::DrCovModule, edges::EdgeCoverageModule, IsFilter, QemuInstrumentationAddressRangeFilter
     },
     ArchExtras, GuestAddr, Qemu,
 };
@@ -67,13 +67,6 @@ impl<'a> Client<'a> {
     #[allow(clippy::similar_names)] // elf != self
     fn coverage_filter(&self, qemu: &Qemu) -> Result<QemuInstrumentationAddressRangeFilter, Error> {
         /* Conversion is required on 32-bit targets, but not on 64-bit ones */
-        // Manually add this range to exclude: "0x7f0000000000-0x7f0000001000"
-
-        let exclude_brutal = Some(vec![Range {
-            start: GuestAddr::from_str_radix("7f0000000000", 16)?,
-            end: GuestAddr::from_str_radix("7f0000001000", 16)?,
-        }]);
-
         if let Some(includes) = &self.options.include {
             #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
             let rules = includes
@@ -84,7 +77,7 @@ impl<'a> Client<'a> {
                 })
                 .collect::<Vec<Range<GuestAddr>>>();
             Ok(QemuInstrumentationAddressRangeFilter::AllowList(rules))
-        } else if let Some(excludes) = &exclude_brutal {
+        } else if let Some(excludes) = &self.options.exclude {
             #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
             let rules = excludes
                 .iter()
@@ -103,6 +96,60 @@ impl<'a> Client<'a> {
             Ok(QemuInstrumentationAddressRangeFilter::AllowList(vec![
                 range,
             ]))
+        }
+    }
+
+    fn get_dynamic_sanitization_filter(&self) -> Result<QemuInstrumentationAddressRangeFilter, Error> {
+        // In this variable we will store arbitrarily addresses from drcov-cleanup.txt
+        let mut exclude_brutal = Some(vec![Range {
+            start: GuestAddr::from_str_radix("7f0000000000", 16)?,
+            end: GuestAddr::from_str_radix("7f0000001000", 16)?,
+        }]);
+
+        // Remove the hardcoded range
+        exclude_brutal.as_mut().unwrap().clear();
+
+        // Check if the file ./tmp/drcov-cleanup.txt exists first
+        if std::path::Path::new("./tmp/drcov-cleanup.txt").exists() {
+            let file = std::fs::File::open("./tmp/drcov-cleanup.txt");
+            if !file.is_err() {
+                // Start reading from file; the format is <address_start>-<address_end>: <hitcount>; one range per line; also the file ends with `END`
+                // Example: 7f7d11609f56-7f7d11609f59: 664\n7f7cf3e4c18e-n7f7cf3e4c19e: 169\nEND\n
+                // For each address range with hitcount > 50, add it to the exclude_brutal vector
+                let reader = std::io::BufReader::new(file.unwrap());
+                for line in reader.lines() {
+                    let line = line.unwrap();
+                    if line == "END" {
+                        break;
+                    }
+                    let parts = line.split(": ").collect::<Vec<&str>>();
+                    let hitcount = parts[1].parse::<u64>().unwrap();
+                    let cutoff = self.options.dynamic_sanitizer_cutoff;
+                    if hitcount > cutoff {
+                        let parts = parts[0].split("-").collect::<Vec<&str>>();
+                        let addr_start = GuestAddr::from_str_radix(parts[0], 16).unwrap();
+                        let addr_end = GuestAddr::from_str_radix(parts[1], 16).unwrap();
+                        exclude_brutal.as_mut().unwrap().push(Range {
+                            start: addr_start,
+                            end: addr_end,
+                        });
+                    }
+                }
+            }
+        }
+
+        #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
+        if let Some(excludes) = &exclude_brutal {
+            let rules = excludes
+            .iter()
+            .map(|x| Range {
+                start: x.start.into(),
+                end: x.end.into(),
+            })
+            .collect::<Vec<Range<GuestAddr>>>();
+            Ok(QemuInstrumentationAddressRangeFilter::DenyList(rules))
+        } else {
+            Err(Error::empty_optional("Failed to get dynamic sanitization filter"))
         }
     }
 
@@ -173,9 +220,6 @@ impl<'a> Client<'a> {
 
         let edge_coverage_module = EdgeCoverageModule::new(self.coverage_filter(&qemu)?);
 
-        let str_ranges = edge_coverage_module.get_address_filter().convert_to_string();
-        write_to_file("./tmp", "edge_filter", &str_ranges);
-
         let instance = Instance::builder()
             .options(self.options)
             .qemu(&qemu)
@@ -234,32 +278,55 @@ impl<'a> Client<'a> {
             }
         } else if is_asan {
             if let Some(injection_module) = injection_module {
-                instance.build().run(
-                    tuple_list!(
-                        edge_coverage_module,
-                        AsanModule::default(asan.take().unwrap()),
-                        injection_module,
-                        DrCovModule::new(
-                            QemuInstrumentationAddressRangeFilter::None,
-                            coverage_path,
-                            false,
+                if self.options.dynamic_sanitizer {
+                    let asan_filter = self.get_dynamic_sanitization_filter()?;
+                    instance.build().run(
+                        tuple_list!(
+                            edge_coverage_module,
+                            AsanModule::new(asan.take().unwrap(), asan_filter, QemuAsanOptions::Snapshot),
+                            injection_module,
+                            DrCovModule::new(
+                                QemuInstrumentationAddressRangeFilter::None,
+                                coverage_path,
+                                false,
+                            ),
                         ),
-                    ),
-                    state,
-                )
+                        state,
+                    )
+                } else {
+                    instance.build().run(
+                        tuple_list!(
+                            edge_coverage_module,
+                            AsanModule::default(asan.take().unwrap()),
+                            injection_module
+                        ),
+                        state,
+                    )
+                }
             } else {
-                instance.build().run(
-                    tuple_list!(
-                        edge_coverage_module,
-                        AsanModule::default(asan.take().unwrap()),
-                        DrCovModule::new(
-                            QemuInstrumentationAddressRangeFilter::None,
-                            coverage_path,
-                            false,
+                if self.options.dynamic_sanitizer {
+                    let asan_filter = self.get_dynamic_sanitization_filter()?;
+                    instance.build().run(
+                        tuple_list!(
+                            edge_coverage_module,
+                            AsanModule::new(asan.take().unwrap(), asan_filter, QemuAsanOptions::Snapshot),
+                            DrCovModule::new(
+                                QemuInstrumentationAddressRangeFilter::None,
+                                coverage_path,
+                                false,
+                            ),
                         ),
-                    ),
-                    state,
-                )
+                        state,
+                    )
+                } else {
+                    instance.build().run(
+                        tuple_list!(
+                            edge_coverage_module,
+                            AsanModule::default(asan.take().unwrap()),
+                        ),
+                        state,
+                    )
+                }
             }
         } else if is_asan_guest {
             let modules = tuple_list!(

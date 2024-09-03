@@ -74,6 +74,12 @@ pub struct FuzzerOptions {
 
     #[arg(last = true, help = "Arguments passed to the target")]
     pub args: Vec<String>,
+
+    #[clap(short = 'd', long, help = "Enable dynamic sanitization", default_value = "false")]
+    pub dynamic_sanitizer: bool,
+
+    #[clap(long = "dynamic_sanitizer_cutoff", help = "Hitcount cutoff for dynamic sanitization", default_value = "1000")]
+    pub dynamic_sanitizer_cutoff: u64,
 }
 
 impl FuzzerOptions {

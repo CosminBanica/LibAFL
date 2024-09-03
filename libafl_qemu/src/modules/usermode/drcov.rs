@@ -1,7 +1,7 @@
 use std::{path::PathBuf, sync::Mutex};
 
 use hashbrown::{hash_map::Entry, HashMap};
-use libafl::{executors::ExitKind, inputs::UsesInput, observers::ObserversTuple, HasMetadata, executors::write_to_file};
+use libafl::{executors::ExitKind, inputs::UsesInput, observers::ObserversTuple, HasMetadata, executors::write_to_file, executors::write_to_file_truncate};
 use libafl_qemu_sys::{GuestAddr, GuestUsize};
 use libafl_targets::drcov::{DrCovBasicBlock, DrCovWriter};
 use rangemap::RangeMap;
@@ -19,6 +19,9 @@ use crate::{
 static DRCOV_IDS: Mutex<Option<Vec<u64>>> = Mutex::new(None);
 static DRCOV_MAP: Mutex<Option<HashMap<GuestAddr, u64>>> = Mutex::new(None);
 static DRCOV_LENGTHS: Mutex<Option<HashMap<GuestAddr, GuestUsize>>> = Mutex::new(None);
+
+// Hitcount map; key is the id, value is the number of times it was hit
+static HITCOUNTS: Mutex<Option<HashMap<u64, u64>>> = Mutex::new(None);
 
 #[cfg_attr(
     any(not(feature = "serdeany_autoreg"), miri),
@@ -58,6 +61,8 @@ impl DrCovModule {
         if full_trace {
             let _ = DRCOV_IDS.lock().unwrap().insert(vec![]);
         }
+
+        let _ = HITCOUNTS.lock().unwrap().insert(HashMap::new());
         let _ = DRCOV_MAP.lock().unwrap().insert(HashMap::new());
         let _ = DRCOV_LENGTHS.lock().unwrap().insert(HashMap::new());
         Self {
@@ -72,6 +77,18 @@ impl DrCovModule {
     #[must_use]
     pub fn must_instrument(&self, addr: GuestAddr) -> bool {
         self.filter.allowed(addr)
+    }
+
+    // Write the hitcounts to a file
+    pub fn save_hitcounts(&self) {
+        let str_hitcounts = hitcounts_as_map_string();
+        write_to_file_truncate("./tmp", "drcov-cleanup", &str_hitcounts);
+    }
+}
+
+impl Drop for DrCovModule {
+    fn drop(&mut self) {
+        self.save_hitcounts();
     }
 }
 
@@ -133,10 +150,6 @@ where
     {
         let lengths_opt = DRCOV_LENGTHS.lock().unwrap();
         let lengths = lengths_opt.as_ref().unwrap();
-
-        write_to_file("./tmp", "drcov-post-exec", "Post exec\n");
-        let str_hitcounts = hitcounts_as_map_string();
-        write_to_file("./tmp", "drcov-hitcounts", &str_hitcounts);
 
         if self.full_trace {
             if DRCOV_IDS.lock().unwrap().as_ref().unwrap().len() > self.drcov_len {
@@ -227,8 +240,6 @@ where
 {
     let drcov_module = emulator_modules.get::<DrCovModule>().unwrap();
 
-    write_to_file("./tmp", "drcov-gen-unique-block-ids", "Gen unique block ids\n");
-
     if !drcov_module.must_instrument(pc) {
         return None;
     }
@@ -246,23 +257,26 @@ where
     match DRCOV_MAP.lock().unwrap().as_mut().unwrap().entry(pc) {
         Entry::Occupied(e) => {
             let id = *e.get();
-            if drcov_module.full_trace {
-                Some(id)
-            } else {
-                None
-            }
+            // if drcov_module.full_trace {
+            //     Some(id)
+            // } else {
+            //     None
+            // }
+            Some(id)
         }
         Entry::Vacant(e) => {
             let id = meta.current_id;
             e.insert(id);
             meta.current_id = id + 1;
-            if drcov_module.full_trace {
-                // GuestAddress is u32 for 32 bit guests
-                #[allow(clippy::unnecessary_cast)]
-                Some(id as u64)
-            } else {
-                None
-            }
+            // if drcov_module.full_trace {
+            //     // GuestAddress is u32 for 32 bit guests
+            //     #[allow(clippy::unnecessary_cast)]
+            //     Some(id as u64)
+            // } else {
+            //     None
+            // }
+            #[allow(clippy::unnecessary_cast)]
+            Some(id as u64)
         }
     }
 }
@@ -277,8 +291,6 @@ pub fn gen_block_lengths<ET, S>(
     ET: EmulatorModuleTuple<S>,
 {
     let drcov_module = emulator_modules.get::<DrCovModule>().unwrap();
-
-    write_to_file("./tmp", "drcov-gen-block-lengths", "Gen block lengths\n");
 
     if !drcov_module.must_instrument(pc) {
         return;
@@ -299,10 +311,18 @@ pub fn exec_trace_block<ET, S>(
     ET: EmulatorModuleTuple<S>,
     S: Unpin + UsesInput + HasMetadata,
 {
-    write_to_file("./tmp", "drcov-exec-trace-block", "Exec trace block\n");
 
     if emulator_modules.get::<DrCovModule>().unwrap().full_trace {
         DRCOV_IDS.lock().unwrap().as_mut().unwrap().push(id);
+    }
+
+    match HITCOUNTS.lock().unwrap().as_mut().unwrap().entry(id) {
+        Entry::Occupied(mut e) => {
+            *e.get_mut() += 1;
+        }
+        Entry::Vacant(e) => {
+            e.insert(1);
+        }
     }
 }
 
@@ -316,43 +336,41 @@ pub fn get_hitcount_for_pc(pc: GuestAddr) -> Option<u64> {
         return None;
     }
 
-    // Get the number of times the id appears in DRCOV_IDS
-    let count = DRCOV_IDS.lock().unwrap().as_ref().unwrap().iter().filter(|&x| x == id).count();
+    // Get the number of times the id appears in HITCOUNTS
+    let binding = HITCOUNTS.lock().unwrap();
+    let count = binding.as_ref().unwrap().get(id)?;
 
-    Some(count as u64)
+    Some(*count)
 }
 
 pub fn get_hitcount_for_id(id: u64) -> Option<u64> {
-    // Get the number of times the id appears in DRCOV_IDS
-    write_to_file("./tmp", "drcov-get-hitcount-for-id", "Get hitcount for id\n");
-    let binding = DRCOV_IDS.lock().unwrap();
+    // Get the number of times the id appears in HITCOUNTS
+    let binding = HITCOUNTS.lock().unwrap();
+    let count = binding.as_ref().unwrap().get(&id)?;
 
-    write_to_file("./tmp", "drcov-get-hitcount-for-id", "Binding\n");
-
-    let itr = binding.as_ref().unwrap().iter();
-
-    write_to_file("./tmp", "drcov-get-hitcount-for-id", "Itr\n");
-
-    let flt = itr.filter(|&x| x == &id);
-    
-    write_to_file("./tmp", "drcov-get-hitcount-for-id", "Flt\n");
-
-    let count = flt.count();
-
-    write_to_file("./tmp", "drcov-get-hitcount-for-id", &format!("Count: {}\n", count));
-
-    Some(count as u64)
+    Some(*count)
 }
 
 pub fn hitcounts_as_map_string() -> String {
     let mut hitcounts = String::new();
 
-    write_to_file("./tmp", "drcov-hitcounts-as-map-string", "Hitcounts as map string\n");
-
     for (pc, id) in DRCOV_MAP.lock().unwrap().as_ref().unwrap() {
-        let count = get_hitcount_for_id(id.clone()).unwrap();
-        hitcounts.push_str(&format!("{:x}: {}\n", pc, count));
+        // let count = get_hitcount_for_id(id.clone()).unwrap();
+        // Do the above but with pattern matching in case it returns None
+        let count = match get_hitcount_for_id(id.clone()) {
+            Some(c) => c,
+            None => 0,
+        };
+
+        let pc_start = pc;
+        let binding = DRCOV_LENGTHS.lock().unwrap();
+        let block_length = binding
+        .as_ref()
+        .unwrap()
+        .get(pc);
+        let pc_end = pc_start + block_length.unwrap();
+        hitcounts.push_str(&format!("{:x}-{:x}: {}\n", pc_start, pc_end, count));
     }
-    hitcounts.push_str("\n");
+    hitcounts.push_str("END\n");
     hitcounts
 }

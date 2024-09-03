@@ -199,29 +199,38 @@ pub fn write_to_file(file_path: &str, file_name: &str, content: &str) {
     file.write_all(content.as_bytes()).unwrap();
 }
 
-/// Writes the specified content to a file at the given file path and file name, appending the thread id to the file name.
-/// This function is only available with the `std` feature enabled.
+/// Writes the specified content to a file at the given file path and file name.
+/// If file already exists, truncate it.
+/// Open file in write mode
+/// 
 /// # Arguments
+/// 
 /// * `file_path` - The path to the directory where the file will be created.
 /// * `file_name` - The name of the file to be created.
 /// * `content` - The content to be written to the file.
-#[cfg(all(feature = "std", unix))]
-pub fn write_to_file_with_tid(file_path: &str, file_name: &str, content: &str) -> () {
-    use std::fs::File;
+#[cfg(all(feature = "std"))]
+pub fn write_to_file_truncate(file_path: &str, file_name: &str, content: &str) {
     use std::io::Write;
+    use std::fs::OpenOptions;
     use std::string::ToString;
-    use std::thread;
 
-    // If .txt is provided, remove it
+    // If .txt is not provided, add it
     let file_name = if file_name.ends_with(".txt") {
-        file_name.trim_end_matches(".txt").to_string()
-    } else {
         file_name.to_string()
+    } else {
+        format!("{}.txt", file_name)
     };
 
-    let tid = thread::current().id();
-    let path = format!("{}/{}-{:?}.txt", file_path, file_name, tid);
-    let mut file = File::create(path).unwrap();
+    let path = format!("{}/{}", file_path, file_name);
+
+    // Try to open file in write mode, if it doesn't exist, create it
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .create(true)
+        .open(path)
+        .unwrap();
+    
     file.write_all(content.as_bytes()).unwrap();
 }
 

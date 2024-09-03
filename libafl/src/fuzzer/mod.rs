@@ -9,7 +9,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use crate::{
     corpus::{Corpus, CorpusId, HasCurrentCorpusId, HasTestcase, Testcase},
     events::{Event, EventConfig, EventFirer, EventProcessor, ProgressReporter},
-    executors::{Executor, ExitKind, HasObservers},
+    executors::{Executor, ExitKind, HasObservers, write_to_file},
     feedbacks::Feedback,
     inputs::UsesInput,
     mark_feature_time,
@@ -274,7 +274,10 @@ where
         let mut ret = None;
         let monitor_timeout = STATS_TIMEOUT_DEFAULT;
 
-        for _ in 0..iters {
+        for i in 0..iters {
+            let str_nr_iter = i.to_string();
+            write_to_file("./tmp", "fuzz_loop_for", &str_nr_iter);
+
             manager.maybe_report_progress(state, monitor_timeout)?;
             ret = Some(self.fuzz_one(stages, executor, state, manager)?);
         }
