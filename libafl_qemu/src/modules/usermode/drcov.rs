@@ -49,6 +49,7 @@ pub struct DrCovModule {
     full_trace: bool,
     drcov_len: usize,
     use_hitcounts: bool,
+    core_id: usize,
 }
 
 impl DrCovModule {
@@ -59,6 +60,7 @@ impl DrCovModule {
         filename: PathBuf,
         full_trace: bool,
         use_hitcounts: bool,
+        core_id: usize,
     ) -> Self {
         if full_trace {
             let _ = DRCOV_IDS.lock().unwrap().insert(vec![]);
@@ -74,6 +76,7 @@ impl DrCovModule {
             full_trace,
             drcov_len: 0,
             use_hitcounts,
+            core_id,
         }
     }
 
@@ -85,7 +88,8 @@ impl DrCovModule {
     // Write the hitcounts to a file
     pub fn save_hitcounts(&self) {
         let str_hitcounts = hitcounts_as_map_string();
-        write_to_file_truncate("./tmp", "drcov-cleanup", &str_hitcounts);
+        let file_name = format!("drcov-cleanup-{}.txt", self.core_id);
+        write_to_file_truncate("./tmp", &file_name, &str_hitcounts);
     }
 }
 

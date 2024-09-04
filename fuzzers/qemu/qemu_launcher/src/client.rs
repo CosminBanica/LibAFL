@@ -98,7 +98,7 @@ impl<'a> Client<'a> {
         }
     }
 
-    fn get_dynamic_sanitization_filter(&self) -> Result<QemuInstrumentationAddressRangeFilter, Error> {
+    fn get_dynamic_sanitization_filter(&self, core_id: usize) -> Result<QemuInstrumentationAddressRangeFilter, Error> {
         // In this variable we will store arbitrarily addresses from drcov-cleanup.txt
         let mut exclude_brutal = Some(vec![Range {
             start: GuestAddr::from_str_radix("7f0000000000", 16)?,
@@ -108,9 +108,11 @@ impl<'a> Client<'a> {
         // Remove the hardcoded range
         exclude_brutal.as_mut().unwrap().clear();
 
-        // Check if the file ./tmp/drcov-cleanup.txt exists first
-        if std::path::Path::new("./tmp/drcov-cleanup.txt").exists() {
-            let file = std::fs::File::open("./tmp/drcov-cleanup.txt");
+        let file_name = format!("./tmp/drcov-cleanup-{}.txt", core_id);
+
+        // Check if the file hitcount file exists
+        if std::path::Path::new(&file_name).exists() {
+            let file = std::fs::File::open(file_name);
             if !file.is_err() {
                 // Start reading from file; the format is <address_start>-<address_end>: <hitcount>; one range per line; also the file ends with `END`
                 // Example: 7f7d11609f56-7f7d11609f59: 664\n7f7cf3e4c18e-n7f7cf3e4c19e: 169\nEND\n
@@ -278,7 +280,7 @@ impl<'a> Client<'a> {
         } else if is_asan {
             if let Some(injection_module) = injection_module {
                 if self.options.dynamic_sanitizer {
-                    let asan_filter = self.get_dynamic_sanitization_filter()?;
+                    let asan_filter = self.get_dynamic_sanitization_filter(core_id.0)?;
                     instance.build().run(
                         tuple_list!(
                             edge_coverage_module,
@@ -288,7 +290,8 @@ impl<'a> Client<'a> {
                                 QemuInstrumentationAddressRangeFilter::None,
                                 coverage_path,
                                 false,
-                                true
+                                true,
+                                core_id.0
                             ),
                         ),
                         state,
@@ -305,7 +308,7 @@ impl<'a> Client<'a> {
                 }
             } else {
                 if self.options.dynamic_sanitizer {
-                    let asan_filter = self.get_dynamic_sanitization_filter()?;
+                    let asan_filter = self.get_dynamic_sanitization_filter(core_id.0)?;
                     instance.build().run(
                         tuple_list!(
                             edge_coverage_module,
@@ -314,7 +317,8 @@ impl<'a> Client<'a> {
                                 QemuInstrumentationAddressRangeFilter::None,
                                 coverage_path,
                                 false,
-                                true
+                                true,
+                                core_id.0
                             ),
                         ),
                         state,

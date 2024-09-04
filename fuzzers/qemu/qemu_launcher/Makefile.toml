@@ -337,6 +337,34 @@ args = [
 ]
 dependencies = ["harness", "fuzzer"]
 
+[tasks.asan_dynamic_cores]
+linux_alias = "asan_dynamic_cores_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_dynamic_cores_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "./corpus",
+  "--output",
+  "${TARGET_DIR}/output/",
+  "--log",
+  "${TARGET_DIR}/output/log.txt",
+  "--cores",
+  "0-1",
+  "--asan-cores",
+  "0-1",
+  "--iterations",
+  "5",
+  "-d",
+  "--dynamic_sanitizer_cutoff",
+  "1000",
+  "--",
+  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
+]
+dependencies = ["harness", "fuzzer"]
+
 [tasks.single]
 linux_alias = "single_unix"
 mac_alias = "unsupported"
