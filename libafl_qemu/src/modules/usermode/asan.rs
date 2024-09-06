@@ -765,8 +765,8 @@ impl AsanModule {
             QemuAsanOptions::DetectLeaks => (false, true),
             QemuAsanOptions::SnapshotDetectLeaks => (true, true),
         };
-        let str_ranges = filter.convert_to_string();
-        write_to_file("./tmp", "asan_filter", &str_ranges);
+        // let str_ranges = filter.convert_to_string();
+        // write_to_file("./tmp", "asan_filter", &str_ranges);
 
         rt.set_snapshot_shadow(snapshot);
         Self {

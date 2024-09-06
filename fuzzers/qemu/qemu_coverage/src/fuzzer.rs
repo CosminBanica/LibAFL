@@ -237,7 +237,7 @@ pub fn fuzz() {
                 cov_path,
                 false,
                 false,
-                0,
+                0
             ));
 
             let emulator = Emulator::empty()

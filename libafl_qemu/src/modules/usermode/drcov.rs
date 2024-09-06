@@ -1,4 +1,4 @@
-use std::{path::PathBuf, sync::Mutex};
+use std::{hash::Hash, path::PathBuf, sync::Mutex};
 
 use hashbrown::{hash_map::Entry, HashMap};
 use libafl::{executors::ExitKind, inputs::UsesInput, observers::ObserversTuple, HasMetadata, executors::write_to_file, executors::write_to_file_truncate};
@@ -21,7 +21,7 @@ static DRCOV_MAP: Mutex<Option<HashMap<GuestAddr, u64>>> = Mutex::new(None);
 static DRCOV_LENGTHS: Mutex<Option<HashMap<GuestAddr, GuestUsize>>> = Mutex::new(None);
 
 // Hitcount map; key is the id, value is the number of times the block was hit
-static HITCOUNTS: Mutex<Option<HashMap<u64, u64>>> = Mutex::new(None);
+pub static HITCOUNTS: Mutex<Option<HashMap<u64, u64>>> = Mutex::new(None);
 
 #[cfg_attr(
     any(not(feature = "serdeany_autoreg"), miri),
@@ -50,6 +50,7 @@ pub struct DrCovModule {
     drcov_len: usize,
     use_hitcounts: bool,
     core_id: usize,
+    hitcounts: HashMap<(GuestAddr, GuestAddr), u64>,
 }
 
 impl DrCovModule {
@@ -65,8 +66,10 @@ impl DrCovModule {
         if full_trace {
             let _ = DRCOV_IDS.lock().unwrap().insert(vec![]);
         }
-
+        
+        write_to_file("./tmp", "debug", "Creating new HITCOUNTS map\n");
         let _ = HITCOUNTS.lock().unwrap().insert(HashMap::new());
+        let hitcounts = HashMap::new();
         let _ = DRCOV_MAP.lock().unwrap().insert(HashMap::new());
         let _ = DRCOV_LENGTHS.lock().unwrap().insert(HashMap::new());
         Self {
@@ -77,6 +80,7 @@ impl DrCovModule {
             drcov_len: 0,
             use_hitcounts,
             core_id,
+            hitcounts,
         }
     }
 
@@ -85,18 +89,87 @@ impl DrCovModule {
         self.filter.allowed(addr)
     }
 
-    // Write the hitcounts to a file
-    pub fn save_hitcounts(&self) {
+    pub fn get_hitcounts(&self) -> Option<HashMap<(GuestAddr, GuestAddr), u64>> {
+        Some(self.hitcounts.clone())
+    }
+
+    // Read the previous hitcounts from a file, and add them to the current rolling hitcounts in the rolling file
+    pub fn save_previous_hitcounts(&mut self) {
+        let file_name = format!("drcov-cleanup-{}.txt", self.core_id);
+        let file_path = format!("./tmp/{}", file_name);
+        // Check if the previous HITCOUNTS file exists
+        if !std::path::Path::new(&file_path).exists() {
+            write_to_file("./tmp", "debug", "No previous HITCOUNTS to save\n");
+            return;
+        }
+        let file_contents = std::fs::read_to_string(file_path).unwrap();
+        let lines = file_contents.lines();
+        for line in lines {
+            if line == "END" {
+                break;
+            }
+            let parts: Vec<&str> = line.split(": ").collect();
+            let pc_range: Vec<&str> = parts[0].split("-").collect();
+            let pc_start = u64::from_str_radix(pc_range[0], 16).unwrap();
+            let pc_end = u64::from_str_radix(pc_range[1], 16).unwrap();
+            let count = parts[1].parse::<u64>().unwrap();
+            self.hitcounts.insert((pc_start, pc_end), count);
+        }
+
+        let file_name = format!("drcov-rolling-{}.txt", self.core_id);
+        let file_path = format!("./tmp/{}", file_name);
+        // Check if the rolling HITCOUNTS file exists
+        if std::path::Path::new(&file_path).exists() {
+            let file_contents = std::fs::read_to_string(file_path).unwrap();
+            let lines = file_contents.lines();
+            for line in lines {
+                if line == "END" {
+                    break;
+                }
+                let parts: Vec<&str> = line.split(": ").collect();
+                let pc_range: Vec<&str> = parts[0].split("-").collect();
+                let pc_start = u64::from_str_radix(pc_range[0], 16).unwrap();
+                let pc_end = u64::from_str_radix(pc_range[1], 16).unwrap();
+                let count = parts[1].parse::<u64>().unwrap();
+                match self.hitcounts.get_mut(&(pc_start, pc_end)) {
+                    Some(c) => {
+                        let str_to_write = format!("found rolling: {:x}-{:x}: {}\n", pc_start, pc_end, *c);
+                        write_to_file("./tmp", "debug", &str_to_write);
+                        *c += count;
+                    }
+                    None => {
+                        self.hitcounts.insert((pc_start, pc_end), count);
+                    }
+                }
+            }
+        }
+        self.write_hitcounts_rolling();
+    }
+
+    fn write_hitcounts_rolling(&self) {
+        let mut hitcounts = String::new();
+        for (pc, count) in self.hitcounts.iter() {
+            hitcounts.push_str(&format!("{:x}-{:x}: {}\n", pc.0, pc.1, count));
+        }
+        hitcounts.push_str("END\n");
+        let file_name = format!("drcov-rolling-{}.txt", self.core_id);
+        write_to_file_truncate("./tmp", &file_name, &hitcounts);
+        write_to_file("./tmp", "debug", "Written rolling HITCOUNTS\n");
+    }
+
+    // Write the global HITCOUNTS to a file
+    pub fn write_hitcounts(&mut self) {
         let str_hitcounts = hitcounts_as_map_string();
         let file_name = format!("drcov-cleanup-{}.txt", self.core_id);
         write_to_file_truncate("./tmp", &file_name, &str_hitcounts);
+        write_to_file("./tmp", "debug", "Written GLOBAL HITCOUNTS\n");
     }
 }
 
 impl Drop for DrCovModule {
     fn drop(&mut self) {
         if self.use_hitcounts {
-            self.save_hitcounts();
+            self.write_hitcounts();
         }
     }
 }
@@ -132,7 +205,7 @@ where
     {
         let qemu = emulator_modules.qemu();
 
-        write_to_file("./tmp", "drcov-first-exec", "First exec\n");
+        // write_to_file("./tmp", "drcov-first-exec", "First exec\n");
 
         for (i, (r, p)) in qemu
             .mappings()
@@ -335,23 +408,6 @@ pub fn exec_trace_block<ET, S>(
             }
         }
     }
-}
-
-pub fn get_hitcount_for_pc(pc: GuestAddr) -> Option<u64> {
-    // Get the id for the pc
-    let binding = DRCOV_MAP.lock().unwrap();
-    let id = binding.as_ref().unwrap().get(&pc)?;
-
-    // Check that the id was in the map
-    if id == &0 {
-        return None;
-    }
-
-    // Get the number of times the id appears in HITCOUNTS
-    let binding = HITCOUNTS.lock().unwrap();
-    let count = binding.as_ref().unwrap().get(id)?;
-
-    Some(*count)
 }
 
 pub fn get_hitcount_for_id(id: u64) -> Option<u64> {
