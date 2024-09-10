@@ -1,4 +1,4 @@
-use std::{env, io::BufRead, ops::Range};
+use std::{env, ops::Range};
 
 use libafl::{
     corpus::{InMemoryOnDiskCorpus, OnDiskCorpus},
@@ -14,7 +14,7 @@ use libafl_qemu::modules::injections::InjectionModule;
 use libafl_qemu::{
     elf::EasyElf,
     modules::{
-        asan::{init_qemu_with_asan, AsanModule, QemuAsanOptions}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, drcov::{self, DrCovModule}, edges::EdgeCoverageModule, IsFilter, QemuInstrumentationAddressRangeFilter
+        asan::{init_qemu_with_asan, AsanModule, QemuAsanOptions}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, drcov::DrCovModule, edges::EdgeCoverageModule, IsFilter, QemuInstrumentationAddressRangeFilter
     },
     ArchExtras, GuestAddr, Qemu,
 };
@@ -99,70 +99,13 @@ impl<'a> Client<'a> {
         }
     }
 
-    // fn get_dynamic_sanitization_filter(&self, core_id: usize) -> Result<QemuInstrumentationAddressRangeFilter, Error> {
-    //     // In this variable we will store arbitrarily addresses from drcov-cleanup.txt
-    //     let mut exclude_brutal = Some(vec![Range {
-    //         start: GuestAddr::from_str_radix("7f0000000000", 16)?,
-    //         end: GuestAddr::from_str_radix("7f0000001000", 16)?,
-    //     }]);
-
-    //     // Remove the hardcoded range
-    //     exclude_brutal.as_mut().unwrap().clear();
-
-    //     let file_name = format!("./tmp/drcov-cleanup-{}.txt", core_id);
-
-    //     // Check if the file hitcount file exists
-    //     if std::path::Path::new(&file_name).exists() {
-    //         let file = std::fs::File::open(file_name);
-    //         if !file.is_err() {
-    //             // Start reading from file; the format is <address_start>-<address_end>: <hitcount>; one range per line; also the file ends with `END`
-    //             // Example: 7f7d11609f56-7f7d11609f59: 664\n7f7cf3e4c18e-n7f7cf3e4c19e: 169\nEND\n
-    //             // For each address range with hitcount > 50, add it to the exclude_brutal vector
-    //             let reader = std::io::BufReader::new(file.unwrap());
-    //             for line in reader.lines() {
-    //                 let line = line.unwrap();
-    //                 if line == "END" {
-    //                     break;
-    //                 }
-    //                 let parts = line.split(": ").collect::<Vec<&str>>();
-    //                 let hitcount = parts[1].parse::<u64>().unwrap();
-    //                 let cutoff = self.options.dynamic_sanitizer_cutoff;
-    //                 if hitcount > cutoff {
-    //                     let parts = parts[0].split("-").collect::<Vec<&str>>();
-    //                     let addr_start = GuestAddr::from_str_radix(parts[0], 16).unwrap();
-    //                     let addr_end = GuestAddr::from_str_radix(parts[1], 16).unwrap();
-    //                     exclude_brutal.as_mut().unwrap().push(Range {
-    //                         start: addr_start,
-    //                         end: addr_end,
-    //                     });
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
-    //     if let Some(excludes) = &exclude_brutal {
-    //         let rules = excludes
-    //         .iter()
-    //         .map(|x| Range {
-    //             start: x.start.into(),
-    //             end: x.end.into(),
-    //         })
-    //         .collect::<Vec<Range<GuestAddr>>>();
-    //         Ok(QemuInstrumentationAddressRangeFilter::DenyList(rules))
-    //     } else {
-    //         Err(Error::empty_optional("Failed to get dynamic sanitization filter"))
-    //     }
-    // }
-
-    // Do the above, but just read it directly from the HITCOUNTS global variable, which is a Mutex<Option<HashMap<u64, u64>>>
     pub fn get_dynamic_sanitization_filter(&self, drcov_module: &DrCovModule) -> Result<QemuInstrumentationAddressRangeFilter, Error> {
         let mut exclude_brutal = Some(vec![Range {
             start: GuestAddr::from_str_radix("7f0000000000", 16).unwrap(),
             end: GuestAddr::from_str_radix("7f0000001000", 16).unwrap(),
         }]);
         
-        let hitcounts = drcov_module.get_hitcounts(); // Hitcounts is a HashMap<(GuestAddr, GuestAddr), u64>
+        let hitcounts = drcov_module.get_rolling_hitcounts(); // Hitcounts is a HashMap<(GuestAddr, GuestAddr), u64>
         if !hitcounts.is_none() {
             // Remove the hardcoded range
             exclude_brutal.as_mut().unwrap().clear();
@@ -201,7 +144,7 @@ impl<'a> Client<'a> {
         state: Option<ClientState>,
         mgr: ClientMgr<M>,
         core_id: CoreId,
-        mut drcov_module: DrCovModule,
+        drcov_module: DrCovModule,
     ) -> Result<(), Error> {
         let mut args = self.args()?;
         log::debug!("ARGS: {:#?}", args);
@@ -316,7 +259,6 @@ impl<'a> Client<'a> {
         } else if is_asan {
             if let Some(injection_module) = injection_module {
                 if self.options.dynamic_sanitizer {
-                    drcov_module.save_previous_hitcounts();
                     let asan_filter = self.get_dynamic_sanitization_filter(&drcov_module)?;
                     let filter_string = asan_filter.convert_to_string();
                     write_to_file("./tmp", "resulting_filter", &filter_string);
@@ -341,7 +283,6 @@ impl<'a> Client<'a> {
                 }
             } else {
                 if self.options.dynamic_sanitizer {
-                    drcov_module.save_previous_hitcounts();
                     let asan_filter = self.get_dynamic_sanitization_filter(&drcov_module)?;
                     let filter_string = asan_filter.convert_to_string();
                     write_to_file("./tmp", "resulting_filter", &filter_string);

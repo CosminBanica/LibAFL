@@ -327,7 +327,7 @@ args = [
   "--asan-cores",
   "0",
   "--iterations",
-  "5",
+  "100",
   "--",
   "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
 ]
@@ -352,10 +352,10 @@ args = [
   "--asan-cores",
   "0",
   "--iterations",
-  "5",
+  "100",
   "-d",
   "--dynamic_sanitizer_cutoff",
-  "1000",
+  "1000000",
   "--",
   "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
 ]

@@ -10,7 +10,7 @@ use libafl::events::SimpleEventManager;
 #[cfg(not(feature = "simplemgr"))]
 use libafl::events::{EventConfig, Launcher, MonitorTypedEventManager};
 use libafl::{
-    monitors::{tui::TuiMonitor, Monitor, MultiMonitor}, prelude::write_to_file, Error
+    monitors::{tui::TuiMonitor, Monitor, MultiMonitor}, Error
 };
 #[cfg(feature = "simplemgr")]
 use libafl_bolts::core_affinity::CoreId;
@@ -45,8 +45,6 @@ impl Fuzzer {
         let coverage_extension = coverage_path.extension().unwrap_or_default().to_str().unwrap();
         let core = "0";
         coverage_path.set_file_name(format!("{coverage_name}-{core:03}.{coverage_extension}"));
-
-        write_to_file("./tmp", "debug", "starting fuzz \n");
 
         let drcov_module = DrCovModule::new(
             QemuInstrumentationAddressRangeFilter::None,

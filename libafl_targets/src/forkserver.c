@@ -272,8 +272,12 @@ void __afl_start_forkserver(void) {
     uint32_t len = (__token_stop - __token_start), offset = 0;
 
     if (write(FORKSRV_FD + 1, &len, 4) != 4) {
-      write(2, "Error: could not send autotokens len\n",
+      uint32_t ret = write(2, "Error: could not send autotokens len\n",
             strlen("Error: could not send autotokens len\n"));
+      
+      if (ret < 1) {
+        // write_error("could not send autotokens len");
+      }
       _exit(1);
     }
 
