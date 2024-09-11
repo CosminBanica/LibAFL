@@ -144,7 +144,6 @@ impl<'a> Client<'a> {
         state: Option<ClientState>,
         mgr: ClientMgr<M>,
         core_id: CoreId,
-        drcov_module: DrCovModule,
     ) -> Result<(), Error> {
         let mut args = self.args()?;
         log::debug!("ARGS: {:#?}", args);
@@ -213,6 +212,25 @@ impl<'a> Client<'a> {
             .mgr(mgr)
             .core_id(core_id)
             .extra_tokens(extra_tokens);
+
+        let mut drcov_module = DrCovModule::default();
+
+        if self.options.dynamic_sanitizer {
+            let mut coverage_path = std::path::PathBuf::from("/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/tmp/drcov.log");
+            // Turn to PathBuf
+            let coverage_name = coverage_path.file_stem().unwrap().to_str().unwrap();
+            let coverage_extension = coverage_path.extension().unwrap_or_default().to_str().unwrap();
+            let core = "0";
+            coverage_path.set_file_name(format!("{coverage_name}-{core:03}.{coverage_extension}"));
+
+            drcov_module = DrCovModule::new(
+                QemuInstrumentationAddressRangeFilter::None,
+                coverage_path,
+                false,
+                true,
+                core_id.0
+            );
+        }
 
         if is_asan && is_cmplog {
             if let Some(injection_module) = injection_module {

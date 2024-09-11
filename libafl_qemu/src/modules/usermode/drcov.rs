@@ -80,6 +80,16 @@ impl DrCovModule {
         }
     }
 
+    pub fn default() -> Self {
+        Self::new(
+            QemuInstrumentationAddressRangeFilter::None,
+            PathBuf::from("drcov.log"),
+            false,
+            false,
+            0,
+        )
+    }
+
     #[must_use]
     pub fn must_instrument(&self, addr: GuestAddr) -> bool {
         self.filter.allowed(addr)

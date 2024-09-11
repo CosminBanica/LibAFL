@@ -6,6 +6,11 @@ use std::fmt::Debug;
 #[cfg(not(cpu_target = "hexagon"))]
 pub use drcov::DrCovModule;
 
+#[cfg(not(cpu_target = "hexagon"))]
+pub mod blocks;
+
+#[cfg(not(cpu_target = "hexagon"))]
+
 #[cfg(feature = "injections")]
 pub mod injections;
 #[cfg(feature = "injections")]

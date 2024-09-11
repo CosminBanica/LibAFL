@@ -23,8 +23,6 @@ use {
     std::os::unix::io::{AsRawFd, FromRawFd},
 };
 
-use libafl_qemu::modules::{drcov::DrCovModule, QemuInstrumentationAddressRangeFilter};
-
 use crate::{client::Client, options::FuzzerOptions};
 
 pub struct Fuzzer {
@@ -39,27 +37,13 @@ impl Fuzzer {
     }
 
     pub fn fuzz(&self) -> Result<(), Error> {
-        let mut coverage_path = std::path::PathBuf::from("/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/tmp/drcov.log");
-        // Turn to PathBuf
-        let coverage_name = coverage_path.file_stem().unwrap().to_str().unwrap();
-        let coverage_extension = coverage_path.extension().unwrap_or_default().to_str().unwrap();
-        let core = "0";
-        coverage_path.set_file_name(format!("{coverage_name}-{core:03}.{coverage_extension}"));
-
-        let drcov_module = DrCovModule::new(
-            QemuInstrumentationAddressRangeFilter::None,
-            coverage_path,
-            false,
-            true,
-            0
-        );
         if self.options.tui {
             let monitor = TuiMonitor::builder()
                 .title("QEMU Launcher")
                 .version("0.13.1")
                 .enhanced_graphics(true)
                 .build();
-            self.launch(monitor, drcov_module)
+            self.launch(monitor)
         } else {
             let log = self.options.log.as_ref().and_then(|l| {
                 OpenOptions::new()
@@ -87,11 +71,11 @@ impl Fuzzer {
                     writeln!(log.borrow_mut(), "{:?} {}", current_time(), s).unwrap();
                 }
             });
-            self.launch(monitor, drcov_module)
+            self.launch(monitor)
         }
     }
 
-    fn launch<M>(&self, monitor: M, drcov_module: DrCovModule) -> Result<(), Error>
+    fn launch<M>(&self, monitor: M) -> Result<(), Error>
     where
         M: Monitor + Clone,
     {
@@ -119,7 +103,7 @@ impl Fuzzer {
             .broker_port(self.options.port)
             .configuration(EventConfig::from_build_id())
             .monitor(monitor)
-            .run_client(|s, m, c| client.run(s, MonitorTypedEventManager::<_, M>::new(m), c, drcov_module))
+            .run_client(|s, m, c| client.run(s, MonitorTypedEventManager::<_, M>::new(m), c))
             .cores(&self.options.cores)
             .stdout_file(stdout)
             .stderr_file(stdout)
