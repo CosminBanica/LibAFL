@@ -14,7 +14,7 @@ use libafl_qemu::modules::injections::InjectionModule;
 use libafl_qemu::{
     elf::EasyElf,
     modules::{
-        asan::{init_qemu_with_asan, AsanModule, QemuAsanOptions}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, drcov::DrCovModule, edges::EdgeCoverageModule, IsFilter, QemuInstrumentationAddressRangeFilter
+        asan::{init_qemu_with_asan, AsanModule, QemuAsanOptions}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, blocks::BlockCoverageModule, edges::EdgeCoverageModule, IsFilter, QemuInstrumentationAddressRangeFilter
     },
     ArchExtras, GuestAddr, Qemu,
 };
@@ -99,28 +99,26 @@ impl<'a> Client<'a> {
         }
     }
 
-    pub fn get_dynamic_sanitization_filter(&self, drcov_module: &DrCovModule) -> Result<QemuInstrumentationAddressRangeFilter, Error> {
+    pub fn get_dynamic_sanitization_filter(&self, block_module: &BlockCoverageModule) -> Result<QemuInstrumentationAddressRangeFilter, Error> {
         let mut exclude_brutal = Some(vec![Range {
             start: GuestAddr::from_str_radix("7f0000000000", 16).unwrap(),
             end: GuestAddr::from_str_radix("7f0000001000", 16).unwrap(),
         }]);
         
-        let hitcounts = drcov_module.get_rolling_hitcounts(); // Hitcounts is a HashMap<(GuestAddr, GuestAddr), u64>
-        if !hitcounts.is_none() {
-            // Remove the hardcoded range
-            exclude_brutal.as_mut().unwrap().clear();
+        let hitcounts = block_module.get_rolling_hitcounts();
 
-            let hitcounts = hitcounts.as_ref().unwrap();
-            for (key, value) in hitcounts.iter() {
-                let cutoff = self.options.dynamic_sanitizer_cutoff;
-                if *value > cutoff {
-                    let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
-                    let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
-                    exclude_brutal.as_mut().unwrap().push(Range {
-                        start: addr_start,
-                        end: addr_end,
-                    });
-                }
+        // Remove the hardcoded range
+        exclude_brutal.as_mut().unwrap().clear();
+
+        for (key, value) in hitcounts.iter() {
+            let cutoff = self.options.dynamic_sanitizer_cutoff;
+            if *value > cutoff {
+                let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
+                let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
+                exclude_brutal.as_mut().unwrap().push(Range {
+                    start: addr_start,
+                    end: addr_end,
+                });
             }
         }
 
@@ -213,24 +211,7 @@ impl<'a> Client<'a> {
             .core_id(core_id)
             .extra_tokens(extra_tokens);
 
-        let mut drcov_module = DrCovModule::default();
-
-        if self.options.dynamic_sanitizer {
-            let mut coverage_path = std::path::PathBuf::from("/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/tmp/drcov.log");
-            // Turn to PathBuf
-            let coverage_name = coverage_path.file_stem().unwrap().to_str().unwrap();
-            let coverage_extension = coverage_path.extension().unwrap_or_default().to_str().unwrap();
-            let core = "0";
-            coverage_path.set_file_name(format!("{coverage_name}-{core:03}.{coverage_extension}"));
-
-            drcov_module = DrCovModule::new(
-                QemuInstrumentationAddressRangeFilter::None,
-                coverage_path,
-                false,
-                true,
-                core_id.0
-            );
-        }
+        let mut block_module = BlockCoverageModule::new(core_id.0);
 
         if is_asan && is_cmplog {
             if let Some(injection_module) = injection_module {
@@ -277,7 +258,7 @@ impl<'a> Client<'a> {
         } else if is_asan {
             if let Some(injection_module) = injection_module {
                 if self.options.dynamic_sanitizer {
-                    let asan_filter = self.get_dynamic_sanitization_filter(&drcov_module)?;
+                    let asan_filter = self.get_dynamic_sanitization_filter(&block_module)?;
                     let filter_string = asan_filter.convert_to_string();
                     write_to_file("./tmp", "resulting_filter", &filter_string);
                     instance.build().run(
@@ -285,7 +266,7 @@ impl<'a> Client<'a> {
                             edge_coverage_module,
                             AsanModule::new(asan.take().unwrap(), asan_filter, QemuAsanOptions::Snapshot),
                             injection_module,
-                            drcov_module
+                            block_module
                         ),
                         state,
                     )
@@ -301,14 +282,14 @@ impl<'a> Client<'a> {
                 }
             } else {
                 if self.options.dynamic_sanitizer {
-                    let asan_filter = self.get_dynamic_sanitization_filter(&drcov_module)?;
+                    let asan_filter = self.get_dynamic_sanitization_filter(&block_module)?;
                     let filter_string = asan_filter.convert_to_string();
                     write_to_file("./tmp", "resulting_filter", &filter_string);
                     instance.build().run(
                         tuple_list!(
                             edge_coverage_module,
                             AsanModule::new(asan.take().unwrap(), asan_filter, QemuAsanOptions::Snapshot),
-                            drcov_module
+                            block_module
                         ),
                         state,
                     )
