@@ -42,6 +42,9 @@ pub struct FuzzerOptions {
     #[arg(long, help = "Timeout in milli-seconds", default_value = "1000", value_parser = FuzzerOptions::parse_timeout)]
     pub timeout: Duration,
 
+    #[arg(long, help = "Duration in seconds", default_value = "0", value_parser = FuzzerOptions::parse_duration)]
+    pub duration: Duration,
+
     #[arg(long = "port", help = "Broker port", default_value_t = 1337_u16)]
     pub port: u16,
 
@@ -85,6 +88,10 @@ pub struct FuzzerOptions {
 impl FuzzerOptions {
     fn parse_timeout(src: &str) -> Result<Duration, Error> {
         Ok(Duration::from_millis(src.parse()?))
+    }
+
+    fn parse_duration(src: &str) -> Result<Duration, Error> {
+        Ok(Duration::from_secs(src.parse()?))
     }
 
     fn parse_ranges(src: &str) -> Result<Vec<Range<GuestAddr>>, Error> {

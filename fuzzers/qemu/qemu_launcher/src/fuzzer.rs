@@ -37,13 +37,23 @@ impl Fuzzer {
     }
 
     pub fn fuzz(&self) -> Result<(), Error> {
+        // We have the max duration for the campaign in self.options.duration
+        // If it is 0, we will run indefinitely
+        // Start the clock
+        let start = current_time().as_secs();
+        let duration = self.options.duration.as_secs();
+        let mut end = start + duration;
+        if duration == 0 {
+            end = std::u64::MAX;
+        }
+
         if self.options.tui {
             let monitor = TuiMonitor::builder()
                 .title("QEMU Launcher")
                 .version("0.13.1")
                 .enhanced_graphics(true)
                 .build();
-            self.launch(monitor)
+            self.launch(monitor, end)
         } else {
             let log = self.options.log.as_ref().and_then(|l| {
                 OpenOptions::new()
@@ -71,11 +81,11 @@ impl Fuzzer {
                     writeln!(log.borrow_mut(), "{:?} {}", current_time(), s).unwrap();
                 }
             });
-            self.launch(monitor)
+            self.launch(monitor, end)
         }
     }
 
-    fn launch<M>(&self, monitor: M) -> Result<(), Error>
+    fn launch<M>(&self, monitor: M, end_seconds: u64) -> Result<(), Error>
     where
         M: Monitor + Clone,
     {
@@ -103,7 +113,7 @@ impl Fuzzer {
             .broker_port(self.options.port)
             .configuration(EventConfig::from_build_id())
             .monitor(monitor)
-            .run_client(|s, m, c| client.run(s, MonitorTypedEventManager::<_, M>::new(m), c))
+            .run_client(|s, m, c| client.run(s, MonitorTypedEventManager::<_, M>::new(m), c, end_seconds))
             .cores(&self.options.cores)
             .stdout_file(stdout)
             .stderr_file(stdout)

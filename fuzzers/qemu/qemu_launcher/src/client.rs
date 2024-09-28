@@ -8,7 +8,7 @@ use libafl::{
     Error,
     executors::write_to_file
 };
-use libafl_bolts::{core_affinity::CoreId, rands::StdRand, tuples::tuple_list};
+use libafl_bolts::{core_affinity::CoreId, current_time, rands::StdRand, tuples::tuple_list};
 #[cfg(feature = "injections")]
 use libafl_qemu::modules::injections::InjectionModule;
 use libafl_qemu::{
@@ -142,7 +142,13 @@ impl<'a> Client<'a> {
         state: Option<ClientState>,
         mgr: ClientMgr<M>,
         core_id: CoreId,
+        end_seconds: u64,
     ) -> Result<(), Error> {
+        let current_seconds = current_time().as_secs();
+        if current_seconds >= end_seconds {
+            return Err(Error::ShuttingDown);        
+        }
+
         let mut args = self.args()?;
         log::debug!("ARGS: {:#?}", args);
 
@@ -211,7 +217,7 @@ impl<'a> Client<'a> {
             .core_id(core_id)
             .extra_tokens(extra_tokens);
 
-        let mut block_module = BlockCoverageModule::new(core_id.0);
+        let block_module = BlockCoverageModule::new(core_id.0);
 
         if is_asan && is_cmplog {
             if let Some(injection_module) = injection_module {
