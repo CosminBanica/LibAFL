@@ -389,6 +389,33 @@ args = [
 ]
 dependencies = ["harness", "fuzzer"]
 
+[tasks.normal_campaign]
+linux_alias = "normal_campaign_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_campaign_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "./corpus",
+  "--output",
+  "${TARGET_DIR}/output/",
+  "--log",
+  "${TARGET_DIR}/output/log.txt",
+  "--cores",
+  "0",
+  "--asan-cores",
+  "0",
+  "--iterations",
+  "1000",
+  "--duration", # in seconds, let's do 24 hours
+  "86400",
+  "--",
+  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
+]
+dependencies = ["harness", "fuzzer"]
+
 [tasks.ad_campaign]
 linux_alias = "ad_campaign_unix"
 mac_alias = "unsupported"
@@ -408,12 +435,12 @@ args = [
   "--asan-cores",
   "0",
   "--iterations",
-  "100",
-  "--duration", # in seconds
-  "7",
+  "1000",
+  "--duration", # in seconds, let's do 24 hours
+  "86400", 
   "-d",
   "--dynamic_sanitizer_cutoff",
-  "1000000",
+  "1000000000000", # 1e12
   "--",
   "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
 ]
