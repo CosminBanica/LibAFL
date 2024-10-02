@@ -389,12 +389,12 @@ args = [
 ]
 dependencies = ["harness", "fuzzer"]
 
-[tasks.normal_campaign]
-linux_alias = "normal_campaign_unix"
+[tasks.normal_libpng_campaign]
+linux_alias = "normal_libpng_campaign_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
-[tasks.normal_campaign_unix]
+[tasks.normal_libpng_campaign_unix]
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
 args = [
   "--input",
@@ -416,12 +416,39 @@ args = [
 ]
 dependencies = ["harness", "fuzzer"]
 
-[tasks.ad_campaign]
-linux_alias = "ad_campaign_unix"
+[tasks.normal_libtiff_campaign]
+linux_alias = "normal_libtiff_campaign_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
-[tasks.ad_campaign_unix]
+[tasks.normal_libtiff_campaign_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/",
+  "--log",
+  "${TARGET_DIR}/output/log.txt",
+  "--cores",
+  "0",
+  "--asan-cores",
+  "0",
+  "--iterations",
+  "1000",
+  "--duration", # in seconds, let's do 24 hours
+  "86400",
+  "--",
+  "/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ad_libpng_campaign]
+linux_alias = "ad_libpng_campaign_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_libpng_campaign_unix]
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
 args = [
   "--input",
@@ -443,6 +470,36 @@ args = [
   "1000000000000", # 1e12
   "--",
   "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ad_libtiff_campaign]
+linux_alias = "ad_libtiff_campaign_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_libtiff_campaign_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/",
+  "--log",
+  "${TARGET_DIR}/output/log.txt",
+  "--cores",
+  "0",
+  "--asan-cores",
+  "0",
+  "--iterations",
+  "1000",
+  "--duration", # in seconds, let's do 24 hours
+  "86400", 
+  "-d",
+  "--dynamic_sanitizer_cutoff",
+  "1000000000000", # 1e12
+  "--",
+  "/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
