@@ -10,8 +10,19 @@ TARGET_DIR = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/x86_64"
 LIBPNG_ARCH = "x86_64"
 LIBPNG_OPTIMIZATIONS = "yes"
 FEATURE = "x86_64"
+LIBAFL_LOCATION = "/home/cosmix/thesis"
 #LIBAFL_DEBUG_OUTPUT = "1"
 #CUSTOM_QEMU_DIR= "~/qemu-libafl-bridge"
+
+[env.vm_server]
+CROSS_CC = "x86_64-linux-gnu-gcc"
+CROSS_CXX = "x86_64-linux-gnu-g++"
+CROSS_CFLAGS = ""
+TARGET_DIR = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/x86_64"
+LIBPNG_ARCH = "x86_64"
+LIBPNG_OPTIMIZATIONS = "yes"
+FEATURE = "x86_64"
+LIBAFL_LOCATION = "/home/banica"
 
 [env.arm]
 CROSS_CC = "arm-linux-gnueabi-gcc"
@@ -39,6 +50,7 @@ TARGET_DIR = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/x86_64"
 LIBPNG_ARCH = "x86_64"
 LIBPNG_OPTIMIZATIONS = "yes"
 FEATURE = "x86_64"
+LIBAFL_LOCATION = "/home/cosmix/thesis"
 
 [env.i386]
 CROSS_CC = "x86_64-linux-gnu-gcc"
@@ -389,117 +401,184 @@ args = [
 ]
 dependencies = ["harness", "fuzzer"]
 
-[tasks.normal_libpng_campaign]
-linux_alias = "normal_libpng_campaign_unix"
+# 24h Campaigns: for each target, 3 campaigns are defined: normal, asan, and dynamic asan
+# With 5 targets, this results in 15 campaigns; use a different core for each; also different output/log directories
+
+#LibPNG Campaigns
+[tasks.normal_libpng]
+linux_alias = "normal_libpng_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
-[tasks.normal_libpng_campaign_unix]
+[tasks.normal_libpng_unix]
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
 args = [
   "--input",
   "./corpus",
   "--output",
-  "${TARGET_DIR}/output/",
+  "${TARGET_DIR}/output/normal_libpng/",
   "--log",
-  "${TARGET_DIR}/output/log.txt",
+  "${TARGET_DIR}/output/normal_libpng/log.txt",
   "--cores",
   "0",
-  "--asan-cores",
-  "0",
+  "--port",
+  "1337",
   "--iterations",
-  "1000",
-  "--duration", # in seconds, let's do 24 hours
+  "2000",
+  "--duration",
   "86400",
   "--",
   "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
 ]
 dependencies = ["harness", "fuzzer"]
 
-[tasks.normal_libtiff_campaign]
-linux_alias = "normal_libtiff_campaign_unix"
+[tasks.asan_libpng]
+linux_alias = "asan_libpng_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
-[tasks.normal_libtiff_campaign_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
-args = [
-  "--input",
-  "/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
-  "--output",
-  "${TARGET_DIR}/output/",
-  "--log",
-  "${TARGET_DIR}/output/log.txt",
-  "--cores",
-  "0",
-  "--asan-cores",
-  "0",
-  "--iterations",
-  "1000",
-  "--duration", # in seconds, let's do 24 hours
-  "86400",
-  "--",
-  "/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
-]
-dependencies = ["harness", "fuzzer"]
-
-[tasks.ad_libpng_campaign]
-linux_alias = "ad_libpng_campaign_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.ad_libpng_campaign_unix]
+[tasks.asan_libpng_unix]
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
 args = [
   "--input",
   "./corpus",
   "--output",
-  "${TARGET_DIR}/output/",
+  "${TARGET_DIR}/output/asan_libpng/",
   "--log",
-  "${TARGET_DIR}/output/log.txt",
+  "${TARGET_DIR}/output/asan_libpng/log.txt",
   "--cores",
-  "0",
+  "1",
   "--asan-cores",
-  "0",
+  "1",
+  "--port",
+  "1338",
   "--iterations",
-  "1000",
-  "--duration", # in seconds, let's do 24 hours
-  "86400", 
-  "-d",
-  "--dynamic_sanitizer_cutoff",
-  "1000000000000", # 1e12
+  "2000",
+  "--duration",
+  "86400",
   "--",
   "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
 ]
 dependencies = ["harness", "fuzzer"]
 
-[tasks.ad_libtiff_campaign]
-linux_alias = "ad_libtiff_campaign_unix"
+[tasks.ad_libpng]
+linux_alias = "ad_libpng_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
-[tasks.ad_libtiff_campaign_unix]
+[tasks.ad_libpng_unix]
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
 args = [
   "--input",
-  "/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "./corpus",
   "--output",
-  "${TARGET_DIR}/output/",
+  "${TARGET_DIR}/output/ad_libpng/",
   "--log",
-  "${TARGET_DIR}/output/log.txt",
+  "${TARGET_DIR}/output/ad_libpng/log.txt",
+  "--cores",
+  "2",
+  "--asan-cores",
+  "2",
+  "--port",
+  "1339",
+  "--iterations",
+  "2000",
+  "--duration",
+  "86400", 
+  "-d",
+  "--dynamic_sanitizer_cutoff",
+  "1000000000", # 1e9
+  "--",
+  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
+]
+dependencies = ["harness", "fuzzer"]
+
+#LibTIFF Campaigns
+[tasks.normal_libtiff]
+linux_alias = "normal_libtiff_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_libtiff_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/normal_libtiff/",
+  "--log",
+  "${TARGET_DIR}/output/normal_libtiff/log.txt",
+  "--cores",
+  "0",
+  "--port",
+  "1340",
+  "--iterations",
+  "2000",
+  "--duration",
+  "86400",
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.asan_libtiff]
+linux_alias = "normal_libtiff_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_libtiff_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/asan_libtiff/",
+  "--log",
+  "${TARGET_DIR}/output/asan_libtiff/log.txt",
   "--cores",
   "0",
   "--asan-cores",
   "0",
+  "--port",
+  "1341",
   "--iterations",
-  "1000",
-  "--duration", # in seconds, let's do 24 hours
+  "2000",
+  "--duration",
+  "86400",
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ad_libtiff]
+linux_alias = "ad_libtiff_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_libtiff_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/ad_libtiff/",
+  "--log",
+  "${TARGET_DIR}/output/ad_libtiff/log.txt",
+  "--cores",
+  "0",
+  "--asan-cores",
+  "0",
+  "--port",
+  "1342",
+  "--iterations",
+  "2000",
+  "--duration",
   "86400", 
   "-d",
   "--dynamic_sanitizer_cutoff",
-  "1000000000000", # 1e12
+  "1000000000", # 1e9
   "--",
-  "/home/cosmix/thesis/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 

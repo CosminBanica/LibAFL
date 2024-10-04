@@ -78,4 +78,6 @@ fuzzer_libpng*
 forkserver_simple
 
 # Campaign logs
-campaigns
+campaign/plots/hitcount_maps/
+campaign/plots/output
+campaign/plots/logs
