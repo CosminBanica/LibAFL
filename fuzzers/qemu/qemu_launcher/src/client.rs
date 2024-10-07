@@ -266,7 +266,8 @@ impl<'a> Client<'a> {
                 if self.options.dynamic_sanitizer {
                     let asan_filter = self.get_dynamic_sanitization_filter(&block_module)?;
                     let filter_string = asan_filter.convert_to_string();
-                    write_to_file("./tmp", "resulting_filter", &filter_string);
+                    let filter_file = format!("resulting_filter{}", core_id.0);
+                    write_to_file("./tmp", &filter_file, &filter_string);
                     instance.build().run(
                         tuple_list!(
                             edge_coverage_module,
@@ -290,7 +291,8 @@ impl<'a> Client<'a> {
                 if self.options.dynamic_sanitizer {
                     let asan_filter = self.get_dynamic_sanitization_filter(&block_module)?;
                     let filter_string = asan_filter.convert_to_string();
-                    write_to_file("./tmp", "resulting_filter", &filter_string);
+                    let filter_file = format!("resulting_filter{}", core_id.0);
+                    write_to_file("./tmp", &filter_file, &filter_string);
                     instance.build().run(
                         tuple_list!(
                             edge_coverage_module,
