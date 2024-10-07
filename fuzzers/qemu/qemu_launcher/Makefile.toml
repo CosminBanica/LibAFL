@@ -401,8 +401,14 @@ args = [
 ]
 dependencies = ["harness", "fuzzer"]
 
+##
+##
+##
 # 24h Campaigns: for each target, 3 campaigns are defined: normal, asan, and dynamic asan
 # With 5 targets, this results in 15 campaigns; use a different core for each; also different output/log directories
+##
+##
+##
 
 #LibPNG Campaigns
 [tasks.normal_libpng]
@@ -509,11 +515,11 @@ args = [
   "--log",
   "${TARGET_DIR}/output/normal_libtiff/log.txt",
   "--cores",
-  "0",
+  "3",
   "--port",
   "1340",
   "--iterations",
-  "2000",
+  "1000",
   "--duration",
   "86400",
   "--",
@@ -522,7 +528,7 @@ args = [
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_libtiff]
-linux_alias = "normal_libtiff_unix"
+linux_alias = "asan_libtiff_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
@@ -536,13 +542,13 @@ args = [
   "--log",
   "${TARGET_DIR}/output/asan_libtiff/log.txt",
   "--cores",
-  "0",
+  "4",
   "--asan-cores",
-  "0",
+  "4",
   "--port",
   "1341",
   "--iterations",
-  "2000",
+  "1000",
   "--duration",
   "86400",
   "--",
@@ -565,13 +571,13 @@ args = [
   "--log",
   "${TARGET_DIR}/output/ad_libtiff/log.txt",
   "--cores",
-  "0",
+  "5",
   "--asan-cores",
-  "0",
+  "5",
   "--port",
   "1342",
   "--iterations",
-  "2000",
+  "1000",
   "--duration",
   "86400", 
   "-d",
@@ -581,6 +587,281 @@ args = [
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
+
+#LibXML2 Campaigns
+[tasks.normal_libxml2]
+linux_alias = "normal_libxml2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_libxml2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/normal_libxml2/",
+  "--log",
+  "${TARGET_DIR}/output/normal_libxml2/log.txt",
+  "--cores",
+  "6",
+  "--port",
+  "1343",
+  "--iterations",
+  "500",
+  "--duration",
+  "86400",
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/artifacts/libxml2_xml_read_memory_fuzzer",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.asan_libxml2]
+linux_alias = "asan_libxml2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_libxml2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/asan_libxml2/",
+  "--log",
+  "${TARGET_DIR}/output/asan_libxml2/log.txt",
+  "--cores",
+  "7",
+  "--asan-cores",
+  "7",
+  "--port",
+  "1344",
+  "--iterations",
+  "500",
+  "--duration",
+  "86400",
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/artifacts/libxml2_xml_read_memory_fuzzer",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ad_libxml2]
+linux_alias = "ad_libxml2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_libxml2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/ad_libxml2/",
+  "--log",
+  "${TARGET_DIR}/output/ad_libxml2/log.txt",
+  "--cores",
+  "8",
+  "--asan-cores",
+  "8",
+  "--port",
+  "1345",
+  "--iterations",
+  "500",
+  "--duration",
+  "86400", 
+  "-d",
+  "--dynamic_sanitizer_cutoff",
+  "1000000000", # 1e9
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/artifacts/libxml2_xml_read_memory_fuzzer",
+]
+dependencies = ["harness", "fuzzer"]
+
+#Poppler Campaigns
+[tasks.normal_poppler]
+linux_alias = "normal_poppler_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_poppler_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/corpus/pdf_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/normal_poppler/",
+  "--log",
+  "${TARGET_DIR}/output/normal_poppler/log.txt",
+  "--cores",
+  "9",
+  "--port",
+  "1346",
+  "--iterations",
+  "50",
+  "--duration",
+  "86400",
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/artifacts/pdf_fuzzer",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.asan_poppler]
+linux_alias = "asan_poppler_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_poppler_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/corpus/pdf_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/asan_poppler/",
+  "--log",
+  "${TARGET_DIR}/output/asan_poppler/log.txt",
+  "--cores",
+  "10",
+  "--asan-cores",
+  "10",
+  "--port",
+  "1347",
+  "--iterations",
+  "50",
+  "--duration",
+  "86400",
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/artifacts/pdf_fuzzer",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ad_poppler]
+linux_alias = "ad_poppler_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_poppler_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/corpus/pdf_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/ad_poppler/",
+  "--log",
+  "${TARGET_DIR}/output/ad_poppler/log.txt",
+  "--cores",
+  "11",
+  "--asan-cores",
+  "11",
+  "--port",
+  "1348",
+  "--iterations",
+  "50",
+  "--duration",
+  "86400", 
+  "-d",
+  "--dynamic_sanitizer_cutoff",
+  "1000000000", # 1e9
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/artifacts/pdf_fuzzer",
+]
+dependencies = ["harness", "fuzzer"]
+
+#SQLite3 Campaigns
+[tasks.normal_sqlite3]
+linux_alias = "normal_sqlite3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_sqlite3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz",
+  "--output",
+  "${TARGET_DIR}/output/normal_sqlite3/",
+  "--log",
+  "${TARGET_DIR}/output/normal_sqlite3/log.txt",
+  "--cores",
+  "12",
+  "--port",
+  "1349",
+  "--iterations",
+  "1000",
+  "--duration",
+  "86400",
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.asan_sqlite3]
+linux_alias = "asan_sqlite3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_sqlite3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz",
+  "--output",
+  "${TARGET_DIR}/output/asan_sqlite3/",
+  "--log",
+  "${TARGET_DIR}/output/asan_sqlite3/log.txt",
+  "--cores",
+  "13",
+  "--asan-cores",
+  "13",
+  "--port",
+  "1350",
+  "--iterations",
+  "1000",
+  "--duration",
+  "86400",
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ad_sqlite3]
+linux_alias = "ad_sqlite3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_sqlite3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz",
+  "--output",
+  "${TARGET_DIR}/output/ad_sqlite3/",
+  "--log",
+  "${TARGET_DIR}/output/ad_sqlite3/log.txt",
+  "--cores",
+  "14",
+  "--asan-cores",
+  "14",
+  "--port",
+  "1351",
+  "--iterations",
+  "1000",
+  "--duration",
+  "86400", 
+  "-d",
+  "--dynamic_sanitizer_cutoff",
+  "1000000000", # 1e9
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz",
+]
+
+##
+##
+##
+# END OF 24h Campaigns
+##
+##
+##
+
 
 [tasks.single]
 linux_alias = "single_unix"
