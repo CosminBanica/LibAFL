@@ -417,7 +417,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.normal_libpng_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-1"
 args = [
   "--input",
   "./corpus",
@@ -444,7 +444,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.asan_libpng_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-2"
 args = [
   "--input",
   "./corpus",
@@ -460,6 +460,7 @@ args = [
   "1338",
   "--iterations",
   "2000",
+  "--verbose",
   "--duration",
   "86400",
   "--",
@@ -473,7 +474,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.ad_libpng_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-3"
 args = [
   "--input",
   "./corpus",
@@ -506,7 +507,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.normal_libtiff_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-4"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
@@ -533,7 +534,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.asan_libtiff_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-5"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
@@ -549,6 +550,7 @@ args = [
   "1341",
   "--iterations",
   "1000",
+  "--verbose",
   "--duration",
   "86400",
   "--",
@@ -562,7 +564,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.ad_libtiff_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-6"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
@@ -595,7 +597,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.normal_libxml2_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-7"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
@@ -622,7 +624,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.asan_libxml2_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-8"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
@@ -651,7 +653,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.ad_libxml2_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-9"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
@@ -684,7 +686,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.normal_poppler_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-10"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/corpus/pdf_fuzzer",
@@ -711,7 +713,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.asan_poppler_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-11"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/corpus/pdf_fuzzer",
@@ -740,7 +742,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.ad_poppler_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-12"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/corpus/pdf_fuzzer",
@@ -773,7 +775,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.normal_sqlite3_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-13"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz",
@@ -800,7 +802,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.asan_sqlite3_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-14"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz",
@@ -829,7 +831,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.ad_sqlite3_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-15"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz",
