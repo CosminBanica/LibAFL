@@ -550,7 +550,6 @@ args = [
   "1341",
   "--iterations",
   "1000",
-  "--verbose",
   "--duration",
   "86400",
   "--",
@@ -590,48 +589,49 @@ args = [
 ]
 dependencies = ["harness", "fuzzer"]
 
-#LibXML2 Campaigns
-[tasks.normal_libxml2]
-linux_alias = "normal_libxml2_unix"
+#LibJPEG Campaigns
+[tasks.normal_libjpeg]
+linux_alias = "normal_libjpeg_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
-[tasks.normal_libxml2_unix]
+[tasks.normal_libjpeg_unix]
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-7"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
   "--output",
-  "${TARGET_DIR}/output/normal_libxml2/",
+  "${TARGET_DIR}/output/normal_libjpeg/",
   "--log",
-  "${TARGET_DIR}/output/normal_libxml2/log.txt",
+  "${TARGET_DIR}/output/normal_libjpeg/log.txt",
   "--cores",
   "6",
   "--port",
   "1343",
   "--iterations",
-  "500",
+  "1000",
+  "--verbose",
   "--duration",
   "86400",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/artifacts/libxml2_xml_read_memory_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
-[tasks.asan_libxml2]
-linux_alias = "asan_libxml2_unix"
+[tasks.asan_libjpeg]
+linux_alias = "asan_libjpeg_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
-[tasks.asan_libxml2_unix]
+[tasks.asan_libjpeg_unix]
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-8"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
   "--output",
-  "${TARGET_DIR}/output/asan_libxml2/",
+  "${TARGET_DIR}/output/asan_libjpeg/",
   "--log",
-  "${TARGET_DIR}/output/asan_libxml2/log.txt",
+  "${TARGET_DIR}/output/asan_libjpeg/log.txt",
   "--cores",
   "7",
   "--asan-cores",
@@ -639,28 +639,28 @@ args = [
   "--port",
   "1344",
   "--iterations",
-  "500",
+  "1000",
   "--duration",
   "86400",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/artifacts/libxml2_xml_read_memory_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
-[tasks.ad_libxml2]
-linux_alias = "ad_libxml2_unix"
+[tasks.ad_libjpeg]
+linux_alias = "ad_libjpeg_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
-[tasks.ad_libxml2_unix]
+[tasks.ad_libjpeg_unix]
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-9"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
   "--output",
-  "${TARGET_DIR}/output/ad_libxml2/",
+  "${TARGET_DIR}/output/ad_libjpeg/",
   "--log",
-  "${TARGET_DIR}/output/ad_libxml2/log.txt",
+  "${TARGET_DIR}/output/ad_libjpeg/log.txt",
   "--cores",
   "8",
   "--asan-cores",
@@ -668,103 +668,14 @@ args = [
   "--port",
   "1345",
   "--iterations",
-  "500",
+  "1000",
   "--duration",
   "86400", 
   "-d",
   "--dynamic_sanitizer_cutoff",
   "1000000000", # 1e9
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libxml2/artifacts/libxml2_xml_read_memory_fuzzer",
-]
-dependencies = ["harness", "fuzzer"]
-
-#Poppler Campaigns
-[tasks.normal_poppler]
-linux_alias = "normal_poppler_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.normal_poppler_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-10"
-args = [
-  "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/corpus/pdf_fuzzer",
-  "--output",
-  "${TARGET_DIR}/output/normal_poppler/",
-  "--log",
-  "${TARGET_DIR}/output/normal_poppler/log.txt",
-  "--cores",
-  "9",
-  "--port",
-  "1346",
-  "--iterations",
-  "50",
-  "--duration",
-  "86400",
-  "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/artifacts/pdf_fuzzer",
-]
-dependencies = ["harness", "fuzzer"]
-
-[tasks.asan_poppler]
-linux_alias = "asan_poppler_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.asan_poppler_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-11"
-args = [
-  "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/corpus/pdf_fuzzer",
-  "--output",
-  "${TARGET_DIR}/output/asan_poppler/",
-  "--log",
-  "${TARGET_DIR}/output/asan_poppler/log.txt",
-  "--cores",
-  "10",
-  "--asan-cores",
-  "10",
-  "--port",
-  "1347",
-  "--iterations",
-  "50",
-  "--duration",
-  "86400",
-  "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/artifacts/pdf_fuzzer",
-]
-dependencies = ["harness", "fuzzer"]
-
-[tasks.ad_poppler]
-linux_alias = "ad_poppler_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.ad_poppler_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-12"
-args = [
-  "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/corpus/pdf_fuzzer",
-  "--output",
-  "${TARGET_DIR}/output/ad_poppler/",
-  "--log",
-  "${TARGET_DIR}/output/ad_poppler/log.txt",
-  "--cores",
-  "11",
-  "--asan-cores",
-  "11",
-  "--port",
-  "1348",
-  "--iterations",
-  "50",
-  "--duration",
-  "86400", 
-  "-d",
-  "--dynamic_sanitizer_cutoff",
-  "1000000000", # 1e9
-  "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/poppler/artifacts/pdf_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 

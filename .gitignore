@@ -81,3 +81,6 @@ forkserver_simple
 campaign/plots/hitcount_maps/
 campaign/plots/output
 campaign/plots/logs
+
+# Fuzzing targets
+fuzz_targets
