@@ -101,7 +101,7 @@ impl<'a, M: Monitor> Instance<'a, M> {
         );
 
         // A feedback to choose if an input is a solution or not
-        let mut objective = feedback_or_fast!(CrashFeedback::new(), TimeoutFeedback::new());
+        let mut objective = feedback_or_fast!(CrashFeedback::new());
 
         // // If not restarting, create a State from scratch
         let mut state = match state {
