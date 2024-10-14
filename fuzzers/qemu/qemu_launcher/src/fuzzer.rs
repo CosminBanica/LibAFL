@@ -53,7 +53,7 @@ impl Fuzzer {
                 .version("0.13.1")
                 .enhanced_graphics(true)
                 .build();
-            self.launch(monitor, end)
+            self.launch(monitor, start, end)
         } else {
             let log = self.options.log.as_ref().and_then(|l| {
                 OpenOptions::new()
@@ -81,11 +81,11 @@ impl Fuzzer {
                     writeln!(log.borrow_mut(), "{:?} {}", current_time(), s).unwrap();
                 }
             });
-            self.launch(monitor, end)
+            self.launch(monitor, start, end)
         }
     }
 
-    fn launch<M>(&self, monitor: M, end_seconds: u64) -> Result<(), Error>
+    fn launch<M>(&self, monitor: M, start_seconds: u64, end_seconds: u64) -> Result<(), Error>
     where
         M: Monitor + Clone,
     {
@@ -113,7 +113,7 @@ impl Fuzzer {
             .broker_port(self.options.port)
             .configuration(EventConfig::from_build_id())
             .monitor(monitor)
-            .run_client(|s, m, c| client.run(s, MonitorTypedEventManager::<_, M>::new(m), c, end_seconds))
+            .run_client(|s, m, c| client.run(s, MonitorTypedEventManager::<_, M>::new(m), c, start_seconds, end_seconds))
             .cores(&self.options.cores)
             .stdout_file(stdout)
             .stderr_file(stdout)

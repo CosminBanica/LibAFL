@@ -81,8 +81,14 @@ pub struct FuzzerOptions {
     #[clap(short = 'd', long, help = "Enable dynamic sanitization", default_value = "false")]
     pub dynamic_sanitizer: bool,
 
-    #[clap(long = "dynamic_sanitizer_cutoff", help = "Hitcount cutoff for dynamic sanitization", default_value = "1000")]
+    #[clap(long = "dynamic_sanitizer_cutoff", help = "Hitcount cutoff for dynamic sanitization", default_value = "0")]
     pub dynamic_sanitizer_cutoff: u64,
+
+    #[clap(long = "dynamic_sanitizer_ratio", help = "Hitcount ratio for dynamic sanitization", default_value = "0")]
+    pub dynamic_sanitizer_ratio: u64,
+
+    #[clap(long = "ratio_start", help = "At what percentage of campaign duration to start dynamic sanitization", default_value = "0")]
+    pub ratio_start: u64,
 }
 
 impl FuzzerOptions {

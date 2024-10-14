@@ -99,29 +99,52 @@ impl<'a> Client<'a> {
         }
     }
 
-    pub fn get_dynamic_sanitization_filter(&self, block_module: &BlockCoverageModule) -> Result<QemuInstrumentationAddressRangeFilter, Error> {
+    pub fn get_dynamic_sanitization_filter(&self, block_module: &BlockCoverageModule, options: &FuzzerOptions, ratio_elapsed: u64) -> Result<QemuInstrumentationAddressRangeFilter, Error> {
         let mut exclude_brutal = Some(vec![Range {
             start: GuestAddr::from_str_radix("7f0000000000", 16).unwrap(),
             end: GuestAddr::from_str_radix("7f0000001000", 16).unwrap(),
         }]);
-        
-        let hitcounts = block_module.get_rolling_hitcounts();
-
         // Remove the hardcoded range
         exclude_brutal.as_mut().unwrap().clear();
 
-        for (key, value) in hitcounts.iter() {
-            let cutoff = self.options.dynamic_sanitizer_cutoff;
-            if *value > cutoff {
-                let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
-                let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
-                exclude_brutal.as_mut().unwrap().push(Range {
-                    start: addr_start,
-                    end: addr_end,
-                });
+        if (options.ratio_start == 0) || (u64::from(options.ratio_start) <= ratio_elapsed) {
+            let hitcounts = block_module.get_rolling_hitcounts();
+
+            if options.dynamic_sanitizer_ratio != 0 {
+                // Sort the hitcounts by value
+                let mut hitcounts: Vec<_> = hitcounts.iter().collect();
+                hitcounts.sort_by(|a, b| b.1.cmp(a.1));
+
+                // Get only top options.dynamic_sanitizer_ratio% of the hitcounts
+                let cutoff = hitcounts.len() * options.dynamic_sanitizer_ratio as usize / 100;
+                let hitcounts = hitcounts.iter().take(cutoff).collect::<Vec<_>>();
+
+                for (key, value) in hitcounts.iter() {
+                    let cutoff = self.options.dynamic_sanitizer_cutoff;
+                    if **value > cutoff {
+                        let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
+                        let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
+                        exclude_brutal.as_mut().unwrap().push(Range {
+                            start: addr_start,
+                            end: addr_end,
+                        });
+                    }
+                }
+            } else {
+                for (key, value) in hitcounts.iter() {
+                    let cutoff = self.options.dynamic_sanitizer_cutoff;
+                    if *value > cutoff {
+                        let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
+                        let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
+                        exclude_brutal.as_mut().unwrap().push(Range {
+                            start: addr_start,
+                            end: addr_end,
+                        });
+                    }
+                }
             }
         }
-
+        
         #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
         if let Some(excludes) = &exclude_brutal {
             let rules = excludes
@@ -142,12 +165,18 @@ impl<'a> Client<'a> {
         state: Option<ClientState>,
         mgr: ClientMgr<M>,
         core_id: CoreId,
+        start_seconds: u64,
         end_seconds: u64,
     ) -> Result<(), Error> {
         let current_seconds = current_time().as_secs();
         if current_seconds >= end_seconds {
             return Err(Error::ShuttingDown);        
         }
+
+        // Get percentage of campaign duration elapsed
+        let duration = end_seconds - start_seconds;
+        let remaining = end_seconds - current_seconds;
+        let ratio_elapsed = 100 - (remaining * 100 / duration);
 
         let mut args = self.args()?;
         log::debug!("ARGS: {:#?}", args);
@@ -264,7 +293,7 @@ impl<'a> Client<'a> {
         } else if is_asan {
             if let Some(injection_module) = injection_module {
                 if self.options.dynamic_sanitizer {
-                    let asan_filter = self.get_dynamic_sanitization_filter(&block_module)?;
+                    let asan_filter = self.get_dynamic_sanitization_filter(&block_module, self.options, ratio_elapsed)?;
                     let filter_string = asan_filter.convert_to_string();
                     let filter_file = format!("resulting_filter{}", core_id.0);
                     write_to_file("./tmp", &filter_file, &filter_string);
@@ -289,7 +318,7 @@ impl<'a> Client<'a> {
                 }
             } else {
                 if self.options.dynamic_sanitizer {
-                    let asan_filter = self.get_dynamic_sanitization_filter(&block_module)?;
+                    let asan_filter = self.get_dynamic_sanitization_filter(&block_module, self.options, ratio_elapsed)?;
                     let filter_string = asan_filter.convert_to_string();
                     let filter_file = format!("resulting_filter{}", core_id.0);
                     write_to_file("./tmp", &filter_file, &filter_string);
