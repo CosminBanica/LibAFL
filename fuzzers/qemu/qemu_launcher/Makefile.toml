@@ -432,7 +432,7 @@ args = [
   "--iterations",
   "2000",
   "--duration",
-  "86400",
+  "36000",
   "--",
   "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
 ]
@@ -462,7 +462,7 @@ args = [
   "2000",
   "--verbose",
   "--duration",
-  "86400",
+  "36000",
   "--",
   "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
 ]
@@ -491,14 +491,14 @@ args = [
   "--iterations",
   "2000",
   "--duration",
-  "86400", 
+  "36000", 
   "-d",
   "--dynamic_sanitizer_cutoff",
-  "1000000000", # 1e9
+  "0", # 1e9
   "--dynamic_sanitizer_ratio",
-  "0",
+  "10",
   "--ratio_start",
-  "0",
+  "50",
   "--",
   "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
 ]
@@ -526,7 +526,7 @@ args = [
   "--iterations",
   "1000",
   "--duration",
-  "86400",
+  "36000",
   "--",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
@@ -555,7 +555,7 @@ args = [
   "--iterations",
   "1000",
   "--duration",
-  "86400",
+  "36000",
   "--",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
@@ -584,10 +584,14 @@ args = [
   "--iterations",
   "1000",
   "--duration",
-  "86400", 
+  "36000", 
   "-d",
   "--dynamic_sanitizer_cutoff",
-  "1000000000", # 1e9
+  "0", # 1e9
+  "--dynamic_sanitizer_ratio",
+  "10",
+  "--ratio_start",
+  "50",
   "--",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
@@ -616,7 +620,7 @@ args = [
   "1000",
   "--verbose",
   "--duration",
-  "86400",
+  "36000",
   "--",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
@@ -645,7 +649,7 @@ args = [
   "--iterations",
   "1000",
   "--duration",
-  "86400",
+  "36000",
   "--",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
@@ -674,10 +678,14 @@ args = [
   "--iterations",
   "1000",
   "--duration",
-  "86400", 
+  "36000", 
   "-d",
   "--dynamic_sanitizer_cutoff",
-  "1000000000", # 1e9
+  "0", # 1e9
+  "--dynamic_sanitizer_ratio",
+  "10",
+  "--ratio_start",
+  "50",
   "--",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
@@ -705,7 +713,7 @@ args = [
   "--iterations",
   "1000",
   "--duration",
-  "86400",
+  "36000",
   "--",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz",
 ]
@@ -734,7 +742,7 @@ args = [
   "--iterations",
   "1000",
   "--duration",
-  "86400",
+  "36000",
   "--",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz",
 ]
@@ -763,10 +771,14 @@ args = [
   "--iterations",
   "1000",
   "--duration",
-  "86400", 
+  "36000", 
   "-d",
   "--dynamic_sanitizer_cutoff",
-  "1000000000", # 1e9
+  "0", # 1e9
+  "--dynamic_sanitizer_ratio",
+  "10",
+  "--ratio_start",
+  "50",
   "--",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz",
 ]
