@@ -691,77 +691,163 @@ args = [
 ]
 dependencies = ["harness", "fuzzer"]
 
-#SQLite3 Campaigns
-[tasks.normal_sqlite3]
-linux_alias = "normal_sqlite3_unix"
+#LibPNG Campaigns
+[tasks.normal_libpng_long]
+linux_alias = "normal_libpng_long_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
-[tasks.normal_sqlite3_unix]
+[tasks.normal_libpng_long_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-10"
+args = [
+  "--input",
+  "./corpus",
+  "--output",
+  "${TARGET_DIR}/output/normal_libpng_long/",
+  "--log",
+  "${TARGET_DIR}/output/normal_libpng_long/log.txt",
+  "--cores",
+  "9",
+  "--port",
+  "1346",
+  "--iterations",
+  "2000",
+  "--duration",
+  "518400",
+  "--",
+  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.asan_libpng_long]
+linux_alias = "asan_libpng_long_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_libpng_long_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-11"
+args = [
+  "--input",
+  "./corpus",
+  "--output",
+  "${TARGET_DIR}/output/asan_libpng_long/",
+  "--log",
+  "${TARGET_DIR}/output/asan_libpng_long/log.txt",
+  "--cores",
+  "10",
+  "--asan-cores",
+  "10",
+  "--port",
+  "1347",
+  "--iterations",
+  "2000",
+  "--duration",
+  "518400",
+  "--",
+  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
+]
+dependencies = ["harness", "fuzzer"]
+
+#LibTIFF Campaigns
+[tasks.normal_libtiff_long]
+linux_alias = "normal_libtiff_long_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_libtiff_long_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-12"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/normal_libtiff_long/",
+  "--log",
+  "${TARGET_DIR}/output/normal_libtiff_long/log.txt",
+  "--cores",
+  "11",
+  "--port",
+  "1348",
+  "--iterations",
+  "1000",
+  "--duration",
+  "518400",
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.asan_libtiff_long]
+linux_alias = "asan_libtiff_long_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_libtiff_long_unix]
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-13"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
   "--output",
-  "${TARGET_DIR}/output/normal_sqlite3/",
+  "${TARGET_DIR}/output/asan_libtiff_long/",
   "--log",
-  "${TARGET_DIR}/output/normal_sqlite3/log.txt",
+  "${TARGET_DIR}/output/asan_libtiff_long/log.txt",
   "--cores",
+  "12",
+  "--asan-cores",
   "12",
   "--port",
   "1349",
   "--iterations",
   "1000",
   "--duration",
-  "36000",
+  "518400",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
-[tasks.asan_sqlite3]
-linux_alias = "asan_sqlite3_unix"
+#LibJPEG Campaigns
+[tasks.normal_libjpeg_long]
+linux_alias = "normal_libjpeg_long_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
-[tasks.asan_sqlite3_unix]
+[tasks.normal_libjpeg_long_unix]
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-14"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
   "--output",
-  "${TARGET_DIR}/output/asan_sqlite3/",
+  "${TARGET_DIR}/output/normal_libjpeg_long/",
   "--log",
-  "${TARGET_DIR}/output/asan_sqlite3/log.txt",
+  "${TARGET_DIR}/output/normal_libjpeg_long/log.txt",
   "--cores",
-  "13",
-  "--asan-cores",
   "13",
   "--port",
   "1350",
   "--iterations",
   "1000",
+  "--verbose",
   "--duration",
-  "36000",
+  "518400",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
-[tasks.ad_sqlite3]
-linux_alias = "ad_sqlite3_unix"
+[tasks.asan_libjpeg_long]
+linux_alias = "asan_libjpeg_long_unix"
 mac_alias = "unsupported"
 windows_alias = "unsupported"
 
-[tasks.ad_sqlite3_unix]
+[tasks.asan_libjpeg_long_unix]
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-15"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
   "--output",
-  "${TARGET_DIR}/output/ad_sqlite3/",
+  "${TARGET_DIR}/output/asan_libjpeg_long/",
   "--log",
-  "${TARGET_DIR}/output/ad_sqlite3/log.txt",
+  "${TARGET_DIR}/output/asan_libjpeg_long/log.txt",
   "--cores",
   "14",
   "--asan-cores",
@@ -771,17 +857,11 @@ args = [
   "--iterations",
   "1000",
   "--duration",
-  "36000", 
-  "-d",
-  "--dynamic_sanitizer_cutoff",
-  "0", # 1e9
-  "--dynamic_sanitizer_ratio",
-  "10",
-  "--ratio_start",
-  "50",
+  "518400",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
+dependencies = ["harness", "fuzzer"]
 
 ##
 ##

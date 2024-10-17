@@ -5,18 +5,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import os
-import sys
 
 
-if __name__ == '__main__':
-    # Read input file that was passed as argument
-    # in_file = sys.argv[1]
-    
-    # For now hardcode the input file
-    in_file = "/home/cosmix/thesis/LibAFL/campaign/plots/hitcount_maps/libpng_first_campaign_24.txt"
-    
+def plot_hitcount_map(file_path):
+    '''
+    Plots the hitcount map from the given file path.
+    '''
     # Read from ./hitcount_maps/<in_file> into a pandas dataframe
-    df = pd.read_csv(in_file, header=None, delimiter=':', names=['range', 'hit_count'])
+    df = pd.read_csv(file_path, header=None, delimiter=':', names=['range', 'hit_count'])
     
     # Get bins for the histogram
     max_hit_count = df['hit_count'].max()
@@ -30,7 +26,7 @@ if __name__ == '__main__':
     plt.xscale('log')
     
     # Set the title and labels
-    plt.title(os.path.basename(in_file))
+    plt.title(os.path.basename(file_path))
     plt.xlabel('Hit Count Range')
     plt.ylabel('Number of Hit Counts')
     
@@ -46,7 +42,27 @@ if __name__ == '__main__':
         plt.text(bin_center, count, f'{int(count)}', ha='center', va='bottom')
     
     # Save the plot
-    out_file = "/home/cosmix/thesis/LibAFL/campaign/plots/output/" + os.path.basename(in_file) + ".png"
+    out_folder = os.path.dirname(os.path.realpath(__file__)) + "/output/"
+    out_file = out_folder + os.path.basename(file_path) + ".png"
     plt.tight_layout()
     plt.savefig(out_file)
+    
+    # Clear the plot
+    plt.clf()
+
+
+if __name__ == '__main__':
+    # Directory where the hitcount maps are stored
+    dir_path = os.path.dirname(os.path.realpath(__file__)) + "/hitcount_maps/"
+    
+    # Get list of files in the directory
+    files = os.listdir(dir_path)
+    if "archived" in files:
+        files.remove("archived")
+    
+    for file in files:
+        file_path = dir_path + file
+        plot_hitcount_map(file_path)
+    
+    
     
