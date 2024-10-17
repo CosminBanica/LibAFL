@@ -10,7 +10,7 @@ use libafl::{
     generators::RandPrintablesGenerator,
     inputs::BytesInput,
     monitors::SimpleMonitor,
-    mutators::scheduled::{havoc_mutations, StdScheduledMutator},
+    mutators::{havoc_mutations::havoc_mutations, scheduled::StdScheduledMutator},
     observers::{AsanBacktraceObserver, ConstMapObserver, HitcountsMapObserver},
     schedulers::QueueScheduler,
     stages::mutational::StdMutationalStage,
@@ -97,7 +97,7 @@ pub fn main() {
         .unwrap();
 
     // Generator of printable bytearrays of max size 32
-    let mut generator = RandPrintablesGenerator::new(3);
+    let mut generator = RandPrintablesGenerator::new(3).unwrap();
 
     // Generate 8 initial inputs
     state

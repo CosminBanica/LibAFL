@@ -1,12 +1,4 @@
 #[cfg(not(cpu_target = "hexagon"))]
-pub mod drcov;
-
-use std::fmt::Debug;
-
-#[cfg(not(cpu_target = "hexagon"))]
-pub use drcov::DrCovModule;
-
-#[cfg(not(cpu_target = "hexagon"))]
 pub mod blocks;
 
 #[cfg(not(cpu_target = "hexagon"))]
@@ -19,9 +11,7 @@ pub use injections::InjectionModule;
 #[cfg(not(cpu_target = "hexagon"))]
 pub mod snapshot;
 #[cfg(not(cpu_target = "hexagon"))]
-pub use snapshot::IntervalSnapshotFilter;
-#[cfg(not(cpu_target = "hexagon"))]
-pub use snapshot::SnapshotModule;
+pub use snapshot::{IntervalSnapshotFilter, SnapshotModule};
 
 #[cfg(not(cpu_target = "hexagon"))]
 pub mod asan;
@@ -32,17 +22,3 @@ pub use asan::{init_qemu_with_asan, AsanModule};
 pub mod asan_guest;
 #[cfg(not(cpu_target = "hexagon"))]
 pub use asan_guest::{init_qemu_with_asan_guest, AsanGuestModule};
-
-use crate::modules::{HasInstrumentationFilter, QemuInstrumentationAddressRangeFilter};
-
-pub trait StdInstrumentationFilter:
-    HasInstrumentationFilter<QemuInstrumentationAddressRangeFilter> + Debug
-{
-}
-
-impl<Head> StdInstrumentationFilter for (Head, ()) where
-    Head: HasInstrumentationFilter<QemuInstrumentationAddressRangeFilter> + Debug
-{
-}
-
-impl StdInstrumentationFilter for () {}

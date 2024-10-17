@@ -79,9 +79,6 @@ pub mod tuneable;
 #[cfg(feature = "unicode")]
 pub mod unicode;
 
-pub mod pruning;
-pub use pruning::*;
-
 /// A stage is one step in the fuzzing process.
 /// Multiple stages will be scheduled one by one for each input.
 pub trait Stage<E, EM, Z>: UsesState
@@ -135,7 +132,7 @@ where
     E: UsesState<State = S>,
     EM: UsesState<State = S>,
     Z: UsesState<State = S>,
-    S: UsesInput + HasCurrentStage,
+    S: UsesInput + HasCurrentStageId,
 {
     /// Performs all `Stages` in this tuple.
     fn perform_all(
@@ -152,7 +149,7 @@ where
     E: UsesState<State = S>,
     EM: UsesState<State = S>,
     Z: UsesState<State = S>,
-    S: UsesInput + HasCurrentStage,
+    S: UsesInput + HasCurrentStageId,
 {
     fn perform_all(
         &mut self,
@@ -161,7 +158,7 @@ where
         stage: &mut S,
         _: &mut EM,
     ) -> Result<(), Error> {
-        if stage.current_stage_idx()?.is_some() {
+        if stage.current_stage_id()?.is_some() {
             Err(Error::illegal_state(
                 "Got to the end of the tuple without completing resume.",
             ))
@@ -178,7 +175,7 @@ where
     E: UsesState<State = Head::State>,
     EM: UsesState<State = Head::State> + EventProcessor<E, Z>,
     Z: UsesState<State = Head::State>,
-    Head::State: HasCurrentStage,
+    Head::State: HasCurrentStageId,
 {
     /// Performs all stages in the tuple,
     /// Checks after every stage if state wants to stop
@@ -190,7 +187,7 @@ where
         state: &mut Head::State,
         manager: &mut EM,
     ) -> Result<(), Error> {
-        match state.current_stage_idx()? {
+        match state.current_stage_id()? {
             Some(idx) if idx < StageId(Self::LEN) => {
                 // do nothing; we are resuming
             }
@@ -200,19 +197,19 @@ where
 
                 stage.perform_restartable(fuzzer, executor, state, manager)?;
 
-                state.clear_stage()?;
+                state.clear_stage_id()?;
             }
             Some(idx) if idx > StageId(Self::LEN) => {
                 unreachable!("We should clear the stage index before we get here...");
             }
             // this is None, but the match can't deduce that
             _ => {
-                state.set_current_stage_idx(StageId(Self::LEN))?;
+                state.set_current_stage_id(StageId(Self::LEN))?;
 
                 let stage = &mut self.0;
                 stage.perform_restartable(fuzzer, executor, state, manager)?;
 
-                state.clear_stage()?;
+                state.clear_stage_id()?;
             }
         }
 
@@ -237,7 +234,7 @@ where
     E: UsesState<State = Head::State>,
     EM: UsesState<State = Head::State>,
     Z: UsesState<State = Head::State>,
-    Head::State: HasCurrentStage,
+    Head::State: HasCurrentStageId,
 {
     fn into_vec_reversed(
         self,
@@ -286,7 +283,7 @@ where
     E: UsesState<State = S>,
     EM: UsesState<State = S> + EventProcessor<E, Z>,
     Z: UsesState<State = S>,
-    S: UsesInput + HasCurrentStage + State,
+    S: UsesInput + HasCurrentStageId + State,
 {
     /// Performs all stages in the `Vec`
     /// Checks after every stage if state wants to stop
@@ -420,9 +417,9 @@ pub static PUSH_STAGE_ADAPTER_NAME: &str = "pushstageadapter";
 
 impl<CS, EM, OT, PS, Z> UsesState for PushStageAdapter<CS, EM, OT, PS, Z>
 where
-    CS: UsesState,
+    Z: UsesState,
 {
-    type State = CS::State;
+    type State = Z::State;
 }
 
 impl<CS, EM, OT, PS, Z> Named for PushStageAdapter<CS, EM, OT, PS, Z> {
@@ -434,7 +431,7 @@ impl<CS, EM, OT, PS, Z> Named for PushStageAdapter<CS, EM, OT, PS, Z> {
 
 impl<CS, E, EM, OT, PS, Z> Stage<E, EM, Z> for PushStageAdapter<CS, EM, OT, PS, Z>
 where
-    CS: Scheduler,
+    CS: Scheduler<Z::Input, Z::State>,
     Self::State: HasExecutions
         + HasRand
         + HasCorpus
@@ -442,23 +439,23 @@ where
         + HasCurrentCorpusId
         + HasNamedMetadata
         + HasMetadata,
-    E: Executor<EM, Z> + HasObservers<Observers = OT, State = Self::State>,
+    E: Executor<EM, Z, State = <Self as UsesState>::State> + HasObservers<Observers = OT>,
     EM: EventFirer<State = Self::State>
         + EventRestarter
         + HasEventManagerId
         + ProgressReporter<State = Self::State>,
-    OT: ObserversTuple<Self::State>,
+    OT: ObserversTuple<Self::Input, Self::State>,
     PS: PushStage<CS, EM, OT, Z>,
-    Z: ExecutesInput<E, EM, State = Self::State>
-        + ExecutionProcessor
-        + EvaluatorObservers<OT>
+    Z: ExecutesInput<E, EM>
+        + ExecutionProcessor<EM, OT>
+        + EvaluatorObservers<EM, OT>
         + HasScheduler<Scheduler = CS>,
 {
     fn perform(
         &mut self,
         fuzzer: &mut Z,
         executor: &mut E,
-        state: &mut CS::State,
+        state: &mut Z::State,
         event_mgr: &mut EM,
     ) -> Result<(), Error> {
         let push_stage = &mut self.push_stage;
@@ -592,15 +589,15 @@ impl fmt::Display for StageId {
 }
 
 /// Trait for types which track the current stage
-pub trait HasCurrentStage {
+pub trait HasCurrentStageId {
     /// Set the current stage; we have started processing this stage
-    fn set_current_stage_idx(&mut self, idx: StageId) -> Result<(), Error>;
+    fn set_current_stage_id(&mut self, id: StageId) -> Result<(), Error>;
 
     /// Clear the current stage; we are done processing this stage
-    fn clear_stage(&mut self) -> Result<(), Error>;
+    fn clear_stage_id(&mut self) -> Result<(), Error>;
 
     /// Fetch the current stage -- typically used after a state recovery or transfer
-    fn current_stage_idx(&self) -> Result<Option<StageId>, Error>;
+    fn current_stage_id(&self) -> Result<Option<StageId>, Error>;
 
     /// Notify of a reset from which we may recover
     fn on_restart(&mut self) -> Result<(), Error> {
@@ -610,7 +607,7 @@ pub trait HasCurrentStage {
 
 /// Trait for types which track nested stages. Stages which themselves contain stage tuples should
 /// ensure that they constrain the state with this trait accordingly.
-pub trait HasNestedStageStatus: HasCurrentStage {
+pub trait HasNestedStageStatus: HasCurrentStageId {
     /// Enter a stage scope, potentially resuming to an inner stage status. Returns Ok(true) if
     /// resumed.
     fn enter_inner_stage(&mut self) -> Result<(), Error>;
@@ -699,7 +696,7 @@ impl ExecutionCountRestartHelper {
 }
 
 #[cfg(test)]
-pub mod test {
+mod test {
     use alloc::borrow::Cow;
     use core::marker::PhantomData;
 
@@ -710,15 +707,17 @@ pub mod test {
         corpus::{Corpus, HasCurrentCorpusId, Testcase},
         inputs::NopInput,
         stages::{RetryCountRestartHelper, Stage},
-        state::{test::test_std_state, HasCorpus, State, UsesState},
+        state::{HasCorpus, State, StdState, UsesState},
         HasMetadata,
     };
 
+    /// A stage that succeeds to resume
     #[derive(Debug)]
     pub struct ResumeSucceededStage<S> {
         phantom: PhantomData<S>,
     }
 
+    /// A progress state for testing
     #[derive(Serialize, Deserialize, Debug)]
     pub struct TestProgress {
         count: usize,
@@ -790,6 +789,7 @@ pub mod test {
         }
     }
 
+    /// Test to test retries in stages
     #[test]
     fn test_tries_progress() -> Result<(), Error> {
         // # Safety
@@ -808,7 +808,7 @@ pub mod test {
             }
         }
 
-        let mut state = test_std_state();
+        let mut state = StdState::nop()?;
         let stage = StageWithOneTry;
 
         let corpus_id = state.corpus_mut().add(Testcase::new(NopInput {}))?;

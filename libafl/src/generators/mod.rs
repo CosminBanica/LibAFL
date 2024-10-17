@@ -1,15 +1,14 @@
 //! Generators may generate bytes or, in general, data, for inputs.
 
 use alloc::vec::Vec;
-use core::marker::PhantomData;
+use core::{
+    marker::PhantomData,
+    num::{NonZero, NonZeroUsize},
+};
 
 use libafl_bolts::rands::Rand;
 
-use crate::{
-    inputs::{bytes::BytesInput, Input},
-    state::HasRand,
-    Error,
-};
+use crate::{inputs::bytes::BytesInput, state::HasRand, Error};
 
 pub mod gramatron;
 pub use gramatron::*;
@@ -20,10 +19,7 @@ pub mod nautilus;
 pub use nautilus::*;
 
 /// Generators can generate ranges of bytes.
-pub trait Generator<I, S>
-where
-    I: Input,
-{
+pub trait Generator<I, S> {
     /// Generate a new input
     fn generate(&mut self, state: &mut S) -> Result<I, Error>;
 }
@@ -35,7 +31,6 @@ where
 impl<T, I, S> Generator<I, S> for T
 where
     T: Iterator<Item = I>,
-    I: Input,
 {
     fn generate(&mut self, _state: &mut S) -> Result<I, Error> {
         match self.next() {
@@ -49,21 +44,13 @@ where
 
 /// An [`Iterator`] built from a [`Generator`].
 #[derive(Debug)]
-pub struct GeneratorIter<'a, I, S, G>
-where
-    I: Input,
-    G: Generator<I, S>,
-{
+pub struct GeneratorIter<'a, I, S, G> {
     gen: G,
     state: &'a mut S,
     phantom: PhantomData<I>,
 }
 
-impl<'a, I, S, G> GeneratorIter<'a, I, S, G>
-where
-    I: Input,
-    G: Generator<I, S>,
-{
+impl<'a, I, S, G> GeneratorIter<'a, I, S, G> {
     /// Create a new [`GeneratorIter`]
     pub fn new(gen: G, state: &'a mut S) -> Self {
         Self {
@@ -74,9 +61,8 @@ where
     }
 }
 
-impl<'a, I, S, G> Iterator for GeneratorIter<'a, I, S, G>
+impl<I, S, G> Iterator for GeneratorIter<'_, I, S, G>
 where
-    I: Input,
     G: Generator<I, S>,
 {
     type Item = I;
@@ -88,11 +74,8 @@ where
 
 #[derive(Clone, Debug)]
 /// Generates random bytes
-pub struct RandBytesGenerator<S>
-where
-    S: HasRand,
-{
-    max_size: usize,
+pub struct RandBytesGenerator<S> {
+    max_size: NonZeroUsize,
     phantom: PhantomData<S>,
 }
 
@@ -106,19 +89,26 @@ where
             size = 1;
         }
         let random_bytes: Vec<u8> = (0..size)
-            .map(|_| state.rand_mut().below(256) as u8)
+            .map(|_| state.rand_mut().below(NonZero::new(256).unwrap()) as u8)
             .collect();
         Ok(BytesInput::new(random_bytes))
     }
 }
 
-impl<S> RandBytesGenerator<S>
-where
-    S: HasRand,
-{
+impl<S> RandBytesGenerator<S> {
+    /// Returns a new [`RandBytesGenerator`], generating up to `max_size` random bytes.
+    ///
+    /// If you want to save one 0 check, use [`Self::from_nonzero`].
+    pub fn new(max_size: usize) -> Result<Self, Error> {
+        let Some(max_size) = NonZero::new(max_size) else {
+            return Err(Error::illegal_argument("The max_size may not be 0."));
+        };
+        Ok(Self::from_nonzero(max_size))
+    }
+
     /// Returns a new [`RandBytesGenerator`], generating up to `max_size` random bytes.
     #[must_use]
-    pub fn new(max_size: usize) -> Self {
+    pub fn from_nonzero(max_size: NonZeroUsize) -> Self {
         Self {
             max_size,
             phantom: PhantomData,
@@ -128,11 +118,8 @@ where
 
 #[derive(Clone, Debug)]
 /// Generates random printable characters
-pub struct RandPrintablesGenerator<S>
-where
-    S: HasRand,
-{
-    max_size: usize,
+pub struct RandPrintablesGenerator<S> {
+    max_size: NonZeroUsize,
     phantom: PhantomData<S>,
 }
 
@@ -153,13 +140,20 @@ where
     }
 }
 
-impl<S> RandPrintablesGenerator<S>
-where
-    S: HasRand,
-{
+impl<S> RandPrintablesGenerator<S> {
     /// Creates a new [`RandPrintablesGenerator`], generating up to `max_size` random printable characters.
+    ///
+    /// To skip the 0 `max_size` check, create this using [`Self::from_nonzero`] instead.
+    pub fn new(max_size: usize) -> Result<Self, Error> {
+        let Some(max_size) = NonZero::new(max_size) else {
+            return Err(Error::illegal_argument("The max_size may not be 0."));
+        };
+        Ok(Self::from_nonzero(max_size))
+    }
+
+    /// Returns a new [`RandBytesGenerator`], generating up to `max_size` random bytes.
     #[must_use]
-    pub fn new(max_size: usize) -> Self {
+    pub fn from_nonzero(max_size: NonZeroUsize) -> Self {
         Self {
             max_size,
             phantom: PhantomData,

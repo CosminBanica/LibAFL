@@ -355,7 +355,7 @@ macro_rules! fuzz_with {
             // TODO configure with mutation stacking options from libfuzzer
             let std_mutator = StdScheduledMutator::new(havoc_mutations().merge(tokens_mutations()));
 
-            let std_power = StdPowerMutationalStage::new(std_mutator);
+            let std_power: StdPowerMutationalStage<_, _, BytesInput, _, _> = StdPowerMutationalStage::new(std_mutator);
             let std_power = IfStage::new(|_, _, _, _| Ok(mutator_status.std_mutational.into()), (std_power, ()));
 
             // for custom mutator and crossover, each have access to the LLVMFuzzerMutate -- but it appears
@@ -374,9 +374,10 @@ macro_rules! fuzz_with {
             let custom_mutator = unsafe {
                 LLVMCustomMutator::mutate_unchecked(StdScheduledMutator::new(havoc_mutations_no_crossover().merge(tokens_mutations())))
             };
-            let std_mutator_no_mutate = StdScheduledMutator::with_max_stack_pow(havoc_crossover(), 3);
+            // Safe to unwrap: stack pow is not 0.
+            let std_mutator_no_mutate = StdScheduledMutator::with_max_stack_pow(havoc_crossover(), 3).unwrap();
 
-            let cm_power = StdPowerMutationalStage::new(custom_mutator);
+            let cm_power: StdPowerMutationalStage<_, _, BytesInput, _, _> = StdPowerMutationalStage::new(custom_mutator);
             let cm_power = IfStage::new(|_, _, _, _| Ok(mutator_status.custom_mutation.into()), (cm_power, ()));
             let cm_std_power = StdMutationalStage::new(std_mutator_no_mutate);
             let cm_std_power =
@@ -385,20 +386,22 @@ macro_rules! fuzz_with {
             // a custom crossover is defined
             // while the scenario that a custom crossover is defined without a custom mutator is unlikely
             // we handle it here explicitly anyways
+            // Safe to unwrap: stack pow is not 0.
             let custom_crossover = unsafe {
                 LLVMCustomMutator::crossover_unchecked(StdScheduledMutator::with_max_stack_pow(
                     havoc_mutations_no_crossover().merge(tokens_mutations()),
                     3,
-                ))
+                ).unwrap())
             };
             let std_mutator_no_crossover = StdScheduledMutator::new(havoc_mutations_no_crossover().merge(tokens_mutations()));
 
             let cc_power = StdMutationalStage::new(custom_crossover);
             let cc_power = IfStage::new(|_, _, _, _| Ok(mutator_status.custom_crossover.into()), (cc_power, ()));
-            let cc_std_power = StdPowerMutationalStage::new(std_mutator_no_crossover);
+            let cc_std_power: StdPowerMutationalStage<_, _, BytesInput, _, _> = StdPowerMutationalStage::new(std_mutator_no_crossover);
             let cc_std_power =
                 IfStage::new(|_, _, _, _| Ok(mutator_status.std_no_crossover.into()), (cc_std_power, ()));
 
+            // Safe to unwrap: stack pow is not 0.
             let grimoire_mutator = StdScheduledMutator::with_max_stack_pow(
                 tuple_list!(
                     GrimoireExtensionMutator::new(),
@@ -409,11 +412,11 @@ macro_rules! fuzz_with {
                     GrimoireRandomDeleteMutator::new(),
                 ),
                 3,
-            );
+            ).unwrap();
             let grimoire = IfStage::new(|_, _, _, _| Ok(grimoire.into()), (StdMutationalStage::transforming(grimoire_mutator), ()));
 
             // A minimization+queue policy to get testcasess from the corpus
-            let scheduler = IndexesLenTimeMinimizerScheduler::new(&edges_observer, PowerQueueScheduler::new(&mut state, &edges_observer, PowerSchedule::FAST));
+            let scheduler = IndexesLenTimeMinimizerScheduler::new(&edges_observer, PowerQueueScheduler::new(&mut state, &edges_observer, PowerSchedule::fast()));
 
             // A fuzzer with feedbacks and a corpus scheduler
             let mut fuzzer = StdFuzzer::new(scheduler, feedback, objective);
@@ -464,7 +467,7 @@ macro_rules! fuzz_with {
                 }
                 if state.corpus().count() < 1 {
                     // Generator of bytearrays of max size 64
-                    let mut generator = RandBytesGenerator::from(RandBytesGenerator::new(64));
+                    let mut generator = RandBytesGenerator::from(RandBytesGenerator::new(64).unwrap());
 
                     // Generate 1024 initial inputs
                     state

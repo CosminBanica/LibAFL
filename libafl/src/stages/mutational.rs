@@ -5,7 +5,10 @@ use alloc::{
     borrow::{Cow, ToOwned},
     string::ToString,
 };
-use core::marker::PhantomData;
+use core::{
+    marker::PhantomData,
+    num::{NonZero, NonZeroUsize},
+};
 
 use libafl_bolts::{rands::Rand, Named};
 
@@ -60,7 +63,8 @@ where
 impl<I, S> MutatedTransform<I, S> for I
 where
     I: Input + Clone,
-    S: HasCorpus<Input = I>,
+    S: HasCorpus,
+    S::Corpus: Corpus<Input = I>,
 {
     type Post = ();
 
@@ -85,8 +89,9 @@ where
     M: Mutator<I, Self::State>,
     EM: UsesState<State = Self::State>,
     Z: Evaluator<E, EM, State = Self::State>,
-    Self::State: HasCorpus,
+    Self::State: HasCorpus + HasCurrentTestcase,
     I: MutatedTransform<Self::Input, Self::State> + Clone,
+    <<Self as UsesState>::State as HasCorpus>::Corpus: Corpus<Input = Self::Input>,
 {
     /// The mutator registered for this stage
     fn mutator(&self) -> &M;
@@ -160,7 +165,7 @@ pub struct StdMutationalStage<E, EM, I, M, Z> {
     /// The mutator(s) to use
     mutator: M,
     /// The maximum amount of iterations we should do each round
-    max_iterations: usize,
+    max_iterations: NonZeroUsize,
     #[allow(clippy::type_complexity)]
     phantom: PhantomData<(E, EM, I, Z)>,
 }
@@ -171,8 +176,9 @@ where
     EM: UsesState<State = Self::State>,
     M: Mutator<I, Self::State>,
     Z: Evaluator<E, EM>,
-    Self::State: HasCorpus + HasRand + HasExecutions + HasMetadata + HasNamedMetadata,
+    Z::State: HasCorpus + HasRand + HasExecutions + HasMetadata + HasNamedMetadata,
     I: MutatedTransform<Self::Input, Self::State> + Clone,
+    <<Self as UsesState>::State as HasCorpus>::Corpus: Corpus<Input = Self::Input>, //delete me
 {
     /// The mutator, added to this stage
     #[inline]
@@ -216,8 +222,9 @@ where
     EM: UsesState<State = Self::State>,
     M: Mutator<I, Self::State>,
     Z: Evaluator<E, EM>,
-    Self::State: HasCorpus + HasRand + HasMetadata + HasExecutions + HasNamedMetadata,
+    Z::State: HasCorpus + HasRand + HasMetadata + HasExecutions + HasNamedMetadata,
     I: MutatedTransform<Self::Input, Self::State> + Clone,
+    <<Self as UsesState>::State as HasCorpus>::Corpus: Corpus<Input = Self::Input>, //delete me
 {
     #[inline]
     #[allow(clippy::let_and_return)]
@@ -255,11 +262,13 @@ where
 {
     /// Creates a new default mutational stage
     pub fn new(mutator: M) -> Self {
-        Self::transforming_with_max_iterations(mutator, DEFAULT_MUTATIONAL_MAX_ITERATIONS)
+        // Safe to unwrap: DEFAULT_MUTATIONAL_MAX_ITERATIONS is never 0.
+        Self::transforming_with_max_iterations(mutator, DEFAULT_MUTATIONAL_MAX_ITERATIONS).unwrap()
     }
 
     /// Creates a new mutational stage with the given max iterations
-    pub fn with_max_iterations(mutator: M, max_iterations: usize) -> Self {
+    #[inline]
+    pub fn with_max_iterations(mutator: M, max_iterations: usize) -> Result<Self, Error> {
         Self::transforming_with_max_iterations(mutator, max_iterations)
     }
 }
@@ -274,25 +283,36 @@ where
 {
     /// Creates a new transforming mutational stage with the default max iterations
     pub fn transforming(mutator: M) -> Self {
-        Self::transforming_with_max_iterations(mutator, DEFAULT_MUTATIONAL_MAX_ITERATIONS)
+        // Safe to unwrap: DEFAULT_MUTATIONAL_MAX_ITERATIONS is never 0.
+        Self::transforming_with_max_iterations(mutator, DEFAULT_MUTATIONAL_MAX_ITERATIONS).unwrap()
     }
 
     /// Creates a new transforming mutational stage with the given max iterations
-    pub fn transforming_with_max_iterations(mutator: M, max_iterations: usize) -> Self {
+    ///
+    /// # Errors
+    /// Will return [`Error::IllegalArgument`] for `max_iterations` of 0.
+    #[inline]
+    pub fn transforming_with_max_iterations(
+        mutator: M,
+        max_iterations: usize,
+    ) -> Result<Self, Error> {
         // unsafe but impossible that you create two threads both instantiating this instance
+        let Some(max_iterations) = NonZero::new(max_iterations) else {
+            return Err(Error::illegal_argument("0 max iterations is not allowed.."));
+        };
         let stage_id = unsafe {
             let ret = MUTATIONAL_STAGE_ID;
             MUTATIONAL_STAGE_ID += 1;
             ret
         };
-        Self {
-            name: Cow::Owned(
-                MUTATIONAL_STAGE_NAME.to_owned() + ":" + stage_id.to_string().as_str(),
-            ),
+        let name =
+            Cow::Owned(MUTATIONAL_STAGE_NAME.to_owned() + ":" + stage_id.to_string().as_str());
+        Ok(Self {
+            name,
             mutator,
             max_iterations,
             phantom: PhantomData,
-        }
+        })
     }
 }
 
@@ -329,8 +349,9 @@ where
     EM: UsesState<State = Self::State>,
     M: MultiMutator<I, Self::State>,
     Z: Evaluator<E, EM>,
-    Self::State: HasCorpus + HasRand + HasNamedMetadata,
+    Z::State: HasCorpus + HasRand + HasNamedMetadata + HasCurrentTestcase,
     I: MutatedTransform<Self::Input, Self::State> + Clone,
+    <<Self as UsesState>::State as HasCorpus>::Corpus: Corpus<Input = Self::Input>, //delete me
 {
     #[inline]
     fn should_restart(&mut self, state: &mut Self::State) -> Result<bool, Error> {

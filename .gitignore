@@ -33,7 +33,8 @@ callgrind.out.*
 perf.data
 perf.data.old
 
-.vscode
+.vscode/settings.json
+.vscode/launch.json
 test.dict
 
 .idea/
@@ -42,7 +43,6 @@ test.dict
 AFLplusplus
 test_*
 *_fuzzer
-*_harness
 
 # Ignore common dummy and logfiles
 *.log
@@ -73,7 +73,6 @@ libafl_nyx/packer
 # common harness names
 harness
 program
-fuzzer
 fuzzer_libpng*
 forkserver_simple
 
@@ -81,6 +80,11 @@ forkserver_simple
 campaign/plots/hitcount_maps/
 campaign/plots/output
 campaign/plots/logs
+campaign/utils/*.txt
+campaign/utils/*.png
+
+# Fuzzer helper files
+fuzzers/binary_only/qemu_launcher/tmp
 
 # Fuzzing targets
 fuzz_targets

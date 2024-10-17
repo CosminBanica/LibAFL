@@ -28,7 +28,7 @@ use crate::executors::{Executor, ExitKind};
 use crate::{
     executors::HasObservers,
     inputs::{HasTargetBytes, UsesInput},
-    observers::{ObserversTuple, StdErrObserver, StdOutObserver, UsesObservers},
+    observers::{ObserversTuple, StdErrObserver, StdOutObserver},
     state::{HasExecutions, State, UsesState},
     std::borrow::ToOwned,
 };
@@ -105,7 +105,7 @@ where
 
                 for (i, arg) in args.enumerate() {
                     if i == *argnum {
-                        debug_assert_eq!(arg, "DUMMY");
+                        debug_assert_eq!(arg, "PLACEHOLDER");
                         #[cfg(unix)]
                         cmd.arg(OsStr::from_bytes(input.target_bytes().as_slice()));
                         // There is an issue here that the chars on Windows are 16 bit wide.
@@ -214,7 +214,7 @@ where
     EM: UsesState<State = S>,
     S: State + HasExecutions,
     T: CommandConfigurator<S::Input> + Debug,
-    OT: Debug + MatchName + ObserversTuple<S>,
+    OT: Debug + MatchName + ObserversTuple<S::Input, S>,
     Z: UsesState<State = S>,
 {
     fn run_target(
@@ -290,20 +290,14 @@ where
     type State = S;
 }
 
-impl<OT, S, T> UsesObservers for CommandExecutor<OT, S, T>
-where
-    OT: ObserversTuple<S>,
-    S: State,
-{
-    type Observers = OT;
-}
-
 impl<OT, S, T> HasObservers for CommandExecutor<OT, S, T>
 where
     S: State,
     T: Debug,
-    OT: ObserversTuple<S>,
+    OT: ObserversTuple<S::Input, S>,
 {
+    type Observers = OT;
+
     fn observers(&self) -> RefIndexable<&Self::Observers, Self::Observers> {
         RefIndexable::from(&self.observers)
     }
@@ -379,7 +373,8 @@ impl CommandExecutorBuilder {
     pub fn arg_input_arg(&mut self) -> &mut Self {
         let argnum = self.args.len();
         self.input(InputLocation::Arg { argnum });
-        // self.arg("DUMMY");
+        // Placeholder arg that gets replaced with the input name later.
+        self.arg("PLACEHOLDER");
         self
     }
 
@@ -482,7 +477,7 @@ impl CommandExecutorBuilder {
         observers: OT,
     ) -> Result<CommandExecutor<OT, S, StdCommandConfigurator>, Error>
     where
-        OT: MatchName + ObserversTuple<S>,
+        OT: MatchName + ObserversTuple<S::Input, S>,
         S: UsesInput,
         S::Input: Input + HasTargetBytes,
     {
@@ -581,7 +576,6 @@ impl CommandExecutorBuilder {
 ///     MyExecutor.into_executor(())
 /// }
 /// ```
-
 #[cfg(all(feature = "std", any(unix, doc)))]
 pub trait CommandConfigurator<I>: Sized {
     /// Get the stdout
@@ -620,7 +614,7 @@ mod tests {
             command::{CommandExecutor, InputLocation},
             Executor,
         },
-        fuzzer::test::NopFuzzer,
+        fuzzer::NopFuzzer,
         inputs::BytesInput,
         monitors::SimpleMonitor,
         state::NopState,

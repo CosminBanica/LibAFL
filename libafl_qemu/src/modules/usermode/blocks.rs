@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     emu::EmulatorModules,
-    modules::{EmulatorModule, EmulatorModuleTuple},
+    modules::{EmulatorModule, EmulatorModuleTuple, AddressFilter},
     qemu::Hook,
 };
 
@@ -39,19 +39,23 @@ impl BlockMapMetadata {
 libafl_bolts::impl_serdeany!(BlockMapMetadata);
 
 #[derive(Debug)]
-pub struct BlockCoverageModule {
+pub struct BlockCoverageModule<AF: AddressFilter> {
     core_id: usize,
+    address_filter: AF,
 }
 
-impl BlockCoverageModule {
-    pub fn new(core_id: usize) -> Self {
+impl<AF> BlockCoverageModule<AF> 
+where 
+    AF: AddressFilter
+{
+    pub fn new(core_id: usize, address_filter: AF) -> Self {
         // Initialize the maps
         let _ = HITCOUNTS.lock().unwrap().insert(HashMap::new());
         let _ = ADDR_MAP.lock().unwrap().insert(HashMap::new());
         let _ = BLOCK_LENGTHS.lock().unwrap().insert(HashMap::new());
 
         // Return the module
-        Self { core_id }
+        Self { core_id, address_filter }
     }
 
     pub fn get_rolling_hitcounts(&self) -> HashMap<(GuestAddr, GuestAddr), u64> {
@@ -109,15 +113,19 @@ impl BlockCoverageModule {
     }
 }
 
-impl Drop for BlockCoverageModule {
+impl<AF> Drop for BlockCoverageModule<AF>
+where
+    AF: AddressFilter,
+{
     fn drop(&mut self) {
         self.update_rolling_hitcounts();
     }
 }
 
-impl<S> EmulatorModule<S> for BlockCoverageModule
+impl<S, AF> EmulatorModule<S> for BlockCoverageModule<AF>
 where 
     S: Unpin + UsesInput + HasMetadata,
+    AF: AddressFilter + 'static,
 {
     fn init_module<ET>(&self, emulator_modules: &mut EmulatorModules<ET, S>) 
     where 
@@ -128,6 +136,16 @@ where
             Hook::Function(gen_block_lengths::<ET, S>),
             Hook::Function(exec_trace_block::<ET, S>),
         );
+    }
+    
+    type ModuleAddressFilter = AF;
+    
+    fn address_filter(&self) -> &Self::ModuleAddressFilter {
+        &self.address_filter
+    }
+
+    fn address_filter_mut(&mut self) -> &mut Self::ModuleAddressFilter {
+        &mut self.address_filter
     }
 }
 

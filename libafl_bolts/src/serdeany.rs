@@ -118,7 +118,12 @@ pub mod serdeany_registry {
         boxed::Box,
         string::{String, ToString},
     };
-    use core::{any::TypeId, fmt, hash::BuildHasherDefault};
+    use core::{
+        any::TypeId,
+        fmt,
+        hash::BuildHasherDefault,
+        ptr::{addr_of, addr_of_mut},
+    };
 
     use hashbrown::{
         hash_map::{Values, ValuesMut},
@@ -156,7 +161,7 @@ pub mod serdeany_registry {
             let id: TypeRepr = visitor.next_element()?.unwrap();
 
             let cb = unsafe {
-                REGISTRY
+                (*addr_of!(REGISTRY))
                     .deserializers
                     .as_ref()
                     .ok_or_else(||
@@ -228,7 +233,7 @@ pub mod serdeany_registry {
             T: crate::serdeany::SerdeAny + Serialize + serde::de::DeserializeOwned,
         {
             unsafe {
-                REGISTRY.register::<T>();
+                (*addr_of_mut!(REGISTRY)).register::<T>();
             }
         }
 
@@ -237,9 +242,9 @@ pub mod serdeany_registry {
         /// # Safety
         /// This may never be called concurrently or at the same time as `register`.
         /// It dereferences the `REGISTRY` hashmap and adds the given type to it.
-        pub fn finalize() {
+        pub unsafe fn finalize() {
             unsafe {
-                REGISTRY.finalize();
+                (*addr_of_mut!(REGISTRY)).finalize();
             }
         }
     }
@@ -366,7 +371,7 @@ pub mod serdeany_registry {
 
             assert!(
                         unsafe {
-                            REGISTRY
+                            (*addr_of!(REGISTRY))
                                 .deserializers
                                 .as_ref()
                                 .expect(super::ERR_EMPTY_TYPES_REGISTER)
@@ -629,7 +634,7 @@ pub mod serdeany_registry {
 
             assert!(
                         unsafe {
-                            REGISTRY
+                            (*addr_of!(REGISTRY))
                                 .deserializers
                                 .as_ref()
                                 .expect(super::ERR_EMPTY_TYPES_REGISTER)

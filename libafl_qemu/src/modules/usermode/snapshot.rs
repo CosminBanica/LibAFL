@@ -1,4 +1,4 @@
-use std::{cell::UnsafeCell, mem::MaybeUninit, sync::Mutex};
+use std::{cell::UnsafeCell, mem::MaybeUninit, ptr::addr_of_mut, sync::Mutex};
 
 use hashbrown::{HashMap, HashSet};
 use libafl::inputs::UsesInput;
@@ -21,7 +21,10 @@ use crate::SYS_mmap2;
 use crate::SYS_newfstatat;
 use crate::{
     emu::EmulatorModules,
-    modules::{asan::AsanModule, EmulatorModule, EmulatorModuleTuple, Range},
+    modules::{
+        asan::AsanModule, EmulatorModule, EmulatorModuleTuple, NopAddressFilter, Range,
+        NOP_ADDRESS_FILTER,
+    },
     qemu::{Hook, SyscallHookResult},
     Qemu, SYS_brk, SYS_fstat, SYS_fstatfs, SYS_futex, SYS_getrandom, SYS_mprotect, SYS_mremap,
     SYS_munmap, SYS_pread64, SYS_read, SYS_readlinkat, SYS_statfs,
@@ -31,7 +34,7 @@ use crate::{
 pub const SNAPSHOT_PAGE_SIZE: usize = 4096;
 pub const SNAPSHOT_PAGE_MASK: GuestAddr = !(SNAPSHOT_PAGE_SIZE as GuestAddr - 1);
 
-pub type StopExecutionCallback = Box<dyn FnMut(&mut SnapshotModule, &Qemu)>;
+pub type StopExecutionCallback = Box<dyn FnMut(&mut SnapshotModule, Qemu)>;
 
 #[derive(Clone, Debug)]
 pub struct SnapshotPageInfo {
@@ -205,7 +208,7 @@ impl SnapshotModule {
                     // TODO not just for R pages
                     unsafe {
                         info.data = Some(Box::new(core::mem::zeroed()));
-                        qemu.read_mem(addr, &mut info.data.as_mut().unwrap()[..]);
+                        qemu.read_mem_unchecked(addr, &mut info.data.as_mut().unwrap()[..]);
                     }
                 }
                 self.pages.insert(addr, info);
@@ -296,7 +299,8 @@ impl SnapshotModule {
                             qemu.read_mem(
                                 addr,
                                 current_page_content.as_mut_ptr().as_mut().unwrap(),
-                            );
+                            )
+                            .unwrap();
                         }
 
                         let current_page_content: &mut [u8; SNAPSHOT_PAGE_SIZE] =
@@ -408,7 +412,7 @@ impl SnapshotModule {
                                 return true; // Restore later
                             }
 
-                            unsafe { qemu.write_mem(*page, &data[..]) };
+                            unsafe { qemu.write_mem_unchecked(*page, &data[..]) };
                         } else {
                             panic!("Cannot restored a dirty but unsaved page");
                         }
@@ -443,7 +447,7 @@ impl SnapshotModule {
                 if let Some(info) = self.pages.get_mut(page) {
                     // TODO avoid duplicated memcpy
                     if let Some(data) = info.data.as_ref() {
-                        unsafe { qemu.write_mem(*page, &data[..]) };
+                        unsafe { qemu.write_mem_unchecked(*page, &data[..]) };
                     } else {
                         panic!("Cannot restored a dirty but unsaved page");
                     }
@@ -507,7 +511,7 @@ impl SnapshotModule {
         if self.mmap_limit != 0 && total_size > self.mmap_limit {
             let mut cb = self.stop_execution.take().unwrap();
             let qemu = Qemu::get().unwrap();
-            cb(self, &qemu);
+            cb(self, qemu);
             self.stop_execution = Some(cb);
         }
     }
@@ -667,6 +671,8 @@ impl<S> EmulatorModule<S> for SnapshotModule
 where
     S: Unpin + UsesInput,
 {
+    type ModuleAddressFilter = NopAddressFilter;
+
     fn init_module<ET>(&self, emulator_modules: &mut EmulatorModules<ET, S>)
     where
         ET: EmulatorModuleTuple<S>,
@@ -689,8 +695,12 @@ where
         emulator_modules.after_syscalls(Hook::Function(trace_mmap_snapshot::<ET, S>));
     }
 
-    fn pre_exec<ET>(&mut self, emulator_modules: &mut EmulatorModules<ET, S>, _input: &S::Input)
-    where
+    fn pre_exec<ET>(
+        &mut self,
+        emulator_modules: &mut EmulatorModules<ET, S>,
+        _state: &mut S,
+        _input: &S::Input,
+    ) where
         ET: EmulatorModuleTuple<S>,
     {
         if self.empty {
@@ -698,6 +708,14 @@ where
         } else {
             self.reset(emulator_modules.qemu());
         }
+    }
+
+    fn address_filter(&self) -> &Self::ModuleAddressFilter {
+        &NopAddressFilter
+    }
+
+    fn address_filter_mut(&mut self) -> &mut Self::ModuleAddressFilter {
+        unsafe { addr_of_mut!(NOP_ADDRESS_FILTER).as_mut().unwrap().get_mut() }
     }
 }
 

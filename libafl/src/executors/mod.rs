@@ -20,11 +20,7 @@ use serde::{Deserialize, Serialize};
 pub use shadow::ShadowExecutor;
 pub use with_observers::WithObservers;
 
-use crate::{
-    observers::{ObserversTuple, UsesObservers},
-    state::UsesState,
-    Error,
-};
+use crate::{observers::ObserversTuple, state::UsesState, Error};
 
 pub mod combined;
 #[cfg(all(feature = "std", any(unix, doc)))]
@@ -109,7 +105,10 @@ impl From<ExitKind> for DiffExitKind {
 libafl_bolts::impl_serdeany!(DiffExitKind);
 
 /// Holds a tuple of Observers
-pub trait HasObservers: UsesObservers {
+pub trait HasObservers {
+    /// The observer
+    type Observers;
+
     /// Get the linked observers
     fn observers(&self) -> RefIndexable<&Self::Observers, Self::Observers>;
 
@@ -139,7 +138,7 @@ where
     fn with_observers<OT>(self, observers: OT) -> WithObservers<Self, OT>
     where
         Self: Sized,
-        OT: ObserversTuple<Self::State>,
+        OT: ObserversTuple<Self::Input, Self::State>,
     {
         WithObservers::new(self, observers)
     }
@@ -235,7 +234,7 @@ pub fn write_to_file_truncate(file_path: &str, file_name: &str, content: &str) {
 }
 
 #[cfg(test)]
-pub mod test {
+mod test {
     use core::marker::PhantomData;
 
     use libafl_bolts::{AsSlice, Error};
@@ -243,7 +242,7 @@ pub mod test {
     use crate::{
         events::NopEventManager,
         executors::{Executor, ExitKind},
-        fuzzer::test::NopFuzzer,
+        fuzzer::NopFuzzer,
         inputs::{BytesInput, HasTargetBytes},
         state::{HasExecutions, NopState, State, UsesState},
     };
@@ -256,6 +255,7 @@ pub mod test {
     }
 
     impl<S> NopExecutor<S> {
+        /// Creates a new [`NopExecutor`]
         #[must_use]
         pub fn new() -> Self {
             Self {

@@ -3,7 +3,11 @@
 #[rustversion::nightly]
 #[cfg(any(feature = "sancov_ngram4", feature = "sancov_ngram8"))]
 use core::simd::num::SimdUint;
-use core::{mem::align_of, slice};
+use core::{
+    mem::align_of,
+    ptr::{addr_of, addr_of_mut},
+    slice,
+};
 
 #[cfg(any(
     feature = "sancov_ngram4",
@@ -23,9 +27,9 @@ use crate::coverage::EDGES_MAP;
 use crate::coverage::MAX_EDGES_FOUND;
 #[cfg(any(feature = "sancov_ngram4", feature = "sancov_ngram8"))]
 #[allow(unused)]
-use crate::EDGES_MAP_SIZE_IN_USE;
+use crate::EDGES_MAP_DEFAULT_SIZE;
 #[cfg(feature = "pointer_maps")]
-use crate::{coverage::EDGES_MAP_PTR, EDGES_MAP_SIZE_MAX};
+use crate::{coverage::EDGES_MAP_PTR, EDGES_MAP_ALLOCATED_SIZE};
 
 #[cfg(all(feature = "sancov_pcguard_edges", feature = "sancov_pcguard_hitcounts"))]
 #[cfg(not(any(doc, feature = "clippy")))]
@@ -64,6 +68,8 @@ pub static SHR_4: Ngram4 = Ngram4::from_array([1, 1, 1, 1]);
 #[cfg(feature = "sancov_ngram8")]
 #[rustversion::nightly]
 pub static SHR_8: Ngram8 = Ngram8::from_array([1, 1, 1, 1, 1, 1, 1, 1]);
+
+static mut PC_TABLES: Vec<&'static [PcTableEntry]> = Vec::new();
 
 use alloc::vec::Vec;
 #[cfg(any(
@@ -184,19 +190,21 @@ unsafe fn update_ngram(pos: usize) -> usize {
     let mut reduced = pos;
     #[cfg(feature = "sancov_ngram4")]
     {
-        PREV_ARRAY_4 = PREV_ARRAY_4.rotate_elements_right::<1>();
-        PREV_ARRAY_4.shl_assign(SHR_4);
-        PREV_ARRAY_4.as_mut_array()[0] = pos as u32;
-        reduced = PREV_ARRAY_4.reduce_xor() as usize;
+        let prev_array_4 = &mut *addr_of_mut!(PREV_ARRAY_4);
+        *prev_array_4 = prev_array_4.rotate_elements_right::<1>();
+        prev_array_4.shl_assign(SHR_4);
+        prev_array_4.as_mut_array()[0] = pos as u32;
+        reduced = prev_array_4.reduce_xor() as usize;
     }
     #[cfg(feature = "sancov_ngram8")]
     {
-        PREV_ARRAY_8 = PREV_ARRAY_8.rotate_elements_right::<1>();
-        PREV_ARRAY_8.shl_assign(SHR_8);
-        PREV_ARRAY_8.as_mut_array()[0] = pos as u32;
-        reduced = PREV_ARRAY_8.reduce_xor() as usize;
+        let prev_array_8 = &mut *addr_of_mut!(PREV_ARRAY_8);
+        *prev_array_8 = prev_array_8.rotate_elements_right::<1>();
+        prev_array_8.shl_assign(SHR_8);
+        prev_array_8.as_mut_array()[0] = pos as u32;
+        reduced = prev_array_8.reduce_xor() as usize;
     }
-    reduced %= EDGES_MAP_SIZE_IN_USE;
+    reduced %= EDGES_MAP_DEFAULT_SIZE;
     reduced
 }
 
@@ -225,13 +233,13 @@ pub unsafe extern "C" fn __sanitizer_cov_trace_pc_guard(guard: *mut u32) {
     #[cfg(any(feature = "sancov_ngram4", feature = "sancov_ngram8"))]
     {
         pos = update_ngram(pos);
-        // println!("Wrinting to {} {}", pos, EDGES_MAP_SIZE_IN_USE);
+        // println!("Wrinting to {} {}", pos, EDGES_MAP_DEFAULT_SIZE);
     }
 
     #[cfg(feature = "sancov_ctx")]
     {
         pos ^= __afl_prev_ctx as usize;
-        // println!("Wrinting to {} {}", pos, EDGES_MAP_SIZE_IN_USE);
+        // println!("Wrinting to {} {}", pos, EDGES_MAP_DEFAULT_SIZE);
     }
 
     #[cfg(feature = "pointer_maps")]
@@ -249,14 +257,15 @@ pub unsafe extern "C" fn __sanitizer_cov_trace_pc_guard(guard: *mut u32) {
     }
     #[cfg(not(feature = "pointer_maps"))]
     {
+        let edges_map = &mut *addr_of_mut!(EDGES_MAP);
         #[cfg(feature = "sancov_pcguard_edges")]
         {
-            *EDGES_MAP.get_unchecked_mut(pos) = 1;
+            *(edges_map).get_unchecked_mut(pos) = 1;
         }
         #[cfg(feature = "sancov_pcguard_hitcounts")]
         {
-            let val = (*EDGES_MAP.get_unchecked(pos)).wrapping_add(1);
-            *EDGES_MAP.get_unchecked_mut(pos) = val;
+            let val = (*edges_map.get_unchecked(pos)).wrapping_add(1);
+            *edges_map.get_unchecked_mut(pos) = val;
         }
     }
 }
@@ -269,7 +278,7 @@ pub unsafe extern "C" fn __sanitizer_cov_trace_pc_guard(guard: *mut u32) {
 pub unsafe extern "C" fn __sanitizer_cov_trace_pc_guard_init(mut start: *mut u32, stop: *mut u32) {
     #[cfg(feature = "pointer_maps")]
     if EDGES_MAP_PTR.is_null() {
-        EDGES_MAP_PTR = EDGES_MAP.as_mut_ptr();
+        EDGES_MAP_PTR = addr_of_mut!(EDGES_MAP) as *mut u8;
     }
 
     if start == stop || *start != 0 {
@@ -282,17 +291,16 @@ pub unsafe extern "C" fn __sanitizer_cov_trace_pc_guard_init(mut start: *mut u32
 
         #[cfg(feature = "pointer_maps")]
         {
-            MAX_EDGES_FOUND = MAX_EDGES_FOUND.wrapping_add(1) % EDGES_MAP_SIZE_MAX;
+            MAX_EDGES_FOUND = MAX_EDGES_FOUND.wrapping_add(1) % EDGES_MAP_ALLOCATED_SIZE;
         }
         #[cfg(not(feature = "pointer_maps"))]
         {
+            let edges_map_len = (*addr_of!(EDGES_MAP)).len();
             MAX_EDGES_FOUND = MAX_EDGES_FOUND.wrapping_add(1);
-            assert!((MAX_EDGES_FOUND <= EDGES_MAP.len()), "The number of edges reported by SanitizerCoverage exceed the size of the edges map ({}). Use the LIBAFL_EDGES_MAP_SIZE_IN_USE env to increase it at compile time.", EDGES_MAP.len());
+            assert!((MAX_EDGES_FOUND <= edges_map_len), "The number of edges reported by SanitizerCoverage exceed the size of the edges map ({edges_map_len}). Use the LIBAFL_EDGES_MAP_DEFAULT_SIZE env to increase it at compile time.");
         }
     }
 }
-
-static mut PC_TABLES: Vec<&'static [PcTableEntry]> = Vec::new();
 
 #[no_mangle]
 unsafe extern "C" fn __sanitizer_cov_pcs_init(pcs_beg: *const usize, pcs_end: *const usize) {
@@ -312,7 +320,8 @@ unsafe extern "C" fn __sanitizer_cov_pcs_init(pcs_beg: *const usize, pcs_end: *c
         "Unaligned PC Table - start: {pcs_beg:x?} end: {pcs_end:x?}"
     );
 
-    PC_TABLES.push(slice::from_raw_parts(pcs_beg as *const PcTableEntry, len));
+    let pc_tables = &mut *addr_of_mut!(PC_TABLES);
+    pc_tables.push(slice::from_raw_parts(pcs_beg as *const PcTableEntry, len));
 }
 
 /// An entry to the `sanitizer_cov` `pc_table`
@@ -338,8 +347,11 @@ impl PcTableEntry {
 }
 
 /// Returns an iterator over the PC tables. If no tables were registered, this will be empty.
-pub fn sanitizer_cov_pc_table() -> impl Iterator<Item = &'static [PcTableEntry]> {
+pub fn sanitizer_cov_pc_table<'a>() -> impl Iterator<Item = &'a [PcTableEntry]> {
     // SAFETY: Once PCS_BEG and PCS_END have been initialized, will not be written to again. So
     // there's no TOCTOU issue.
-    unsafe { PC_TABLES.iter().copied() }
+    unsafe {
+        let pc_tables = &*addr_of!(PC_TABLES);
+        pc_tables.iter().copied()
+    }
 }
