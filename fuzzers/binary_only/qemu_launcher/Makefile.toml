@@ -538,7 +538,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-4"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
   "--output",
   "${TARGET_DIR}/output/normal_libtiff/",
   "--log",
@@ -552,7 +552,7 @@ args = [
   "--duration",
   "36000",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
@@ -565,7 +565,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-5"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
   "--output",
   "${TARGET_DIR}/output/asan_libtiff/",
   "--log",
@@ -581,7 +581,7 @@ args = [
   "--duration",
   "36000",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
@@ -594,7 +594,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-6"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
   "--output",
   "${TARGET_DIR}/output/ad_libtiff/",
   "--log",
@@ -617,7 +617,7 @@ args = [
   "--ratio_start",
   "50",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
@@ -631,7 +631,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-7"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
   "--output",
   "${TARGET_DIR}/output/normal_libjpeg/",
   "--log",
@@ -646,7 +646,7 @@ args = [
   "--duration",
   "36000",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
@@ -659,7 +659,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-8"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
   "--output",
   "${TARGET_DIR}/output/asan_libjpeg/",
   "--log",
@@ -675,7 +675,7 @@ args = [
   "--duration",
   "36000",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
@@ -688,7 +688,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-9"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
   "--output",
   "${TARGET_DIR}/output/ad_libjpeg/",
   "--log",
@@ -711,7 +711,7 @@ args = [
   "--ratio_start",
   "50",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
@@ -782,7 +782,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-12"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
   "--output",
   "${TARGET_DIR}/output/normal_libtiff_long/",
   "--log",
@@ -796,7 +796,7 @@ args = [
   "--duration",
   "518400",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
@@ -809,7 +809,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-13"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libtiff/corpus/tiff_read_rgba_fuzzer",
   "--output",
   "${TARGET_DIR}/output/asan_libtiff_long/",
   "--log",
@@ -825,7 +825,7 @@ args = [
   "--duration",
   "518400",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
@@ -839,7 +839,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-14"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
   "--output",
   "${TARGET_DIR}/output/normal_libjpeg_long/",
   "--log",
@@ -854,7 +854,7 @@ args = [
   "--duration",
   "518400",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
@@ -867,7 +867,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-15"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
   "--output",
   "${TARGET_DIR}/output/asan_libjpeg_long/",
   "--log",
@@ -883,7 +883,7 @@ args = [
   "--duration",
   "518400",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/qemu/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
