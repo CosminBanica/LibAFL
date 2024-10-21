@@ -754,6 +754,10 @@ impl AsanModule {
         Self::new(rt, StdAddressFilter::default(), &QemuAsanOptions::Snapshot)
     }
 
+    pub fn set_filter(&mut self, filter: StdAddressFilter) {
+        self.filter = filter;
+    }
+
     #[must_use]
     pub fn new(
         mut rt: Pin<Box<AsanGiovese>>,
@@ -767,8 +771,6 @@ impl AsanModule {
             QemuAsanOptions::DetectLeaks => (false, true),
             QemuAsanOptions::SnapshotDetectLeaks => (true, true),
         };
-        // let str_ranges = filter.convert_to_string();
-        // write_to_file("./tmp", "asan_filter", &str_ranges);
 
         rt.set_snapshot_shadow(snapshot);
         Self {

@@ -1,7 +1,7 @@
-use std::{cell::UnsafeCell, cmp::max, fmt::Debug, ptr, ptr::addr_of};
+use std::{cell::UnsafeCell, cmp::max, fmt::Debug, ptr, ptr::addr_of, sync::Mutex, path::Path, fs::read_to_string};
 
-use hashbrown::{hash_map::Entry, HashMap};
-use libafl::{inputs::UsesInput, observers::VariableLengthMapObserver, HasMetadata};
+use hashbrown::{hash_map::Entry, HashMap, HashSet};
+use libafl::{inputs::UsesInput, observers::VariableLengthMapObserver, HasMetadata, executors::write_to_file_truncate};
 use libafl_bolts::Error;
 use libafl_qemu_sys::GuestAddr;
 #[cfg(emulation_mode = "systemmode")]
@@ -29,6 +29,12 @@ static mut LIBAFL_QEMU_EDGES_MAP_ALLOCATED_SIZE: usize = 0;
 
 #[no_mangle]
 static mut LIBAFL_QEMU_EDGES_MAP_MASK_MAX: usize = 0;
+
+// key is the block ending address, value is list of ids of edges that start at this block, stored as a HashSet to avoid duplicates
+static BLOCK_EDGES: Mutex<Option<HashMap<GuestAddr, HashSet<u64>>>> = Mutex::new(None);
+
+// key is block ending address, value is start address of the block
+static BLOCK_START: Mutex<Option<HashMap<GuestAddr, GuestAddr>>> = Mutex::new(None);
 
 #[cfg_attr(
     any(not(feature = "serdeany_autoreg"), miri),
@@ -186,6 +192,8 @@ impl Default for StdEdgeCoverageFullModuleBuilder {
             page_filter: StdPageFilter::default(),
             use_hitcounts: true,
             use_jit: true,
+            use_dynamic_sanitization: false,
+            core_id: 0,
         }
     }
 }
@@ -287,6 +295,8 @@ impl Default for StdEdgeCoverageClassicModuleBuilder {
             page_filter: StdPageFilter::default(),
             use_hitcounts: true,
             use_jit: true,
+            use_dynamic_sanitization: false,
+            core_id: 0,
         }
     }
 }
@@ -343,6 +353,8 @@ impl Default for StdEdgeCoverageChildModuleBuilder {
             page_filter: StdPageFilter::default(),
             use_hitcounts: true,
             use_jit: true,
+            use_dynamic_sanitization: false,
+            core_id: 0,
         }
     }
 }
@@ -361,6 +373,8 @@ pub struct EdgeCoverageModuleBuilder<AF, PF, V, const IS_INITIALIZED: bool> {
     page_filter: PF,
     use_hitcounts: bool,
     use_jit: bool,
+    use_dynamic_sanitization: bool,
+    core_id: usize,
 }
 
 #[derive(Debug)]
@@ -372,6 +386,8 @@ pub struct EdgeCoverageModule<AF, PF, V> {
     page_filter: PF,
     use_hitcounts: bool,
     use_jit: bool,
+    use_dynamic_sanitization: bool,
+    core_id: usize,
 }
 
 impl<AF, PF, V> EdgeCoverageModuleBuilder<AF, PF, V, true> {
@@ -382,6 +398,8 @@ impl<AF, PF, V> EdgeCoverageModuleBuilder<AF, PF, V, true> {
             self.variant,
             self.use_hitcounts,
             self.use_jit,
+            self.use_dynamic_sanitization,
+            self.core_id,
         ))
     }
 }
@@ -393,6 +411,8 @@ impl<AF, PF, V, const IS_INITIALIZED: bool> EdgeCoverageModuleBuilder<AF, PF, V,
         page_filter: PF,
         use_hitcounts: bool,
         use_jit: bool,
+        use_dynamic_sanitization: bool,
+        core_id: usize,
     ) -> Self {
         Self {
             variant,
@@ -400,6 +420,8 @@ impl<AF, PF, V, const IS_INITIALIZED: bool> EdgeCoverageModuleBuilder<AF, PF, V,
             page_filter,
             use_hitcounts,
             use_jit,
+            use_dynamic_sanitization,
+            core_id,   
         }
     }
 
@@ -425,6 +447,8 @@ impl<AF, PF, V, const IS_INITIALIZED: bool> EdgeCoverageModuleBuilder<AF, PF, V,
             self.page_filter,
             self.use_hitcounts,
             self.use_jit,
+            self.use_dynamic_sanitization,
+            self.core_id,
         )
     }
 
@@ -435,6 +459,8 @@ impl<AF, PF, V, const IS_INITIALIZED: bool> EdgeCoverageModuleBuilder<AF, PF, V,
             self.page_filter,
             self.use_hitcounts,
             self.use_jit,
+            self.use_dynamic_sanitization,
+            self.core_id,
         )
     }
 
@@ -448,6 +474,8 @@ impl<AF, PF, V, const IS_INITIALIZED: bool> EdgeCoverageModuleBuilder<AF, PF, V,
             self.page_filter,
             self.use_hitcounts,
             self.use_jit,
+            self.use_dynamic_sanitization,
+            self.core_id,
         )
     }
 
@@ -461,6 +489,8 @@ impl<AF, PF, V, const IS_INITIALIZED: bool> EdgeCoverageModuleBuilder<AF, PF, V,
             page_filter,
             self.use_hitcounts,
             self.use_jit,
+            self.use_dynamic_sanitization,
+            self.core_id,
         )
     }
 
@@ -475,6 +505,8 @@ impl<AF, PF, V, const IS_INITIALIZED: bool> EdgeCoverageModuleBuilder<AF, PF, V,
             self.page_filter,
             use_hitcounts,
             self.use_jit,
+            self.use_dynamic_sanitization,
+            self.core_id,
         )
     }
 
@@ -486,6 +518,42 @@ impl<AF, PF, V, const IS_INITIALIZED: bool> EdgeCoverageModuleBuilder<AF, PF, V,
             self.page_filter,
             self.use_hitcounts,
             use_jit,
+            self.use_dynamic_sanitization,
+            self.core_id,
+        )
+    }
+
+    #[must_use]
+    pub fn dynamic_sanitization(
+        self,
+        use_dynamic_sanitization: bool,
+    ) -> EdgeCoverageModuleBuilder<AF, PF, V, IS_INITIALIZED> {
+        if use_dynamic_sanitization == true {
+            let _ = BLOCK_EDGES.lock().unwrap().insert(HashMap::new());
+            let _ = BLOCK_START.lock().unwrap().insert(HashMap::new());
+        }
+
+        EdgeCoverageModuleBuilder::new(
+            self.variant,
+            self.address_filter,
+            self.page_filter,
+            self.use_hitcounts,
+            self.use_jit,
+            use_dynamic_sanitization,
+            self.core_id,
+        )
+    }
+
+    #[must_use]
+    pub fn core_id(self, core_id: usize) -> EdgeCoverageModuleBuilder<AF, PF, V, IS_INITIALIZED> {
+        EdgeCoverageModuleBuilder::new(
+            self.variant,
+            self.address_filter,
+            self.page_filter,
+            self.use_hitcounts,
+            self.use_jit,
+            self.use_dynamic_sanitization,
+            core_id,
         )
     }
 }
@@ -498,6 +566,8 @@ impl<AF, PF, V> EdgeCoverageModule<AF, PF, V> {
         variant: V,
         use_hitcounts: bool,
         use_jit: bool,
+        use_dynamic_sanitization: bool,
+        core_id: usize,
     ) -> Self {
         Self {
             variant,
@@ -505,7 +575,66 @@ impl<AF, PF, V> EdgeCoverageModule<AF, PF, V> {
             page_filter,
             use_hitcounts,
             use_jit,
+            use_dynamic_sanitization,
+            core_id,
         }
+    }
+
+    pub fn get_rolling_hitcounts(&self) -> HashMap<(GuestAddr, GuestAddr), u64> {
+        let mut hitcounts_map = get_hitcounts_with_address_key();
+        hitcounts_map = self.read_rolling_hitcounts(hitcounts_map);
+
+        hitcounts_map
+    }
+
+    pub fn update_rolling_hitcounts(&self) {
+        let mut hitcounts_map = get_hitcounts_with_address_key();
+        hitcounts_map = self.read_rolling_hitcounts(hitcounts_map);
+        self.write_rolling_hitcounts(hitcounts_map);
+    }
+
+    fn read_rolling_hitcounts(
+        &self,
+        mut hitcounts_map: HashMap<(GuestAddr, GuestAddr), u64>
+    ) -> HashMap<(GuestAddr, GuestAddr), u64> {
+        let file_name = format!("drcov-rolling-{}.txt", self.core_id);
+        let file_path = format!("./tmp/{}", file_name);
+
+        if Path::new(&file_path).exists() {
+            let file_contents = read_to_string(file_path).unwrap();
+            let lines = file_contents.lines();
+            for line in lines {
+                let parts: Vec<&str> = line.split(": ").collect();
+                let pc_range: Vec<&str> = parts[0].split("-").collect();
+                let pc_start = u64::from_str_radix(pc_range[0], 16).unwrap();
+                let pc_end = u64::from_str_radix(pc_range[1], 16).unwrap();
+                let hitcount = parts[1].parse::<u64>().unwrap();
+                match hitcounts_map.get_mut(&(pc_start, pc_end)) {
+                    Some(c) => {
+                        *c += hitcount;
+                    }
+                    None => {
+                        hitcounts_map.insert((pc_start, pc_end), hitcount);
+                    }
+                }
+            }
+        }
+
+        hitcounts_map
+    }
+
+    fn write_rolling_hitcounts(
+        &self,
+        hitcounts_map: HashMap<(GuestAddr, GuestAddr), u64>
+    ) {
+        let file_name = format!("drcov-rolling-{}.txt", self.core_id);
+
+        let mut file_contents = String::new();
+        for ((pc_start, pc_end), hitcount) in hitcounts_map.iter() {
+            file_contents.push_str(&format!("{:x}-{:x}: {}\n", pc_start, pc_end, hitcount));
+        }
+
+        write_to_file_truncate("./tmp", &file_name, &file_contents);
     }
 }
 
@@ -527,6 +656,14 @@ where
             self.address_filter.allowed(&addr) && self.page_filter.allowed(&page_id)
         } else {
             self.address_filter.allowed(&addr)
+        }
+    }
+}
+
+impl<AF, PF, V> Drop for EdgeCoverageModule<AF, PF, V> {
+    fn drop(&mut self) {
+        if self.use_dynamic_sanitization {
+            self.update_rolling_hitcounts();
         }
     }
 }
@@ -594,11 +731,13 @@ where
     S: Unpin + UsesInput + HasMetadata,
     V: EdgeCoverageVariant<AF, PF>,
 {
+    let mut use_dynamic_sanitization = false;
     if let Some(module) = emulator_modules.get::<EdgeCoverageModule<AF, PF, V>>() {
         unsafe {
             assert!(LIBAFL_QEMU_EDGES_MAP_MASK_MAX > 0);
             assert_ne!(*addr_of!(LIBAFL_QEMU_EDGES_MAP_SIZE_PTR), ptr::null_mut());
         }
+        use_dynamic_sanitization = module.use_dynamic_sanitization;
 
         #[cfg(emulation_mode = "usermode")]
         {
@@ -629,7 +768,15 @@ where
             unsafe {
                 let nxt = (id as usize + 1) & LIBAFL_QEMU_EDGES_MAP_MASK_MAX;
                 *LIBAFL_QEMU_EDGES_MAP_SIZE_PTR = max(*LIBAFL_QEMU_EDGES_MAP_SIZE_PTR, nxt);
+
+                if use_dynamic_sanitization {
+                    // Update PREV_LOC
+                    PREV_LOC.with(|prev_loc| {
+                        *prev_loc.get() = dest;
+                    });
+                }
             }
+            
             Some(id)
         }
         Entry::Vacant(e) => {
@@ -638,6 +785,29 @@ where
             unsafe {
                 meta.current_id = (id + 1) & (LIBAFL_QEMU_EDGES_MAP_MASK_MAX as u64);
                 *LIBAFL_QEMU_EDGES_MAP_SIZE_PTR = meta.current_id as usize;
+
+                if use_dynamic_sanitization {
+                    // Update BLOCK_EDGES
+                    let mut block_edges = BLOCK_EDGES.lock().unwrap();
+                    match block_edges.as_mut().unwrap().entry(src) {
+                        Entry::Occupied(mut e) => {
+                            e.get_mut().insert(id);
+                        }
+                        Entry::Vacant(e) => {
+                            e.insert(HashSet::new()).insert(id);
+                        }
+                    }
+
+                    // Update BLOCK_START
+                    PREV_LOC.with(|prev_loc| {
+                        let prev_loc = prev_loc.get();
+                        let mut block_start = BLOCK_START.lock().unwrap();
+                        block_start.as_mut().unwrap().insert(src, *prev_loc);
+
+                        // Update PREV_LOC
+                        *prev_loc = dest;
+                    });
+                }
             }
             // GuestAddress is u32 for 32 bit guests
             #[allow(clippy::unnecessary_cast)]
@@ -799,4 +969,25 @@ pub unsafe extern "C" fn trace_block_transition_single(_: *const (), id: u64) {
             *prev_loc.get() = id.overflowing_shr(1).0;
         });
     }
+}
+
+pub fn get_hitcounts_with_address_key() -> HashMap<(GuestAddr, GuestAddr), u64> {
+    let mut hitcounts_ret = HashMap::new();
+
+    // Iterate through BLOCK_EDGES to get each block ending address and the list of ids of edges that start at this block
+    // For each block ending address, get the start address of the block from BLOCK_START
+    // Add all the hitcounts of the edges that start at this block to get the hitcount of the block
+    // Get hitcounts from LIBAFL_QEMU_EDGES_MAP_PTR
+    for (pc_end, idm) in BLOCK_EDGES.lock().unwrap().as_ref().unwrap() {
+        let block_start_guard = BLOCK_START.lock().unwrap();
+        let block_start = block_start_guard.as_ref().unwrap();
+        let pc_start = block_start.get(pc_end).unwrap();
+        let mut hitcount = 0;
+        for id in idm {
+            hitcount += unsafe { *LIBAFL_QEMU_EDGES_MAP_PTR.add(*id as usize) };
+        }
+        hitcounts_ret.insert((*pc_start, *pc_end), hitcount as u64);
+    }
+
+    hitcounts_ret
 }

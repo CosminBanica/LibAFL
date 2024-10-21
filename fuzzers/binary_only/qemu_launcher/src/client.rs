@@ -56,66 +56,66 @@ impl Client<'_> {
             .collect::<Vec<(String, String)>>()
     }
 
-    pub fn get_dynamic_sanitization_filter(&self, block_module: &BlockCoverageModule<StdAddressFilter>, options: &FuzzerOptions, ratio_elapsed: u64) -> Result<StdAddressFilter, Error> {
-        let mut exclude_brutal = Some(vec![Range {
-            start: GuestAddr::from_str_radix("7f0000000000", 16).unwrap(),
-            end: GuestAddr::from_str_radix("7f0000001000", 16).unwrap(),
-        }]);
-        // Remove the hardcoded range
-        exclude_brutal.as_mut().unwrap().clear();
+    // pub fn get_dynamic_sanitization_filter(&self, block_module: &BlockCoverageModule<StdAddressFilter>, options: &FuzzerOptions, ratio_elapsed: u64) -> Result<StdAddressFilter, Error> {
+    //     let mut exclude_brutal = Some(vec![Range {
+    //         start: GuestAddr::from_str_radix("7f0000000000", 16).unwrap(),
+    //         end: GuestAddr::from_str_radix("7f0000001000", 16).unwrap(),
+    //     }]);
+    //     // Remove the hardcoded range
+    //     exclude_brutal.as_mut().unwrap().clear();
 
-        if (options.ratio_start == 0) || (u64::from(options.ratio_start) <= ratio_elapsed) {
-            let hitcounts = block_module.get_rolling_hitcounts();
+    //     if (options.ratio_start == 0) || (u64::from(options.ratio_start) <= ratio_elapsed) {
+    //         let hitcounts = block_module.get_rolling_hitcounts();
 
-            if options.dynamic_sanitizer_ratio != 0 {
-                // Sort the hitcounts by value
-                let mut hitcounts: Vec<_> = hitcounts.iter().collect();
-                hitcounts.sort_by(|a, b| b.1.cmp(a.1));
+    //         if options.dynamic_sanitizer_ratio != 0 {
+    //             // Sort the hitcounts by value
+    //             let mut hitcounts: Vec<_> = hitcounts.iter().collect();
+    //             hitcounts.sort_by(|a, b| b.1.cmp(a.1));
 
-                // Get only top options.dynamic_sanitizer_ratio% of the hitcounts
-                let cutoff = hitcounts.len() * options.dynamic_sanitizer_ratio as usize / 100;
-                let hitcounts = hitcounts.iter().take(cutoff).collect::<Vec<_>>();
+    //             // Get only top options.dynamic_sanitizer_ratio% of the hitcounts
+    //             let cutoff = hitcounts.len() * options.dynamic_sanitizer_ratio as usize / 100;
+    //             let hitcounts = hitcounts.iter().take(cutoff).collect::<Vec<_>>();
 
-                for (key, value) in hitcounts.iter() {
-                    let cutoff = self.options.dynamic_sanitizer_cutoff;
-                    if **value > cutoff {
-                        let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
-                        let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
-                        exclude_brutal.as_mut().unwrap().push(Range {
-                            start: addr_start,
-                            end: addr_end,
-                        });
-                    }
-                }
-            } else {
-                for (key, value) in hitcounts.iter() {
-                    let cutoff = self.options.dynamic_sanitizer_cutoff;
-                    if *value > cutoff {
-                        let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
-                        let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
-                        exclude_brutal.as_mut().unwrap().push(Range {
-                            start: addr_start,
-                            end: addr_end,
-                        });
-                    }
-                }
-            }
-        }
+    //             for (key, value) in hitcounts.iter() {
+    //                 let cutoff = self.options.dynamic_sanitizer_cutoff;
+    //                 if **value > cutoff {
+    //                     let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
+    //                     let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
+    //                     exclude_brutal.as_mut().unwrap().push(Range {
+    //                         start: addr_start,
+    //                         end: addr_end,
+    //                     });
+    //                 }
+    //             }
+    //         } else {
+    //             for (key, value) in hitcounts.iter() {
+    //                 let cutoff = self.options.dynamic_sanitizer_cutoff;
+    //                 if *value > cutoff {
+    //                     let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
+    //                     let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
+    //                     exclude_brutal.as_mut().unwrap().push(Range {
+    //                         start: addr_start,
+    //                         end: addr_end,
+    //                     });
+    //                 }
+    //             }
+    //         }
+    //     }
         
-        #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
-        if let Some(excludes) = &exclude_brutal {
-            let rules = excludes
-            .iter()
-            .map(|x| Range {
-                start: x.start.into(),
-                end: x.end.into(),
-            })
-            .collect::<Vec<Range<GuestAddr>>>();
-            Ok(StdAddressFilter::deny_list(rules))
-        } else {
-            Err(Error::empty_optional("Failed to get dynamic sanitization filter"))
-        }
-    }
+    //     #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
+    //     if let Some(excludes) = &exclude_brutal {
+    //         let rules = excludes
+    //         .iter()
+    //         .map(|x| Range {
+    //             start: x.start.into(),
+    //             end: x.end.into(),
+    //         })
+    //         .collect::<Vec<Range<GuestAddr>>>();
+    //         Ok(StdAddressFilter::deny_list(rules))
+    //     } else {
+    //         Err(Error::empty_optional("Failed to get dynamic sanitization filter"))
+    //     }
+    // }
 
     pub fn run<M: Monitor>(
         &self,
@@ -207,7 +207,7 @@ impl Client<'_> {
                 .filename(drcov.clone())
                 .full_trace(true)
                 .build();
-            instance_builder.build().run(tuple_list!(drcov), state)
+            instance_builder.build().run(tuple_list!(drcov), state, core_id, ratio_elapsed)
         } else if is_asan && is_cmplog {
             if let Some(injection_module) = injection_module {
                 instance_builder.build().run(
@@ -217,6 +217,8 @@ impl Client<'_> {
                         injection_module,
                     ),
                     state,
+                    core_id, 
+                    ratio_elapsed
                 )
             } else {
                 instance_builder.build().run(
@@ -225,6 +227,8 @@ impl Client<'_> {
                         AsanModule::default(asan.take().unwrap()),
                     ),
                     state,
+                    core_id, 
+                    ratio_elapsed
                 )
             }
         } else if is_asan_guest && is_cmplog {
@@ -236,6 +240,8 @@ impl Client<'_> {
                         injection_module
                     ),
                     state,
+                    core_id, 
+                    ratio_elapsed
                 )
             } else {
                 instance_builder.build().run(
@@ -244,22 +250,26 @@ impl Client<'_> {
                         AsanGuestModule::default(qemu, &asan_lib.take().unwrap()),
                     ),
                     state,
+                    core_id, 
+                    ratio_elapsed
                 )
             }
         } else if is_asan {
             if let Some(injection_module) = injection_module {
                 if self.options.dynamic_sanitizer {
-                    let asan_filter = self.get_dynamic_sanitization_filter(&block_module, self.options, ratio_elapsed)?;
-                    let filter_string = asan_filter.convert_to_string();
-                    let filter_file = format!("resulting_filter{}", core_id.0);
-                    write_to_file("./tmp", &filter_file, &filter_string);
+                    // let asan_filter = self.get_dynamic_sanitization_filter(&block_module, self.options, ratio_elapsed)?;
+                    // let filter_string = asan_filter.convert_to_string();
+                    // let filter_file = format!("resulting_filter{}", core_id.0);
+                    // write_to_file("./tmp", &filter_file, &filter_string);
                     instance_builder.build().run(
                         tuple_list!(
-                            AsanModule::new(asan.take().unwrap(), asan_filter, &QemuAsanOptions::Snapshot),
+                            AsanModule::default(asan.take().unwrap()),
                             injection_module,
                             block_module
                         ),
                         state,
+                        core_id, 
+                        ratio_elapsed
                     )
                 } else {
                     instance_builder.build().run(
@@ -268,48 +278,56 @@ impl Client<'_> {
                             injection_module
                         ),
                         state,
+                        core_id, 
+                        ratio_elapsed
                     )
                 }
             } else {
                 if self.options.dynamic_sanitizer {
-                    let asan_filter = self.get_dynamic_sanitization_filter(&block_module, self.options, ratio_elapsed)?;
-                    let filter_string = asan_filter.convert_to_string();
-                    let filter_file = format!("resulting_filter{}", core_id.0);
-                    write_to_file("./tmp", &filter_file, &filter_string);
+                    // let asan_filter = self.get_dynamic_sanitization_filter(&block_module, self.options, ratio_elapsed)?;
+                    // let filter_string = asan_filter.convert_to_string();
+                    // let filter_file = format!("resulting_filter{}", core_id.0);
+                    // write_to_file("./tmp", &filter_file, &filter_string);
                     instance_builder.build().run(
                         tuple_list!(
-                            AsanModule::new(asan.take().unwrap(), asan_filter, &QemuAsanOptions::Snapshot),
+                            AsanModule::default(asan.take().unwrap()),
                             block_module
                         ),
                         state,
+                        core_id, 
+                        ratio_elapsed
                     )
                 } else {
                     instance_builder.build().run(
                         tuple_list!(AsanModule::default(asan.take().unwrap()),),
                         state,
+                        core_id, 
+                        ratio_elapsed
                     )
                 }
             }
         } else if is_asan_guest {
             let modules = tuple_list!(AsanGuestModule::default(qemu, &asan_lib.take().unwrap()));
-            instance_builder.build().run(modules, state)
+            instance_builder.build().run(modules, state, core_id, ratio_elapsed)
         } else if is_cmplog {
             if let Some(injection_module) = injection_module {
                 instance_builder.build().run(
                     tuple_list!(CmpLogModule::default(), injection_module),
                     state,
+                    core_id, 
+                    ratio_elapsed
                 )
             } else {
                 instance_builder
                     .build()
-                    .run(tuple_list!(CmpLogModule::default()), state)
+                    .run(tuple_list!(CmpLogModule::default()), state, core_id, ratio_elapsed)
             }
         } else if let Some(injection_module) = injection_module {
             instance_builder
                 .build()
-                .run(tuple_list!(injection_module), state)
+                .run(tuple_list!(injection_module), state, core_id, ratio_elapsed)
         } else {
-            instance_builder.build().run(tuple_list!(), state)
+            instance_builder.build().run(tuple_list!(), state, core_id, ratio_elapsed)
         }
     }
 }

@@ -5,10 +5,12 @@ use std::{fs, marker::PhantomData, ops::Range, process, time::Duration};
 use libafl::events::SimpleEventManager;
 #[cfg(not(feature = "simplemgr"))]
 use libafl::events::{LlmpRestartingEventManager, MonitorTypedEventManager};
+
+#[allow(unused_imports)]
 use libafl::{
     corpus::{Corpus, InMemoryOnDiskCorpus, OnDiskCorpus},
     events::{EventRestarter, NopEventManager},
-    executors::{Executor, ShadowExecutor},
+    executors::{Executor, ShadowExecutor, write_to_file},
     feedback_or, feedback_or_fast,
     feedbacks::{CrashFeedback, MaxMapFeedback, TimeFeedback, TimeoutFeedback},
     fuzzer::{Evaluator, Fuzzer, StdFuzzer},
@@ -41,6 +43,8 @@ use libafl_qemu::{
     elf::EasyElf,
     modules::{
         cmplog::CmpLogObserver, EmulatorModuleTuple, StdAddressFilter, StdEdgeCoverageModule,
+        EdgeCoverageModule, AddressFilter, StdPageFilter, EdgeCoverageFullVariant,
+        AsanModule
     },
     Emulator, GuestAddr, Qemu, QemuExecutor,
 };
@@ -107,8 +111,72 @@ impl<M: Monitor> Instance<'_, M> {
         }
     }
 
+    pub fn get_dynamic_sanitization_filter(&self, 
+        edge_module: &EdgeCoverageModule<StdAddressFilter, StdPageFilter, EdgeCoverageFullVariant>, 
+        options: &FuzzerOptions, ratio_elapsed: u64) -> Result<StdAddressFilter, Error> 
+        {
+        let mut exclude_brutal = Some(vec![Range {
+            start: GuestAddr::from_str_radix("7f0000000000", 16).unwrap(),
+            end: GuestAddr::from_str_radix("7f0000001000", 16).unwrap(),
+        }]);
+        // Remove the hardcoded range
+        exclude_brutal.as_mut().unwrap().clear();
+
+        if (options.ratio_start == 0) || (u64::from(options.ratio_start) <= ratio_elapsed) {
+            let hitcounts = edge_module.get_rolling_hitcounts();
+
+            if options.dynamic_sanitizer_ratio != 0 {
+                // Sort the hitcounts by value
+                let mut hitcounts: Vec<_> = hitcounts.iter().collect();
+                hitcounts.sort_by(|a, b| b.1.cmp(a.1));
+
+                // Get only top options.dynamic_sanitizer_ratio% of the hitcounts
+                let cutoff = hitcounts.len() * options.dynamic_sanitizer_ratio as usize / 100;
+                let hitcounts = hitcounts.iter().take(cutoff).collect::<Vec<_>>();
+
+                for (key, value) in hitcounts.iter() {
+                    let cutoff = self.options.dynamic_sanitizer_cutoff;
+                    if **value > cutoff {
+                        let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
+                        let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
+                        exclude_brutal.as_mut().unwrap().push(Range {
+                            start: addr_start,
+                            end: addr_end,
+                        });
+                    }
+                }
+            } else {
+                for (key, value) in hitcounts.iter() {
+                    let cutoff = self.options.dynamic_sanitizer_cutoff;
+                    if *value > cutoff {
+                        let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
+                        let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
+                        exclude_brutal.as_mut().unwrap().push(Range {
+                            start: addr_start,
+                            end: addr_end,
+                        });
+                    }
+                }
+            }
+        }
+        
+        #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
+        if let Some(excludes) = &exclude_brutal {
+            let rules = excludes
+            .iter()
+            .map(|x| Range {
+                start: x.start.into(),
+                end: x.end.into(),
+            })
+            .collect::<Vec<Range<GuestAddr>>>();
+            Ok(StdAddressFilter::deny_list(rules))
+        } else {
+            Err(Error::empty_optional("Failed to get dynamic sanitization filter"))
+        }
+    }
+
     #[allow(clippy::too_many_lines)]
-    pub fn run<ET>(&mut self, modules: ET, state: Option<ClientState>) -> Result<(), Error>
+    pub fn run<ET>(&mut self, mut modules: ET, state: Option<ClientState>, core_id: CoreId, ratio_elapsed: u64) -> Result<(), Error>
     where
         ET: EmulatorModuleTuple<ClientState> + Debug,
     {
@@ -125,8 +193,20 @@ impl<M: Monitor> Instance<'_, M> {
         let edge_coverage_module = StdEdgeCoverageModule::builder()
             .map_observer(edges_observer.as_mut())
             .address_filter(self.coverage_filter(self.qemu)?)
+            .core_id(core_id.0)
+            .dynamic_sanitization(self.options.dynamic_sanitizer)
             .build()?;
 
+        if self.options.dynamic_sanitizer {
+            let asan_filter = self.get_dynamic_sanitization_filter(&edge_coverage_module, self.options, ratio_elapsed)?;
+            let filter_string = asan_filter.convert_to_string();
+            let filter_file = format!("resulting_filter{}", core_id.0);
+            write_to_file("./tmp", &filter_file, &filter_string);
+
+            let asan_module: &mut AsanModule = modules.match_first_type_mut().unwrap();
+            asan_module.set_filter(asan_filter);
+        }
+        
         let modules = modules.prepend(edge_coverage_module);
 
         // Create an observation channel to keep track of the execution time
