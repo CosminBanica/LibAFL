@@ -306,7 +306,7 @@ impl Client<'_> {
                         instance_builder.build().run(
                             tuple_list!(
                                 AsanModule::new(asan.take().unwrap(), asan_filter, &QemuAsanOptions::Snapshot),
-                                // block_module
+                                block_module
                             ),
                             state,
                             core_id, 
