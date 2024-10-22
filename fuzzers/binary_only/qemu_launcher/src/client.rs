@@ -15,7 +15,8 @@ use libafl_qemu::{
     modules::{
         asan::{init_qemu_with_asan, AsanModule, QemuAsanOptions}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, DrCovModule,
         // IsFilter, QemuInstrumentationAddressRangeFilter,
-        StdAddressFilter, AddressFilter
+        StdAddressFilter, AddressFilter,
+        blocks::BlockCoverageModule
     },
     Qemu, GuestAddr
 };
@@ -56,66 +57,66 @@ impl Client<'_> {
             .collect::<Vec<(String, String)>>()
     }
 
-    // pub fn get_dynamic_sanitization_filter(&self, block_module: &BlockCoverageModule<StdAddressFilter>, options: &FuzzerOptions, ratio_elapsed: u64) -> Result<StdAddressFilter, Error> {
-    //     let mut exclude_brutal = Some(vec![Range {
-    //         start: GuestAddr::from_str_radix("7f0000000000", 16).unwrap(),
-    //         end: GuestAddr::from_str_radix("7f0000001000", 16).unwrap(),
-    //     }]);
-    //     // Remove the hardcoded range
-    //     exclude_brutal.as_mut().unwrap().clear();
+    pub fn get_dynamic_sanitization_filter(&self, block_module: &BlockCoverageModule<StdAddressFilter>, options: &FuzzerOptions, ratio_elapsed: u64) -> Result<StdAddressFilter, Error> {
+        let mut exclude_brutal = Some(vec![Range {
+            start: GuestAddr::from_str_radix("7f0000000000", 16).unwrap(),
+            end: GuestAddr::from_str_radix("7f0000001000", 16).unwrap(),
+        }]);
+        // Remove the hardcoded range
+        exclude_brutal.as_mut().unwrap().clear();
 
-    //     if (options.ratio_start == 0) || (u64::from(options.ratio_start) <= ratio_elapsed) {
-    //         let hitcounts = block_module.get_rolling_hitcounts();
+        if (options.ratio_start == 0) || (u64::from(options.ratio_start) <= ratio_elapsed) {
+            let hitcounts = block_module.get_rolling_hitcounts();
 
-    //         if options.dynamic_sanitizer_ratio != 0 {
-    //             // Sort the hitcounts by value
-    //             let mut hitcounts: Vec<_> = hitcounts.iter().collect();
-    //             hitcounts.sort_by(|a, b| b.1.cmp(a.1));
+            if options.dynamic_sanitizer_ratio != 0 {
+                // Sort the hitcounts by value
+                let mut hitcounts: Vec<_> = hitcounts.iter().collect();
+                hitcounts.sort_by(|a, b| b.1.cmp(a.1));
 
-    //             // Get only top options.dynamic_sanitizer_ratio% of the hitcounts
-    //             let cutoff = hitcounts.len() * options.dynamic_sanitizer_ratio as usize / 100;
-    //             let hitcounts = hitcounts.iter().take(cutoff).collect::<Vec<_>>();
+                // Get only top options.dynamic_sanitizer_ratio% of the hitcounts
+                let cutoff = hitcounts.len() * options.dynamic_sanitizer_ratio as usize / 100;
+                let hitcounts = hitcounts.iter().take(cutoff).collect::<Vec<_>>();
 
-    //             for (key, value) in hitcounts.iter() {
-    //                 let cutoff = self.options.dynamic_sanitizer_cutoff;
-    //                 if **value > cutoff {
-    //                     let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
-    //                     let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
-    //                     exclude_brutal.as_mut().unwrap().push(Range {
-    //                         start: addr_start,
-    //                         end: addr_end,
-    //                     });
-    //                 }
-    //             }
-    //         } else {
-    //             for (key, value) in hitcounts.iter() {
-    //                 let cutoff = self.options.dynamic_sanitizer_cutoff;
-    //                 if *value > cutoff {
-    //                     let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
-    //                     let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
-    //                     exclude_brutal.as_mut().unwrap().push(Range {
-    //                         start: addr_start,
-    //                         end: addr_end,
-    //                     });
-    //                 }
-    //             }
-    //         }
-    //     }
+                for (key, value) in hitcounts.iter() {
+                    let cutoff = self.options.dynamic_sanitizer_cutoff;
+                    if **value > cutoff {
+                        let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
+                        let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
+                        exclude_brutal.as_mut().unwrap().push(Range {
+                            start: addr_start,
+                            end: addr_end,
+                        });
+                    }
+                }
+            } else {
+                for (key, value) in hitcounts.iter() {
+                    let cutoff = self.options.dynamic_sanitizer_cutoff;
+                    if *value > cutoff {
+                        let addr_start = GuestAddr::from_str_radix(&format!("{:x}", key.0), 16).unwrap();
+                        let addr_end = GuestAddr::from_str_radix(&format!("{:x}", key.1), 16).unwrap();
+                        exclude_brutal.as_mut().unwrap().push(Range {
+                            start: addr_start,
+                            end: addr_end,
+                        });
+                    }
+                }
+            }
+        }
         
-    //     #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
-    //     if let Some(excludes) = &exclude_brutal {
-    //         let rules = excludes
-    //         .iter()
-    //         .map(|x| Range {
-    //             start: x.start.into(),
-    //             end: x.end.into(),
-    //         })
-    //         .collect::<Vec<Range<GuestAddr>>>();
-    //         Ok(StdAddressFilter::deny_list(rules))
-    //     } else {
-    //         Err(Error::empty_optional("Failed to get dynamic sanitization filter"))
-    //     }
-    // }
+        #[cfg_attr(target_pointer_width = "64", allow(clippy::useless_conversion))]
+        if let Some(excludes) = &exclude_brutal {
+            let rules = excludes
+            .iter()
+            .map(|x| Range {
+                start: x.start.into(),
+                end: x.end.into(),
+            })
+            .collect::<Vec<Range<GuestAddr>>>();
+            Ok(StdAddressFilter::deny_list(rules))
+        } else {
+            Err(Error::empty_optional("Failed to get dynamic sanitization filter"))
+        }
+    }
 
     pub fn run<M: Monitor>(
         &self,
@@ -198,7 +199,6 @@ impl Client<'_> {
             .core_id(core_id)
             .extra_tokens(extra_tokens);
 
-        // let block_module = BlockCoverageModule::new(core_id.0, StdAddressFilter::default());
         if self.options.rerun_input.is_some() && self.options.drcov.is_some() {
             // Special code path for re-running inputs with DrCov.
             // TODO: Add ASan support, injection support
@@ -257,20 +257,33 @@ impl Client<'_> {
         } else if is_asan {
             if let Some(injection_module) = injection_module {
                 if self.options.dynamic_sanitizer {
-                    // let asan_filter = self.get_dynamic_sanitization_filter(&block_module, self.options, ratio_elapsed)?;
-                    // let filter_string = asan_filter.convert_to_string();
-                    // let filter_file = format!("resulting_filter{}", core_id.0);
-                    // write_to_file("./tmp", &filter_file, &filter_string);
-                    instance_builder.build().run(
-                        tuple_list!(
-                            AsanModule::default(asan.take().unwrap()),
-                            injection_module,
-                            // block_module
-                        ),
-                        state,
-                        core_id, 
-                        ratio_elapsed
-                    )
+                    if self.options.use_blocks {
+                        let block_module = BlockCoverageModule::new(core_id.0, StdAddressFilter::default());
+                        let asan_filter = self.get_dynamic_sanitization_filter(&block_module, self.options, ratio_elapsed)?;
+                        let filter_string = asan_filter.convert_to_string();
+                        let filter_file = format!("resulting_filter{}", core_id.0);
+                        write_to_file("./tmp", &filter_file, &filter_string);
+                        instance_builder.build().run(
+                            tuple_list!(
+                                AsanModule::new(asan.take().unwrap(), asan_filter, &QemuAsanOptions::Snapshot),
+                                injection_module,
+                                block_module
+                            ),
+                            state,
+                            core_id, 
+                            ratio_elapsed
+                        )
+                    } else {
+                        instance_builder.build().run(
+                            tuple_list!(
+                                AsanModule::default(asan.take().unwrap()),
+                                injection_module,
+                            ),
+                            state,
+                            core_id, 
+                            ratio_elapsed
+                        )
+                    }
                 } else {
                     instance_builder.build().run(
                         tuple_list!(
@@ -284,19 +297,32 @@ impl Client<'_> {
                 }
             } else {
                 if self.options.dynamic_sanitizer {
-                    // let asan_filter = self.get_dynamic_sanitization_filter(&block_module, self.options, ratio_elapsed)?;
-                    // let filter_string = asan_filter.convert_to_string();
-                    // let filter_file = format!("resulting_filter{}", core_id.0);
-                    // write_to_file("./tmp", &filter_file, &filter_string);
-                    instance_builder.build().run(
-                        tuple_list!(
-                            AsanModule::default(asan.take().unwrap()),
-                            // block_module
-                        ),
-                        state,
-                        core_id, 
-                        ratio_elapsed
-                    )
+                    if self.options.use_blocks {
+                        let block_module = BlockCoverageModule::new(core_id.0, StdAddressFilter::default());
+                        let asan_filter = self.get_dynamic_sanitization_filter(&block_module, self.options, ratio_elapsed)?;
+                        let filter_string = asan_filter.convert_to_string();
+                        let filter_file = format!("resulting_filter{}", core_id.0);
+                        write_to_file("./tmp", &filter_file, &filter_string);
+                        instance_builder.build().run(
+                            tuple_list!(
+                                AsanModule::new(asan.take().unwrap(), asan_filter, &QemuAsanOptions::Snapshot),
+                                // block_module
+                            ),
+                            state,
+                            core_id, 
+                            ratio_elapsed
+                        )
+                    } else {
+                        instance_builder.build().run(
+                            tuple_list!(
+                                AsanModule::default(asan.take().unwrap()),
+                            ),
+                            state,
+                            core_id, 
+                            ratio_elapsed
+                        )
+                    }
+                    
                 } else {
                     instance_builder.build().run(
                         tuple_list!(AsanModule::default(asan.take().unwrap()),),

@@ -240,34 +240,6 @@ ${CROSS_CXX} \
 '''
 dependencies = ["libpng"]
 
-[tasks.debug]
-linux_alias = "debug_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.debug_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
-args = [
-  "--input",
-  "./corpus",
-  "--output",
-  "${TARGET_DIR}/output/",
-  "--log",
-  "${TARGET_DIR}/output/log.txt",
-  "--cores",
-  "0-7",
-  "--asan-cores",
-  "0-3",
-  "--cmplog-cores",
-  "2-5",
-  "--iterations",
-  "100000",
-  "--verbose",
-  "--",
-  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
-]
-dependencies = ["harness", "fuzzer"]
-
 [tasks.run]
 linux_alias = "run_unix"
 mac_alias = "unsupported"
@@ -296,111 +268,6 @@ args = [
 ]
 dependencies = ["harness", "fuzzer"]
 
-[tasks.run_no_asan]
-linux_alias = "run_no_asan_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.run_no_asan_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
-args = [
-  "--input",
-  "./corpus",
-  "--output",
-  "${TARGET_DIR}/output/",
-  "--log",
-  "${TARGET_DIR}/output/log.txt",
-  "--cores",
-  "0",
-  "--iterations",
-  "1000000",
-  "--tui",
-  "--",
-  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
-]
-dependencies = ["harness", "fuzzer"]
-
-[tasks.asan_no_dynamic]
-linux_alias = "asan_no_dynamic_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.asan_no_dynamic_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
-args = [
-  "--input",
-  "./corpus",
-  "--output",
-  "${TARGET_DIR}/output/",
-  "--log",
-  "${TARGET_DIR}/output/log.txt",
-  "--cores",
-  "0",
-  "--asan-cores",
-  "0",
-  "--iterations",
-  "100",
-  "--",
-  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
-]
-dependencies = ["harness", "fuzzer"]
-
-[tasks.asan_dynamic]
-linux_alias = "asan_dynamic_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.asan_dynamic_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
-args = [
-  "--input",
-  "./corpus",
-  "--output",
-  "${TARGET_DIR}/output/",
-  "--log",
-  "${TARGET_DIR}/output/log.txt",
-  "--cores",
-  "0",
-  "--asan-cores",
-  "0",
-  "--iterations",
-  "100",
-  "--dynamic_sanitizer",
-  "--dynamic_sanitizer_cutoff",
-  "1000000",
-  "--",
-  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
-]
-dependencies = ["harness", "fuzzer"]
-
-[tasks.asan_dynamic_cores]
-linux_alias = "asan_dynamic_cores_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.asan_dynamic_cores_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
-args = [
-  "--input",
-  "./corpus",
-  "--output",
-  "${TARGET_DIR}/output/",
-  "--log",
-  "${TARGET_DIR}/output/log.txt",
-  "--cores",
-  "0-5",
-  "--asan-cores",
-  "0-5",
-  "--iterations",
-  "100",
-  "--dynamic_sanitizer",
-  "--dynamic_sanitizer_cutoff",
-  "1000000",
-  "--",
-  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
-]
-dependencies = ["harness", "fuzzer"]
-
 [tasks.test_harness]
 linux_alias = "test_harness_unix"
 mac_alias = "unsupported"
@@ -420,7 +287,7 @@ args = [
   "--asan-cores",
   "0",
   "--port",
-  "1339",
+  "1340",
   # "--verbose",
   "--duration",
   "36000",
@@ -435,7 +302,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.normal_expat_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-1"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-4"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
@@ -444,11 +311,12 @@ args = [
   "--log",
   "${TARGET_DIR}/output/normal_expat/log.txt",
   "--cores",
-  "0",
+  "4",
   "--port",
-  "1337",
+  "1344",
   # "--iterations",
   # "2000",
+  "--verbose",
   "--duration",
   "36000",
   "--",
@@ -462,7 +330,7 @@ mac_alias = "unsupported"
 windows_alias = "unsupported"
 
 [tasks.asan_expat_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-1"
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-5"
 args = [
   "--input",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
@@ -471,11 +339,11 @@ args = [
   "--log",
   "${TARGET_DIR}/output/asan_expat/log.txt",
   "--cores",
-  "1",
+  "5",
   "--asan-cores",
-  "1",
+  "5",
   "--port",
-  "1337",
+  "1345",
   # "--iterations",
   # "2000",
   "--verbose",
@@ -484,6 +352,235 @@ args = [
   "--",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/libexpat/expat/fuzz_src/expat_fuzzer",
 ]
+dependencies = ["harness", "fuzzer"]
+
+##
+##
+##
+# Ratio test campaigns; all dynamic-san; all 24 hours; each on different 1 core and port; all libpng
+# Half with "--use_blocks" and half without; all with "--ratio_start 0"; each with increasing "--dynamic_sanitizer_ratio", from 0 to 100, in steps of 10
+# Name them: "ratio_test_libpng_0", "ratio_test_libpng_10", ..., "ratio_test_libpng_100", "block_test_libpng_0", "block_test_libpng_10", ..., "block_test_libpng_100"
+##
+##
+##
+[tasks.ratio_test_libpng_0]
+linux_alias = "ratio_test_libpng_0_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ratio_test_libpng_0_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-16"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_0/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_0/log.txt", "--cores", "15", "--asan-cores", "15", "--port", "1352", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "1", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ratio_test_libpng_10]
+linux_alias = "ratio_test_libpng_10_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ratio_test_libpng_10_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-17"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_10/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_10/log.txt", "--cores", "16", "--asan-cores", "16", "--port", "1353", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ratio_test_libpng_20]
+linux_alias = "ratio_test_libpng_20_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ratio_test_libpng_20_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-18"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_20/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_20/log.txt", "--cores", "17", "--asan-cores", "17", "--port", "1354", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "20", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ratio_test_libpng_30]
+linux_alias = "ratio_test_libpng_30_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ratio_test_libpng_30_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-19"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_30/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_30/log.txt", "--cores", "18", "--asan-cores", "18", "--port", "1355", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "30", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ratio_test_libpng_40]
+linux_alias = "ratio_test_libpng_40_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ratio_test_libpng_40_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-20"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_40/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_40/log.txt", "--cores", "19", "--asan-cores", "19", "--port", "1356", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "40", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ratio_test_libpng_50]
+linux_alias = "ratio_test_libpng_50_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ratio_test_libpng_50_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-21"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_50/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_50/log.txt", "--cores", "20", "--asan-cores", "20", "--port", "1357", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "50", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ratio_test_libpng_60]
+linux_alias = "ratio_test_libpng_60_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ratio_test_libpng_60_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-22"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_60/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_60/log.txt", "--cores", "21", "--asan-cores", "21", "--port", "1358", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "60", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ratio_test_libpng_70]
+linux_alias = "ratio_test_libpng_70_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ratio_test_libpng_70_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-23"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_70/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_70/log.txt", "--cores", "22", "--asan-cores", "22", "--port", "1359", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "70", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ratio_test_libpng_80]
+linux_alias = "ratio_test_libpng_80_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ratio_test_libpng_80_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-24"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_80/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_80/log.txt", "--cores", "23", "--asan-cores", "23", "--port", "1360", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "80", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ratio_test_libpng_90]
+linux_alias = "ratio_test_libpng_90_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ratio_test_libpng_90_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-25"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_90/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_90/log.txt", "--cores", "24", "--asan-cores", "24", "--port", "1361", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "90", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.ratio_test_libpng_100]
+linux_alias = "ratio_test_libpng_100_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ratio_test_libpng_100_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-26"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_100/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_100/log.txt", "--cores", "25", "--asan-cores", "25", "--port", "1362", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "100", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.block_test_libpng_0]
+linux_alias = "block_test_libpng_0_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.block_test_libpng_0_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-27"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/block_test_libpng_0/", "--log", "${TARGET_DIR}/output/block_test_libpng_0/log.txt", "--cores", "26", "--asan-cores", "26", "--port", "1363", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "1", "--ratio_start", "0", "--use_blocks", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.block_test_libpng_10]
+linux_alias = "block_test_libpng_10_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.block_test_libpng_10_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-28"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/block_test_libpng_10/", "--log", "${TARGET_DIR}/output/block_test_libpng_10/log.txt", "--cores", "27", "--asan-cores", "27", "--port", "1364", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--use_blocks", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.block_test_libpng_20]
+linux_alias = "block_test_libpng_20_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.block_test_libpng_20_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-29"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/block_test_libpng_20/", "--log", "${TARGET_DIR}/output/block_test_libpng_20/log.txt", "--cores", "28", "--asan-cores", "28", "--port", "1365", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "20", "--ratio_start", "0", "--use_blocks", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.block_test_libpng_30]
+linux_alias = "block_test_libpng_30_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.block_test_libpng_30_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-30"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/block_test_libpng_30/", "--log", "${TARGET_DIR}/output/block_test_libpng_30/log.txt", "--cores", "29", "--asan-cores", "29", "--port", "1366", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "30", "--ratio_start", "0", "--use_blocks", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.block_test_libpng_40]
+linux_alias = "block_test_libpng_40_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.block_test_libpng_40_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-31"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/block_test_libpng_40/", "--log", "${TARGET_DIR}/output/block_test_libpng_40/log.txt", "--cores", "30", "--asan-cores", "30", "--port", "1367", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "40", "--ratio_start", "0", "--use_blocks", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.block_test_libpng_50]
+linux_alias = "block_test_libpng_50_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.block_test_libpng_50_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-32"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/block_test_libpng_50/", "--log", "${TARGET_DIR}/output/block_test_libpng_50/log.txt", "--cores", "31", "--asan-cores", "31", "--port", "1368", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "50", "--ratio_start", "0", "--use_blocks", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.block_test_libpng_60]
+linux_alias = "block_test_libpng_60_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.block_test_libpng_60_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-33"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/block_test_libpng_60/", "--log", "${TARGET_DIR}/output/block_test_libpng_60/log.txt", "--cores", "32", "--asan-cores", "32", "--port", "1369", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "60", "--ratio_start", "0", "--use_blocks", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.block_test_libpng_70]
+linux_alias = "block_test_libpng_70_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.block_test_libpng_70_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-34"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/block_test_libpng_70/", "--log", "${TARGET_DIR}/output/block_test_libpng_70/log.txt", "--cores", "33", "--asan-cores", "33", "--port", "1370", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "70", "--ratio_start", "0", "--use_blocks", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.block_test_libpng_80]
+linux_alias = "block_test_libpng_80_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.block_test_libpng_80_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-35"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/block_test_libpng_80/", "--log", "${TARGET_DIR}/output/block_test_libpng_80/log.txt", "--cores", "34", "--asan-cores", "34", "--port", "1371", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "80", "--ratio_start", "0", "--use_blocks", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.block_test_libpng_90]
+linux_alias = "block_test_libpng_90_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.block_test_libpng_90_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-36"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/block_test_libpng_90/", "--log", "${TARGET_DIR}/output/block_test_libpng_90/log.txt", "--cores", "35", "--asan-cores", "35", "--port", "1372", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "90", "--ratio_start", "0", "--use_blocks", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.block_test_libpng_100]
+linux_alias = "block_test_libpng_100_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.block_test_libpng_100_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-37"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/block_test_libpng_100/", "--log", "${TARGET_DIR}/output/block_test_libpng_100/log.txt", "--cores", "36", "--asan-cores", "36", "--port", "1373", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "100", "--ratio_start", "0", "--use_blocks", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
 dependencies = ["harness", "fuzzer"]
 
 ##
@@ -776,6 +873,22 @@ args = [
 ]
 dependencies = ["harness", "fuzzer"]
 
+##
+##
+##
+# END OF 24h Campaigns
+##
+##
+##
+
+
+##
+##
+##
+# Long Campaigns
+##
+##
+##
 #LibPNG Campaigns long
 [tasks.normal_libpng_long]
 linux_alias = "normal_libpng_long_unix"
@@ -951,78 +1064,10 @@ dependencies = ["harness", "fuzzer"]
 ##
 ##
 ##
-# END OF 24h Campaigns
+# END OF Long Campaigns
 ##
 ##
 ##
-
-
-[tasks.single]
-linux_alias = "single_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.single_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
-args = [
-  "--input",
-  "./corpus",
-  "--output",
-  "${TARGET_DIR}/output/",
-  "--log",
-  "${TARGET_DIR}/output/log.txt",
-  "--cores",
-  "0",
-  "--",
-  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
-]
-dependencies = ["harness", "fuzzer"]
-
-[tasks.asan]
-linux_alias = "asan_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.asan_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
-args = [
-  "--input",
-  "./corpus",
-  "--output",
-  "${TARGET_DIR}/output/",
-  "--log",
-  "${TARGET_DIR}/output/log.txt",
-  "--cores",
-  "0",
-  "--asan-cores",
-  "0",
-  "--",
-  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
-]
-dependencies = ["harness", "fuzzer"]
-
-[tasks.asan_guest]
-linux_alias = "asan_guest_unix"
-mac_alias = "unsupported"
-windows_alias = "unsupported"
-
-[tasks.asan_guest_unix]
-command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}"
-args = [
-  "--input",
-  "./corpus",
-  "--output",
-  "${TARGET_DIR}/output/",
-  "--log",
-  "${TARGET_DIR}/output/log.txt",
-  "--cores",
-  "0",
-  "--asan-guest-cores",
-  "0",
-  "--",
-  "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
-]
-dependencies = ["harness", "fuzzer"]
 
 [tasks.test]
 linux_alias = "test_unix"
@@ -1064,30 +1109,3 @@ script = '''
 rm -rf ${CARGO_MAKE_CRATE_TARGET_DIRECTORY}
 cargo clean
 '''
-
-[tasks.arm]
-command = "cargo"
-args = ["make", "-p", "arm", "run"]
-
-[tasks.aarch64]
-command = "cargo"
-args = ["make", "-p", "aarch64", "run"]
-
-[tasks.x86_64]
-command = "cargo"
-args = ["make", "-p", "x86_64", "run"]
-
-[tasks.i386]
-command = "cargo"
-args = ["make", "-p", "i386", "run"]
-
-[tasks.mips]
-command = "cargo"
-args = ["make", "-p", "mips", "run"]
-
-[tasks.ppc]
-command = "cargo"
-args = ["make", "-p", "ppc", "run"]
-
-[tasks.all]
-dependencies = ["arm", "aarch64", "x86_64", "i386", "mips", "ppc"]

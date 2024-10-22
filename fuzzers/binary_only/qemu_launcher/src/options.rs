@@ -101,6 +101,9 @@ pub struct FuzzerOptions {
 
     #[clap(long = "ratio_start", help = "At what percentage of campaign duration to start dynamic sanitization", default_value = "0")]
     pub ratio_start: u64,
+    
+    #[clap(long = "use_blocks", help = "Use the block module instead of doing everything in the edge module", default_value = "false")]
+    pub use_blocks: bool,
 }
 
 impl FuzzerOptions {

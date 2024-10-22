@@ -190,14 +190,16 @@ impl<M: Monitor> Instance<'_, M> {
             .track_indices()
         };
 
+        let use_edge_dynamic_sanitization = self.options.dynamic_sanitizer && !self.options.use_blocks;
+
         let edge_coverage_module = StdEdgeCoverageModule::builder()
             .map_observer(edges_observer.as_mut())
             .address_filter(self.coverage_filter(self.qemu)?)
             .core_id(core_id.0)
-            .dynamic_sanitization(self.options.dynamic_sanitizer)
+            .dynamic_sanitization(use_edge_dynamic_sanitization)
             .build()?;
 
-        if self.options.dynamic_sanitizer {
+        if use_edge_dynamic_sanitization {
             let asan_filter = self.get_dynamic_sanitization_filter(&edge_coverage_module, self.options, ratio_elapsed)?;
             let filter_string = asan_filter.convert_to_string();
             let filter_file = format!("resulting_filter{}", core_id.0);

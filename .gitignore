@@ -82,6 +82,7 @@ campaign/plots/output
 campaign/plots/logs
 campaign/utils/*.txt
 campaign/utils/*.png
+campaign/utils/archived/*.png
 
 # Fuzzer helper files
 fuzzers/binary_only/qemu_launcher/tmp
