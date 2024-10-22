@@ -417,12 +417,72 @@ args = [
   "${TARGET_DIR}/output/test_harness/log.txt",
   "--cores",
   "0",
+  "--asan-cores",
+  "0",
   "--port",
-  "1337",
+  "1339",
+  # "--verbose",
   "--duration",
   "36000",
   "--",
   "${LIBAFL_LOCATION}/LibAFL/test_harness",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.normal_expat]
+linux_alias = "normal_expat_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_expat_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-1"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/normal_expat/",
+  "--log",
+  "${TARGET_DIR}/output/normal_expat/log.txt",
+  "--cores",
+  "0",
+  "--port",
+  "1337",
+  # "--iterations",
+  # "2000",
+  "--duration",
+  "36000",
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/libexpat/expat/fuzz_src/expat_fuzzer",
+]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.asan_expat]
+linux_alias = "asan_expat_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_expat_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-1"
+args = [
+  "--input",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libxml2/corpus/libxml2_xml_read_memory_fuzzer",
+  "--output",
+  "${TARGET_DIR}/output/asan_expat/",
+  "--log",
+  "${TARGET_DIR}/output/asan_expat/log.txt",
+  "--cores",
+  "1",
+  "--asan-cores",
+  "1",
+  "--port",
+  "1337",
+  # "--iterations",
+  # "2000",
+  "--verbose",
+  "--duration",
+  "36000",
+  "--",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/libexpat/expat/fuzz_src/expat_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 
@@ -455,7 +515,7 @@ args = [
   "--port",
   "1337",
   "--iterations",
-  "2000",
+  "3000",
   "--duration",
   "36000",
   "--",
@@ -484,9 +544,9 @@ args = [
   "--port",
   "1338",
   "--iterations",
-  "2000",
+  "3000",
   "--duration",
-  "36000",
+  "7200",
   "--",
   "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}",
 ]
@@ -513,14 +573,15 @@ args = [
   "--port",
   "1339",
   "--iterations",
-  "2000",
+  "1000",
   "--duration",
-  "36000", 
+  "7200", 
+  # "--verbose",
   "--dynamic_sanitizer",
   "--dynamic_sanitizer_cutoff",
   "0", # 1e9
   "--dynamic_sanitizer_ratio",
-  "10",
+  "30",
   "--ratio_start",
   "50",
   "--",
@@ -577,9 +638,9 @@ args = [
   "--port",
   "1341",
   "--iterations",
-  "1000",
+  "2000",
   "--duration",
-  "36000",
+  "7200",
   "--",
   "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libtiff/artifacts/tiff_read_rgba_fuzzer",
 ]
@@ -606,14 +667,14 @@ args = [
   "--port",
   "1342",
   "--iterations",
-  "1000",
+  "2000",
   "--duration",
-  "36000", 
+  "7200", 
   "--dynamic_sanitizer",
   "--dynamic_sanitizer_cutoff",
   "0", # 1e9
   "--dynamic_sanitizer_ratio",
-  "10",
+  "30",
   "--ratio_start",
   "50",
   "--",
@@ -631,7 +692,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-7"
 args = [
   "--input",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/seed-corpora/afl-testcases/jpeg_turbo/full/images",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/seed-corpora/bugs/compress/16bit",
   "--output",
   "${TARGET_DIR}/output/normal_libjpeg/",
   "--log",
@@ -646,7 +707,7 @@ args = [
   "--duration",
   "36000",
   "--",
-  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress_fuzzer",
+  "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/fuzz_targets/libjpeg-turbo/build/fuzz/compress16_lossless_fuzzer",
 ]
 dependencies = ["harness", "fuzzer"]
 

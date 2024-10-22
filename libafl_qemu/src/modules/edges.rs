@@ -30,11 +30,17 @@ static mut LIBAFL_QEMU_EDGES_MAP_ALLOCATED_SIZE: usize = 0;
 #[no_mangle]
 static mut LIBAFL_QEMU_EDGES_MAP_MASK_MAX: usize = 0;
 
+// key is the id, value is the block ending address
+static ID_TO_BLOCK: Mutex<Option<HashMap<u64, GuestAddr>>> = Mutex::new(None);
+
 // key is the block ending address, value is list of ids of edges that start at this block, stored as a HashSet to avoid duplicates
-static BLOCK_EDGES: Mutex<Option<HashMap<GuestAddr, HashSet<u64>>>> = Mutex::new(None);
+// static BLOCK_EDGES: Mutex<Option<HashMap<GuestAddr, HashSet<u64>>>> = Mutex::new(None);
 
 // key is block ending address, value is start address of the block
 static BLOCK_START: Mutex<Option<HashMap<GuestAddr, GuestAddr>>> = Mutex::new(None);
+
+// key is the block ending address, value is the hitcount
+static HITCOUNTS: Mutex<Option<HashMap<GuestAddr, u64>>> = Mutex::new(None);
 
 #[cfg_attr(
     any(not(feature = "serdeany_autoreg"), miri),
@@ -77,6 +83,16 @@ pub trait EdgeCoverageVariant<AF, PF>: 'static + Debug {
         S: Unpin + UsesInput + HasMetadata,
     {
         panic!("JIT hitcount is not supported.")
+    }
+
+    fn jit_hitcount_dyn<ET, S>(&mut self, _emulator_modules: &mut EmulatorModules<ET, S>)
+    where
+        AF: AddressFilter,
+        ET: EmulatorModuleTuple<S>,
+        PF: PageFilter,
+        S: Unpin + UsesInput + HasMetadata,
+    {
+        panic!("JIT hitcount dynamic is not supported.")
     }
 
     fn jit_no_hitcount<ET, S>(&mut self, _emulator_modules: &mut EmulatorModules<ET, S>)
@@ -129,6 +145,25 @@ impl<AF, PF> EdgeCoverageVariant<AF, PF> for EdgeCoverageFullVariant {
         let hook_id = emulator_modules.edges(
             Hook::Function(gen_unique_edge_ids::<AF, ET, PF, S, Self>),
             Hook::Empty,
+        );
+        unsafe {
+            libafl_qemu_sys::libafl_qemu_edge_hook_set_jit(
+                hook_id.0,
+                Some(libafl_qemu_sys::libafl_jit_trace_edge_hitcount),
+            );
+        }
+    }
+
+    fn jit_hitcount_dyn<ET, S>(&mut self, emulator_modules: &mut EmulatorModules<ET, S>)
+    where
+        AF: AddressFilter,
+        ET: EmulatorModuleTuple<S>,
+        PF: PageFilter,
+        S: Unpin + UsesInput + HasMetadata,
+    {
+        let hook_id = emulator_modules.edges(
+            Hook::Function(gen_unique_edge_ids::<AF, ET, PF, S, Self>),
+            Hook::Raw(trace_block_hitcount),
         );
         unsafe {
             libafl_qemu_sys::libafl_qemu_edge_hook_set_jit(
@@ -529,7 +564,9 @@ impl<AF, PF, V, const IS_INITIALIZED: bool> EdgeCoverageModuleBuilder<AF, PF, V,
         use_dynamic_sanitization: bool,
     ) -> EdgeCoverageModuleBuilder<AF, PF, V, IS_INITIALIZED> {
         if use_dynamic_sanitization == true {
-            let _ = BLOCK_EDGES.lock().unwrap().insert(HashMap::new());
+            let _ = ID_TO_BLOCK.lock().unwrap().insert(HashMap::new());
+            let _ = HITCOUNTS.lock().unwrap().insert(HashMap::new());
+            // let _ = BLOCK_EDGES.lock().unwrap().insert(HashMap::new());
             let _ = BLOCK_START.lock().unwrap().insert(HashMap::new());
         }
 
@@ -687,7 +724,11 @@ where
     {
         if self.use_hitcounts {
             if self.use_jit {
-                self.variant.jit_hitcount(emulator_modules);
+                if self.use_dynamic_sanitization {
+                    self.variant.jit_hitcount_dyn(emulator_modules);
+                } else {
+                    self.variant.jit_hitcount(emulator_modules);
+                }
             } else {
                 self.variant.fn_hitcount(emulator_modules);
             }
@@ -787,16 +828,20 @@ where
                 *LIBAFL_QEMU_EDGES_MAP_SIZE_PTR = meta.current_id as usize;
 
                 if use_dynamic_sanitization {
-                    // Update BLOCK_EDGES
-                    let mut block_edges = BLOCK_EDGES.lock().unwrap();
-                    match block_edges.as_mut().unwrap().entry(src) {
-                        Entry::Occupied(mut e) => {
-                            e.get_mut().insert(id);
-                        }
-                        Entry::Vacant(e) => {
-                            e.insert(HashSet::new()).insert(id);
-                        }
-                    }
+                    // Update ID_TO_BLOCK
+                    let mut id_to_block = ID_TO_BLOCK.lock().unwrap();
+                    id_to_block.as_mut().unwrap().insert(id, src);
+
+                    // // Update BLOCK_EDGES
+                    // let mut block_edges = BLOCK_EDGES.lock().unwrap();
+                    // match block_edges.as_mut().unwrap().entry(src) {
+                    //     Entry::Occupied(mut e) => {
+                    //         e.get_mut().insert(id);
+                    //     }
+                    //     Entry::Vacant(e) => {
+                    //         e.insert(HashSet::new()).insert(id);
+                    //     }
+                    // }
 
                     // Update BLOCK_START
                     PREV_LOC.with(|prev_loc| {
@@ -830,6 +875,28 @@ pub extern "C" fn trace_edge_single(_: *const (), id: u64) {
     // Worst case we set the byte to 1 multiple times..
     unsafe {
         EDGES_MAP[id as usize] = 1;
+    }
+}
+
+pub unsafe extern "C" fn trace_block_hitcount(_: *const (), id: u64) {
+    // Get the block ending address
+    let block_end_binding = ID_TO_BLOCK.lock().unwrap();
+    let block_end = block_end_binding.as_ref().unwrap().get(&id);
+
+    if block_end.is_none() {
+        return;
+    }
+
+    let block_end_val = block_end.unwrap();
+
+    // Update the hitcount
+    match HITCOUNTS.lock().unwrap().as_mut().unwrap().entry(*block_end_val) {
+        Entry::Occupied(mut e) => {
+            *e.get_mut() += 1;
+        }
+        Entry::Vacant(e) => {
+            e.insert(1);
+        }
     }
 }
 
@@ -974,19 +1041,12 @@ pub unsafe extern "C" fn trace_block_transition_single(_: *const (), id: u64) {
 pub fn get_hitcounts_with_address_key() -> HashMap<(GuestAddr, GuestAddr), u64> {
     let mut hitcounts_ret = HashMap::new();
 
-    // Iterate through BLOCK_EDGES to get each block ending address and the list of ids of edges that start at this block
-    // For each block ending address, get the start address of the block from BLOCK_START
-    // Add all the hitcounts of the edges that start at this block to get the hitcount of the block
-    // Get hitcounts from LIBAFL_QEMU_EDGES_MAP_PTR
-    for (pc_end, idm) in BLOCK_EDGES.lock().unwrap().as_ref().unwrap() {
-        let block_start_guard = BLOCK_START.lock().unwrap();
-        let block_start = block_start_guard.as_ref().unwrap();
-        let pc_start = block_start.get(pc_end).unwrap();
-        let mut hitcount = 0;
-        for id in idm {
-            hitcount += unsafe { *LIBAFL_QEMU_EDGES_MAP_PTR.add(*id as usize) };
-        }
-        hitcounts_ret.insert((*pc_start, *pc_end), hitcount as u64);
+    // Iterate through BLOCK_START to get each block ending and start address
+    // For each block ending address, get the hitcount from HITCOUNTS
+    for (pc_end, pc_start) in BLOCK_START.lock().unwrap().as_ref().unwrap() {
+        let hitcount_binding = HITCOUNTS.lock().unwrap();
+        let hitcount = hitcount_binding.as_ref().unwrap().get(pc_end).unwrap();
+        hitcounts_ret.insert((*pc_start, *pc_end), *hitcount);
     }
 
     hitcounts_ret

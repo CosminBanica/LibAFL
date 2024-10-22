@@ -13,7 +13,7 @@ use libafl_bolts::{core_affinity::CoreId, current_time, rands::StdRand, tuples::
 use libafl_qemu::modules::injections::InjectionModule;
 use libafl_qemu::{
     modules::{
-        asan::{init_qemu_with_asan, AsanModule, QemuAsanOptions}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, blocks::BlockCoverageModule, DrCovModule,
+        asan::{init_qemu_with_asan, AsanModule, QemuAsanOptions}, asan_guest::{init_qemu_with_asan_guest, AsanGuestModule}, cmplog::CmpLogModule, DrCovModule,
         // IsFilter, QemuInstrumentationAddressRangeFilter,
         StdAddressFilter, AddressFilter
     },
@@ -198,7 +198,7 @@ impl Client<'_> {
             .core_id(core_id)
             .extra_tokens(extra_tokens);
 
-        let block_module = BlockCoverageModule::new(core_id.0, StdAddressFilter::default());
+        // let block_module = BlockCoverageModule::new(core_id.0, StdAddressFilter::default());
         if self.options.rerun_input.is_some() && self.options.drcov.is_some() {
             // Special code path for re-running inputs with DrCov.
             // TODO: Add ASan support, injection support
@@ -265,7 +265,7 @@ impl Client<'_> {
                         tuple_list!(
                             AsanModule::default(asan.take().unwrap()),
                             injection_module,
-                            block_module
+                            // block_module
                         ),
                         state,
                         core_id, 
@@ -291,7 +291,7 @@ impl Client<'_> {
                     instance_builder.build().run(
                         tuple_list!(
                             AsanModule::default(asan.take().unwrap()),
-                            block_module
+                            // block_module
                         ),
                         state,
                         core_id, 
