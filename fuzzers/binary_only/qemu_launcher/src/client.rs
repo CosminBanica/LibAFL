@@ -144,7 +144,7 @@ impl Client<'_> {
         Harness::edit_env(&mut env);
         log::debug!("ENV: {:#?}", env);
 
-        let is_asan = self.options.is_asan_core(core_id);
+        let mut is_asan = self.options.is_asan_core(core_id);
         let is_asan_guest = self.options.is_asan_guest_core(core_id);
 
         if is_asan && is_asan_guest {
@@ -198,6 +198,13 @@ impl Client<'_> {
             .mgr(mgr)
             .core_id(core_id)
             .extra_tokens(extra_tokens);
+
+        if self.options.reverse_mode {
+            // If 1 hour hasn't yet passed, set is_asan to false
+            if ratio_elapsed < 10 {
+                is_asan = false;
+            }
+        } 
 
         if self.options.rerun_input.is_some() && self.options.drcov.is_some() {
             // Special code path for re-running inputs with DrCov.

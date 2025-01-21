@@ -104,6 +104,9 @@ pub struct FuzzerOptions {
     
     #[clap(long = "use_blocks", help = "Use the block module instead of doing everything in the edge module", default_value = "false")]
     pub use_blocks: bool,
+
+    #[clap(long = "reverse_mode", help = "Don't sanitize anything at first, after each hour add 10%", default_value = "false")]
+    pub reverse_mode: bool,
 }
 
 impl FuzzerOptions {

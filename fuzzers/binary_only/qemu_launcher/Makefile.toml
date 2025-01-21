@@ -403,8 +403,8 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-16"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_0/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_0/log.txt", "--cores", "15", "--asan-cores", "15", 
 # "--cmplog-cores", "15", 
-"--port", "1352", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "1", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
-dependencies = ["harness", "fuzzer"]
+"--port", "1352", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "2", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
 
 [tasks.ratio_test_libpng_10]
 linux_alias = "ratio_test_libpng_10_unix"
@@ -415,8 +415,8 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-17"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_10/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_10/log.txt", "--cores", "16", "--asan-cores", "16", 
 # "--cmplog-cores", "16", 
-"--port", "1353", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
-dependencies = ["harness", "fuzzer"]
+"--port", "1353", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "4", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
 
 [tasks.ratio_test_libpng_20]
 linux_alias = "ratio_test_libpng_20_unix"
@@ -427,8 +427,8 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-18"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_20/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_20/log.txt", "--cores", "17", "--asan-cores", "17", 
 # "--cmplog-cores", "17", 
-"--port", "1354", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "20", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
-dependencies = ["harness", "fuzzer"]
+"--port", "1354", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "6", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
 
 [tasks.ratio_test_libpng_30]
 linux_alias = "ratio_test_libpng_30_unix"
@@ -439,8 +439,8 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-19"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_30/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_30/log.txt", "--cores", "18", "--asan-cores", "18", 
 # "--cmplog-cores", "18", 
-"--port", "1355", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "30", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
-dependencies = ["harness", "fuzzer"]
+"--port", "1355", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "8", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
 
 [tasks.ratio_test_libpng_40]
 linux_alias = "ratio_test_libpng_40_unix"
@@ -451,8 +451,8 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-20"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_40/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_40/log.txt", "--cores", "19", "--asan-cores", "19", 
 # "--cmplog-cores", "19", 
-"--port", "1356", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "40", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
-dependencies = ["harness", "fuzzer"]
+"--port", "1356", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
 
 [tasks.ratio_test_libpng_50]
 linux_alias = "ratio_test_libpng_50_unix"
@@ -463,8 +463,8 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-21"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_50/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_50/log.txt", "--cores", "20", "--asan-cores", "20", 
 # "--cmplog-cores", "20", 
-"--port", "1357", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "50", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
-dependencies = ["harness", "fuzzer"]
+"--port", "1357", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "12", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
 
 [tasks.ratio_test_libpng_60]
 linux_alias = "ratio_test_libpng_60_unix"
@@ -475,8 +475,8 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-22"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_60/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_60/log.txt", "--cores", "21", "--asan-cores", "21", 
 # "--cmplog-cores", "21", 
-"--port", "1358", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "60", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
-dependencies = ["harness", "fuzzer"]
+"--port", "1358", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "14", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
 
 [tasks.ratio_test_libpng_70]
 linux_alias = "ratio_test_libpng_70_unix"
@@ -487,8 +487,8 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-23"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_70/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_70/log.txt", "--cores", "22", "--asan-cores", "22", 
 # "--cmplog-cores", "22", 
-"--port", "1359", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "70", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
-dependencies = ["harness", "fuzzer"]
+"--port", "1359", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "16", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
 
 [tasks.ratio_test_libpng_80]
 linux_alias = "ratio_test_libpng_80_unix"
@@ -499,8 +499,8 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-24"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_80/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_80/log.txt", "--cores", "23", "--asan-cores", "23", 
 # "--cmplog-cores", "23", 
-"--port", "1360", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "80", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
-dependencies = ["harness", "fuzzer"]
+"--port", "1360", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "18", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
 
 [tasks.ratio_test_libpng_90]
 linux_alias = "ratio_test_libpng_90_unix"
@@ -511,8 +511,8 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-25"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_90/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_90/log.txt", "--cores", "24", "--asan-cores", "24", 
 # "--cmplog-cores", "24", 
-"--port", "1361", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "90", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
-dependencies = ["harness", "fuzzer"]
+"--port", "1361", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "20", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
 
 [tasks.ratio_test_libpng_100]
 linux_alias = "ratio_test_libpng_100_unix"
@@ -523,8 +523,8 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-26"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ratio_test_libpng_100/", "--log", "${TARGET_DIR}/output/ratio_test_libpng_100/log.txt", "--cores", "25", "--asan-cores", "25", 
 # "--cmplog-cores", "25", 
-"--port", "1362", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "100", "--ratio_start", "0", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
-dependencies = ["harness", "fuzzer"]
+"--port", "1362", "--iterations", "3000", "--duration", "86400", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "100", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
 
 [tasks.block_test_libpng_0]
 linux_alias = "block_test_libpng_0_unix"
@@ -667,7 +667,6 @@ dependencies = ["harness", "fuzzer"]
 ##
 ##
 ##
-
 [tasks.normal_crash_0]
 linux_alias = "normal_crash_0_unix"
 mac_alias = "unsupported"
@@ -677,7 +676,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-16"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_crash_0/", "--log", "${TARGET_DIR}/output/normal_crash_0/log.txt", "--cores", "15",
 # "--cmplog-cores", "15", 
-"--port", "1352", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1352", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.normal_crash_10]
@@ -689,7 +688,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-17"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_crash_10/", "--log", "${TARGET_DIR}/output/normal_crash_10/log.txt", "--cores", "16",
 # "--cmplog-cores", "16", 
-"--port", "1353", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1353", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.normal_crash_20]
@@ -701,7 +700,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-18"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_crash_20/", "--log", "${TARGET_DIR}/output/normal_crash_20/log.txt", "--cores", "17",
 # "--cmplog-cores", "17", 
-"--port", "1354", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1354", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.normal_crash_30]
@@ -713,7 +712,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-19"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_crash_30/", "--log", "${TARGET_DIR}/output/normal_crash_30/log.txt", "--cores", "18",
 # "--cmplog-cores", "18", 
-"--port", "1355", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1355", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.normal_crash_40]
@@ -725,7 +724,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-20"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_crash_40/", "--log", "${TARGET_DIR}/output/normal_crash_40/log.txt", "--cores", "19",
 # "--cmplog-cores", "19", 
-"--port", "1356", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1356", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.normal_crash_50]
@@ -737,7 +736,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-21"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_crash_50/", "--log", "${TARGET_DIR}/output/normal_crash_50/log.txt", "--cores", "20",
 # "--cmplog-cores", "20", 
-"--port", "1357", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1357", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.normal_crash_60]
@@ -749,7 +748,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-22"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_crash_60/", "--log", "${TARGET_DIR}/output/normal_crash_60/log.txt", "--cores", "21",
 # "--cmplog-cores", "21", 
-"--port", "1358", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1358", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.normal_crash_70]
@@ -761,7 +760,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-23"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_crash_70/", "--log", "${TARGET_DIR}/output/normal_crash_70/log.txt", "--cores", "22",
 # "--cmplog-cores", "22", 
-"--port", "1359", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1359", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.normal_crash_80]
@@ -773,7 +772,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-24"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_crash_80/", "--log", "${TARGET_DIR}/output/normal_crash_80/log.txt", "--cores", "23",
 # "--cmplog-cores", "23", 
-"--port", "1360", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1360", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.normal_crash_90]
@@ -785,7 +784,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-25"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_crash_90/", "--log", "${TARGET_DIR}/output/normal_crash_90/log.txt", "--cores", "24",
 # "--cmplog-cores", "24", 
-"--port", "1361", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1361", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.normal_crash_100]
@@ -797,7 +796,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-26"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_crash_100/", "--log", "${TARGET_DIR}/output/normal_crash_100/log.txt", "--cores", "25",
 # "--cmplog-cores", "25", 
-"--port", "1362", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1362", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_crash_0]
@@ -809,7 +808,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-27"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_crash_0/", "--log", "${TARGET_DIR}/output/asan_crash_0/log.txt", "--cores", "26", "--asan-cores", "26", 
 # "--cmplog-cores", "26", 
-"--port", "1363", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1363", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_crash_10]
@@ -821,7 +820,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-28"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_crash_10/", "--log", "${TARGET_DIR}/output/asan_crash_10/log.txt", "--cores", "27", "--asan-cores", "27", 
 # "--cmplog-cores", "27", 
-"--port", "1364", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1364", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_crash_20]
@@ -833,7 +832,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-29"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_crash_20/", "--log", "${TARGET_DIR}/output/asan_crash_20/log.txt", "--cores", "28", "--asan-cores", "28", 
 # "--cmplog-cores", "28", 
-"--port", "1365", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1365", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_crash_30]
@@ -845,7 +844,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-30"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_crash_30/", "--log", "${TARGET_DIR}/output/asan_crash_30/log.txt", "--cores", "29", "--asan-cores", "29", 
 # "--cmplog-cores", "29", 
-"--port", "1366", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1366", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_crash_40]
@@ -857,7 +856,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-31"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_crash_40/", "--log", "${TARGET_DIR}/output/asan_crash_40/log.txt", "--cores", "30", "--asan-cores", "30", 
 # "--cmplog-cores", "30", 
-"--port", "1367", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1367", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_crash_50]
@@ -869,7 +868,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-32"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_crash_50/", "--log", "${TARGET_DIR}/output/asan_crash_50/log.txt", "--cores", "31", "--asan-cores", "31", 
 # "--cmplog-cores", "31", 
-"--port", "1368", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1368", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_crash_60]
@@ -881,7 +880,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-33"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_crash_60/", "--log", "${TARGET_DIR}/output/asan_crash_60/log.txt", "--cores", "32", "--asan-cores", "32", 
 # "--cmplog-cores", "32", 
-"--port", "1369", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1369", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_crash_70]
@@ -893,7 +892,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-34"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_crash_70/", "--log", "${TARGET_DIR}/output/asan_crash_70/log.txt", "--cores", "33", "--asan-cores", "33", 
 # "--cmplog-cores", "33", 
-"--port", "1370", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1370", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_crash_80]
@@ -905,7 +904,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-35"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_crash_80/", "--log", "${TARGET_DIR}/output/asan_crash_80/log.txt", "--cores", "34", "--asan-cores", "34", 
 # "--cmplog-cores", "34", 
-"--port", "1371", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1371", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_crash_90]
@@ -917,7 +916,7 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-36"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_crash_90/", "--log", "${TARGET_DIR}/output/asan_crash_90/log.txt", "--cores", "35", "--asan-cores", "35", 
 # "--cmplog-cores", "35", 
-"--port", "1372", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1372", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
 
 [tasks.asan_crash_100]
@@ -929,8 +928,973 @@ windows_alias = "unsupported"
 command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-37"
 args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_crash_100/", "--log", "${TARGET_DIR}/output/asan_crash_100/log.txt", "--cores", "36", "--asan-cores", "36", 
 # "--cmplog-cores", "36", 
-"--port", "1373", "--duration", "86400", "--", "${TARGET_DIR}/libpng-harness-${CARGO_MAKE_PROFILE}"]
+"--port", "1373", "--duration", "86400", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
 dependencies = ["harness", "fuzzer"]
+
+##
+##
+##
+# Crash test campaigns; 2 normal, 2 asan, 2 dynamic with 10% ratio; for libpng: libpng/artifacts/libpng_read_fuzzer
+# for libpng: ./corpus
+##
+##
+##
+[tasks.normal_manual_0]
+linux_alias = "normal_manual_0_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_manual_0_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-16"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_manual_0/", "--log", "${TARGET_DIR}/output/normal_manual_0/log.txt", "--cores", "15", "--verbose",
+# "--cmplog-cores", "15", 
+"--port", "1352", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.normal_manual_1]
+linux_alias = "normal_manual_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_manual_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-17"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_manual_1/", "--log", "${TARGET_DIR}/output/normal_manual_1/log.txt", "--cores", "16", "--verbose",
+# "--cmplog-cores", "16", 
+"--port", "1353", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.normal_manual_2]
+linux_alias = "normal_manual_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_manual_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-18"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_manual_2/", "--log", "${TARGET_DIR}/output/normal_manual_2/log.txt", "--cores", "17", "--verbose",
+# "--cmplog-cores", "17", 
+"--port", "1354", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.normal_manual_3]
+linux_alias = "normal_manual_3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_manual_3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-19"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_manual_3/", "--log", "${TARGET_DIR}/output/normal_manual_3/log.txt", "--cores", "18", "--verbose",
+# "--cmplog-cores", "18", 
+"--port", "1355", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.normal_manual_4]
+linux_alias = "normal_manual_4_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.normal_manual_4_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-20"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/normal_manual_4/", "--log", "${TARGET_DIR}/output/normal_manual_4/log.txt", "--cores", "19", "--verbose",
+# "--cmplog-cores", "19", 
+"--port", "1356", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.asan_1_manual_0]
+linux_alias = "asan_1_manual_0_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_1_manual_0_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-21"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_1_manual_0/", "--log", "${TARGET_DIR}/output/asan_1_manual_0/log.txt", "--cores", "20", "--asan-cores", "20", "--verbose",
+# "--cmplog-cores", "20", 
+"--port", "1357", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/1/libpng_read_fuzzer"]
+
+
+[tasks.asan_1_manual_1]
+linux_alias = "asan_1_manual_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_1_manual_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-22"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_1_manual_1/", "--log", "${TARGET_DIR}/output/asan_1_manual_1/log.txt", "--cores", "21", "--asan-cores", "21", "--verbose",
+# "--cmplog-cores", "21",
+"--port", "1358", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/1/libpng_read_fuzzer"]
+
+
+[tasks.asan_1_manual_2]
+linux_alias = "asan_1_manual_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_1_manual_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-23"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_1_manual_2/", "--log", "${TARGET_DIR}/output/asan_1_manual_2/log.txt", "--cores", "22", "--asan-cores", "22", "--verbose",
+# "--cmplog-cores", "22", 
+"--port", "1359", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/1/libpng_read_fuzzer"]
+
+
+[tasks.asan_1_manual_3]
+linux_alias = "asan_1_manual_3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_1_manual_3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-24"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_1_manual_3/", "--log", "${TARGET_DIR}/output/asan_1_manual_3/log.txt", "--cores", "23", "--asan-cores", "23", "--verbose",
+# "--cmplog-cores", "23", 
+"--port", "1360", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/1/libpng_read_fuzzer"]
+
+
+[tasks.asan_1_manual_4]
+linux_alias = "asan_1_manual_4_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_1_manual_4_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-25"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_1_manual_4/", "--log", "${TARGET_DIR}/output/asan_1_manual_4/log.txt", "--cores", "24", "--asan-cores", "24", "--verbose",
+# "--cmplog-cores", "24", 
+"--port", "1361", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/1/libpng_read_fuzzer"]
+
+
+[tasks.asan_7_manual_5]
+linux_alias = "asan_7_manual_5_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_7_manual_5_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-26"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_7_manual_5/", "--log", "${TARGET_DIR}/output/asan_7_manual_5/log.txt", "--cores", "25", "--asan-cores", "25", "--verbose",
+# "--cmplog-cores", "25",
+"--port", "1362", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/7/libpng_read_fuzzer"]
+
+[tasks.asan_7_manual_6]
+linux_alias = "asan_7_manual_6_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_7_manual_6_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-27"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_7_manual_6/", "--log", "${TARGET_DIR}/output/asan_7_manual_6/log.txt", "--cores", "26", "--asan-cores", "26", "--verbose",
+# "--cmplog-cores", "26",
+"--port", "1363", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/7/libpng_read_fuzzer"]
+
+
+[tasks.asan_7_manual_7]
+linux_alias = "asan_7_manual_7_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_7_manual_7_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-28"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_7_manual_7/", "--log", "${TARGET_DIR}/output/asan_7_manual_7/log.txt", "--cores", "27", "--asan-cores", "27", "--verbose",
+# "--cmplog-cores", "27",
+"--port", "1364", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/7/libpng_read_fuzzer"]
+
+
+[tasks.asan_7_manual_8]
+linux_alias = "asan_7_manual_8_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_7_manual_8_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-29"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_7_manual_8/", "--log", "${TARGET_DIR}/output/asan_7_manual_8/log.txt", "--cores", "28", "--asan-cores", "28", "--verbose",
+# "--cmplog-cores", "28",
+"--port", "1365", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/7/libpng_read_fuzzer"]
+
+
+[tasks.asan_7_manual_9]
+linux_alias = "asan_7_manual_9_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asan_7_manual_9_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-30"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/asan_7_manual_9/", "--log", "${TARGET_DIR}/output/asan_7_manual_9/log.txt", "--cores", "29", "--asan-cores", "29", "--verbose",
+# "--cmplog-cores", "29",
+"--port", "1366", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/7/libpng_read_fuzzer"]
+
+
+[tasks.ad_1_manual_0]
+linux_alias = "ad_1_manual_0_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_1_manual_0_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-31"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_1_manual_0/", "--log", "${TARGET_DIR}/output/ad_1_manual_0/log.txt", "--cores", "30", "--asan-cores", "30", "--verbose",
+# "--cmplog-cores", "30", 
+"--port", "1367", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/1/libpng_read_fuzzer"]
+
+
+[tasks.ad_1_manual_1]
+linux_alias = "ad_1_manual_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_1_manual_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-32"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_1_manual_1/", "--log", "${TARGET_DIR}/output/ad_1_manual_1/log.txt", "--cores", "31", "--asan-cores", "31", "--verbose",
+# "--cmplog-cores", "31", 
+"--port", "1368", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/1/libpng_read_fuzzer"]
+
+
+[tasks.ad_1_manual_2]
+linux_alias = "ad_1_manual_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_1_manual_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-33"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_1_manual_2/", "--log", "${TARGET_DIR}/output/ad_1_manual_2/log.txt", "--cores", "32", "--asan-cores", "32", "--verbose",
+# "--cmplog-cores", "32", 
+"--port", "1369", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/1/libpng_read_fuzzer"]
+
+
+[tasks.ad_1_manual_3]
+linux_alias = "ad_1_manual_3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_1_manual_3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-34"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_1_manual_3/", "--log", "${TARGET_DIR}/output/ad_1_manual_3/log.txt", "--cores", "33", "--asan-cores", "33", "--verbose",
+# "--cmplog-cores", "33",
+"--port", "1370", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/1/libpng_read_fuzzer"]
+
+
+[tasks.ad_1_manual_4]
+linux_alias = "ad_1_manual_4_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_1_manual_4_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-35"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_1_manual_4/", "--log", "${TARGET_DIR}/output/ad_1_manual_4/log.txt", "--cores", "34", "--asan-cores", "34", "--verbose",
+# "--cmplog-cores", "34",
+"--port", "1371", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/1/libpng_read_fuzzer"]
+
+[tasks.ad_7_manual_5]
+linux_alias = "ad_7_manual_5_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_7_manual_5_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-36"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_7_manual_5/", "--log", "${TARGET_DIR}/output/ad_7_manual_5/log.txt", "--cores", "35", "--asan-cores", "35", "--verbose",
+# "--cmplog-cores", "35",
+"--port", "1372", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/7/libpng_read_fuzzer"]
+
+[tasks.ad_7_manual_6]
+linux_alias = "ad_7_manual_6_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_7_manual_6_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-37"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_7_manual_6/", "--log", "${TARGET_DIR}/output/ad_7_manual_6/log.txt", "--cores", "36", "--asan-cores", "36", "--verbose",
+# "--cmplog-cores", "36",
+"--port", "1373", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/7/libpng_read_fuzzer"]
+
+[tasks.ad_7_manual_7]
+linux_alias = "ad_7_manual_7_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_7_manual_7_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-38"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_7_manual_7/", "--log", "${TARGET_DIR}/output/ad_7_manual_7/log.txt", "--cores", "37", "--asan-cores", "37", "--verbose",
+# "--cmplog-cores", "37",
+"--port", "1374", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/7/libpng_read_fuzzer"]
+
+[tasks.ad_7_manual_8]
+linux_alias = "ad_7_manual_8_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_7_manual_8_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-39"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_7_manual_8/", "--log", "${TARGET_DIR}/output/ad_7_manual_8/log.txt", "--cores", "38", "--asan-cores", "38", "--verbose",
+# "--cmplog-cores", "38",
+"--port", "1375", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/7/libpng_read_fuzzer"]
+
+[tasks.ad_7_manual_9]
+linux_alias = "ad_7_manual_9_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ad_7_manual_9_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-40"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_7_manual_9/", "--log", "${TARGET_DIR}/output/ad_7_manual_9/log.txt", "--cores", "39", "--asan-cores", "39", "--verbose",
+# "--cmplog-cores", "39",
+"--port", "1376", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/1by1artifacts/7/libpng_read_fuzzer"]
+
+# [tasks.ad_manual_0]
+# linux_alias = "ad_manual_0_unix"
+# mac_alias = "unsupported"
+# windows_alias = "unsupported"
+
+# [tasks.ad_manual_0_unix]
+# command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-31"
+# args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_manual_0/", "--log", "${TARGET_DIR}/output/ad_manual_0/log.txt", "--cores", "30", "--asan-cores", "30", "--verbose",
+# # "--cmplog-cores", "30", 
+# "--port", "1367", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--reverse_mode", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
+
+# [tasks.ad_manual_1]
+# linux_alias = "ad_manual_1_unix"
+# mac_alias = "unsupported"
+# windows_alias = "unsupported"
+
+# [tasks.ad_manual_1_unix]
+# command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-32"
+# args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_manual_1/", "--log", "${TARGET_DIR}/output/ad_manual_1/log.txt", "--cores", "31", "--asan-cores", "31", "--verbose",
+# # "--cmplog-cores", "31", 
+# "--port", "1368", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--reverse_mode", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
+
+# [tasks.ad_manual_2]
+# linux_alias = "ad_manual_2_unix"
+# mac_alias = "unsupported"
+# windows_alias = "unsupported"
+
+# [tasks.ad_manual_2_unix]
+# command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-33"
+# args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_manual_2/", "--log", "${TARGET_DIR}/output/ad_manual_2/log.txt", "--cores", "32", "--asan-cores", "32", "--verbose",
+# # "--cmplog-cores", "32", 
+# "--port", "1369", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--reverse_mode", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
+
+# [tasks.ad_manual_3]
+# linux_alias = "ad_manual_3_unix"
+# mac_alias = "unsupported"
+# windows_alias = "unsupported"
+
+# [tasks.ad_manual_3_unix]
+# command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-34"
+# args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_manual_3/", "--log", "${TARGET_DIR}/output/ad_manual_3/log.txt", "--cores", "33", "--asan-cores", "33", "--verbose",
+# # "--cmplog-cores", "33",
+# "--port", "1370", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--reverse_mode", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+# dependencies = ["harness", "fuzzer"]
+
+# [tasks.ad_manual_4]
+# linux_alias = "ad_manual_4_unix"
+# mac_alias = "unsupported"
+# windows_alias = "unsupported"
+
+# [tasks.ad_manual_4_unix]
+# command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-35"
+# args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_manual_4/", "--log", "${TARGET_DIR}/output/ad_manual_4/log.txt", "--cores", "34", "--asan-cores", "34", "--verbose",
+# # "--cmplog-cores", "34",
+# "--port", "1371", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--reverse_mode", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+
+# [tasks.ad_manual_5]
+# linux_alias = "ad_manual_5_unix"
+# mac_alias = "unsupported"
+# windows_alias = "unsupported"
+
+# [tasks.ad_manual_5_unix]
+# command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-36"
+# args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_manual_5/", "--log", "${TARGET_DIR}/output/ad_manual_5/log.txt", "--cores", "35", "--asan-cores", "35", "--verbose",
+# # "--cmplog-cores", "35",
+# "--port", "1372", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--reverse_mode", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+
+# [tasks.ad_manual_6]
+# linux_alias = "ad_manual_6_unix"
+# mac_alias = "unsupported"
+# windows_alias = "unsupported"
+
+# [tasks.ad_manual_6_unix]
+# command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-37"
+# args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_manual_6/", "--log", "${TARGET_DIR}/output/ad_manual_6/log.txt", "--cores", "36", "--asan-cores", "36", "--verbose",
+# # "--cmplog-cores", "36",
+# "--port", "1373", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--reverse_mode", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+
+# [tasks.ad_manual_7]
+# linux_alias = "ad_manual_7_unix"
+# mac_alias = "unsupported"
+# windows_alias = "unsupported"
+
+# [tasks.ad_manual_7_unix]
+# command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-38"
+# args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_manual_7/", "--log", "${TARGET_DIR}/output/ad_manual_7/log.txt", "--cores", "37", "--asan-cores", "37", "--verbose",
+# # "--cmplog-cores", "37",
+# "--port", "1374", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--reverse_mode", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+
+# [tasks.ad_manual_8]
+# linux_alias = "ad_manual_8_unix"
+# mac_alias = "unsupported"
+# windows_alias = "unsupported"
+
+# [tasks.ad_manual_8_unix]
+# command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-39"
+# args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_manual_8/", "--log", "${TARGET_DIR}/output/ad_manual_8/log.txt", "--cores", "38", "--asan-cores", "38", "--verbose",
+# # "--cmplog-cores", "38",
+# "--port", "1375", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--reverse_mode", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+
+# [tasks.ad_manual_9]
+# linux_alias = "ad_manual_9_unix"
+# mac_alias = "unsupported"
+# windows_alias = "unsupported"
+
+# [tasks.ad_manual_9_unix]
+# command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-40"
+# args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/ad_manual_9/", "--log", "${TARGET_DIR}/output/ad_manual_9/log.txt", "--cores", "39", "--asan-cores", "39", "--verbose",
+# # "--cmplog-cores", "39",
+# "--port", "1376", "--duration", "120", "--iterations", "1000", "--dynamic_sanitizer", "--reverse_mode", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]
+
+##
+##
+##
+# Crash test campaigns, all 10 hours; 2 normal, 3 asan, 3 dynamic with 10% ratio; for sqlite3: sqlite3/artifacts/sqlite3_fuzz
+##
+##
+##
+[tasks.sqlite3_normal_1]
+linux_alias = "sqlite3_normal_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_normal_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-16"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_normal_1/", "--log", "${TARGET_DIR}/output/sqlite3_normal_1/log.txt", "--cores", "15", "--verbose",
+# "--cmplog-cores", "15", 
+"--port", "1352", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz"]
+
+[tasks.sqlite3_normal_2]
+linux_alias = "sqlite3_normal_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_normal_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-17"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_normal_2/", "--log", "${TARGET_DIR}/output/sqlite3_normal_2/log.txt", "--cores", "16", "--verbose",
+# "--cmplog-cores", "16",
+"--port", "1353", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz"]
+
+[tasks.sqlite3_asan_1]
+linux_alias = "sqlite3_asan_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_asan_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-18"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_asan_1/", "--log", "${TARGET_DIR}/output/sqlite3_asan_1/log.txt", "--cores", "17", "--asan-cores", "17", "--verbose",
+# "--cmplog-cores", "17",
+"--port", "1354", "--duration", "3600", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz"]
+
+[tasks.sqlite3_asan_2]
+linux_alias = "sqlite3_asan_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_asan_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-19"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_asan_2/", "--log", "${TARGET_DIR}/output/sqlite3_asan_2/log.txt", "--cores", "18", "--asan-cores", "18", "--verbose",
+# "--cmplog-cores", "18",
+"--port", "1355", "--duration", "3600", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz"]
+
+[tasks.sqlite3_asan_3]
+linux_alias = "sqlite3_asan_3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_asan_3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-20"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_asan_3/", "--log", "${TARGET_DIR}/output/sqlite3_asan_3/log.txt", "--cores", "19", "--asan-cores", "19", "--verbose",
+# "--cmplog-cores", "19",
+"--port", "1356", "--duration", "3600", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz"]
+
+[tasks.sqlite3_ad_1]
+linux_alias = "sqlite3_ad_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_ad_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-21"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_ad_1/", "--log", "${TARGET_DIR}/output/sqlite3_ad_1/log.txt", "--cores", "20", "--asan-cores", "20", "--verbose",
+# "--cmplog-cores", "20",
+"--port", "1357", "--duration", "3600", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz"]
+
+[tasks.sqlite3_ad_2]
+linux_alias = "sqlite3_ad_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_ad_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-22"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_ad_2/", "--log", "${TARGET_DIR}/output/sqlite3_ad_2/log.txt", "--cores", "21", "--asan-cores", "21", "--verbose",
+# "--cmplog-cores", "21",
+"--port", "1358", "--duration", "3600", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz"]
+
+[tasks.sqlite3_ad_3]
+linux_alias = "sqlite3_ad_3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_ad_3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-23"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_ad_3/", "--log", "${TARGET_DIR}/output/sqlite3_ad_3/log.txt", "--cores", "22", "--asan-cores", "22", "--verbose",
+# "--cmplog-cores", "22",
+"--port", "1359", "--duration", "3600", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz"]
+
+##
+##
+##
+# Crash test campaigns, all 10 hours, all asan; 1 for sqlite3: sqlite3/artifacts/sqlite3_fuzz_1, 1 for sqlite3: sqlite3/artifacts/sqlite3_fuzz_2 etc. up to 20
+##
+##
+##
+[tasks.sqlite3_bug5_asan_1]
+linux_alias = "sqlite3_bug5_asan_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug5_asan_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-16"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug5_asan_1/", "--log", "${TARGET_DIR}/output/sqlite3_bug5_asan_1/log.txt", "--cores", "15", "--asan-cores", "15", "--verbose",
+# "--cmplog-cores", "15", 
+"--port", "1352", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_5"]
+
+[tasks.sqlite3_bug5_asan_2]
+linux_alias = "sqlite3_bug5_asan_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug5_asan_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-17"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug5_asan_2/", "--log", "${TARGET_DIR}/output/sqlite3_bug5_asan_2/log.txt", "--cores", "16", "--asan-cores", "16", "--verbose",
+# "--cmplog-cores", "16",
+"--port", "1353", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_5"]
+
+[tasks.sqlite3_bug5_asan_3]
+linux_alias = "sqlite3_bug5_asan_3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug5_asan_3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-18"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug5_asan_3/", "--log", "${TARGET_DIR}/output/sqlite3_bug5_asan_3/log.txt", "--cores", "17", "--asan-cores", "17", "--verbose",
+# "--cmplog-cores", "17",
+"--port", "1354", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_5"]
+
+[tasks.sqlite3_bug5_asan_4]
+linux_alias = "sqlite3_bug5_asan_4_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug5_asan_4_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-19"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug5_asan_4/", "--log", "${TARGET_DIR}/output/sqlite3_bug5_asan_4/log.txt", "--cores", "18", "--asan-cores", "18", "--verbose",
+# "--cmplog-cores", "18",
+"--port", "1355", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_5"]
+
+[tasks.sqlite3_bug5_asan_5]
+linux_alias = "sqlite3_bug5_asan_5_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug5_asan_5_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-20"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug5_asan_5/", "--log", "${TARGET_DIR}/output/sqlite3_bug5_asan_5/log.txt", "--cores", "19", "--asan-cores", "19", "--verbose",
+# "--cmplog-cores", "19",
+"--port", "1356", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_5"]
+
+[tasks.sqlite3_bug5_ad_1]
+linux_alias = "sqlite3_bug5_ad_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug5_ad_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-21"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug5_ad_1/", "--log", "${TARGET_DIR}/output/sqlite3_bug5_ad_1/log.txt", "--cores", "20", "--asan-cores", "20", "--verbose",
+# "--cmplog-cores", "20",
+"--port", "1357", "--duration", "36000", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_5"]
+
+[tasks.sqlite3_bug5_ad_2]
+linux_alias = "sqlite3_bug5_ad_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug5_ad_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-22"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug5_ad_2/", "--log", "${TARGET_DIR}/output/sqlite3_bug5_ad_2/log.txt", "--cores", "21", "--asan-cores", "21", "--verbose",
+# "--cmplog-cores", "21",
+"--port", "1358", "--duration", "36000", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_5"]
+
+[tasks.sqlite3_bug5_ad_3]
+linux_alias = "sqlite3_bug5_ad_3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug5_ad_3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-23"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug5_ad_3/", "--log", "${TARGET_DIR}/output/sqlite3_bug5_ad_3/log.txt", "--cores", "22", "--asan-cores", "22", "--verbose",
+# "--cmplog-cores", "22",
+"--port", "1359", "--duration", "36000", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_5"]
+
+[tasks.sqlite3_bug5_ad_4]
+linux_alias = "sqlite3_bug5_ad_4_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug5_ad_4_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-24"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug5_ad_4/", "--log", "${TARGET_DIR}/output/sqlite3_bug5_ad_4/log.txt", "--cores", "23", "--asan-cores", "23", "--verbose",
+# "--cmplog-cores", "23",
+"--port", "1360", "--duration", "36000", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_5"]
+
+[tasks.sqlite3_bug5_ad_5]
+linux_alias = "sqlite3_bug5_ad_5_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug5_ad_5_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-25"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug5_ad_5/", "--log", "${TARGET_DIR}/output/sqlite3_bug5_ad_5/log.txt", "--cores", "24", "--asan-cores", "24", "--verbose",
+# "--cmplog-cores", "24",
+"--port", "1361", "--duration", "36000", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_5"]
+
+[tasks.sqlite3_bug7_asan_1]
+linux_alias = "sqlite3_bug7_asan_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug7_asan_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-26"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug7_asan_1/", "--log", "${TARGET_DIR}/output/sqlite3_bug7_asan_1/log.txt", "--cores", "25", "--asan-cores", "25", "--verbose",
+# "--cmplog-cores", "25",
+"--port", "1362", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_7"]
+
+[tasks.sqlite3_bug7_asan_2]
+linux_alias = "sqlite3_bug7_asan_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug7_asan_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-27"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug7_asan_2/", "--log", "${TARGET_DIR}/output/sqlite3_bug7_asan_2/log.txt", "--cores", "26", "--asan-cores", "26", "--verbose",
+# "--cmplog-cores", "26",
+"--port", "1363", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_7"]
+
+[tasks.sqlite3_bug7_asan_3]
+linux_alias = "sqlite3_bug7_asan_3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug7_asan_3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-28"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug7_asan_3/", "--log", "${TARGET_DIR}/output/sqlite3_bug7_asan_3/log.txt", "--cores", "27", "--asan-cores", "27", "--verbose",
+# "--cmplog-cores", "27",
+"--port", "1364", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_7"]
+
+[tasks.sqlite3_bug7_asan_4]
+linux_alias = "sqlite3_bug7_asan_4_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug7_asan_4_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-29"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug7_asan_4/", "--log", "${TARGET_DIR}/output/sqlite3_bug7_asan_4/log.txt", "--cores", "28", "--asan-cores", "28", "--verbose",
+# "--cmplog-cores", "28",
+"--port", "1365", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_7"]
+
+[tasks.sqlite3_bug7_asan_5]
+linux_alias = "sqlite3_bug7_asan_5_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug7_asan_5_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-30"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug7_asan_5/", "--log", "${TARGET_DIR}/output/sqlite3_bug7_asan_5/log.txt", "--cores", "29", "--asan-cores", "29", "--verbose",
+# "--cmplog-cores", "29",
+"--port", "1366", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_7"]
+
+[tasks.sqlite3_bug7_ad_1]
+linux_alias = "sqlite3_bug7_ad_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug7_ad_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-31"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug7_ad_1/", "--log", "${TARGET_DIR}/output/sqlite3_bug7_ad_1/log.txt", "--cores", "30", "--asan-cores", "30", "--verbose",
+# "--cmplog-cores", "30",
+"--port", "1367", "--duration", "36000", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_7"]
+
+[tasks.sqlite3_bug7_ad_2]
+linux_alias = "sqlite3_bug7_ad_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug7_ad_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-32"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug7_ad_2/", "--log", "${TARGET_DIR}/output/sqlite3_bug7_ad_2/log.txt", "--cores", "31", "--asan-cores", "31", "--verbose",
+# "--cmplog-cores", "31",
+"--port", "1368", "--duration", "36000", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_7"]
+
+[tasks.sqlite3_bug7_ad_3]
+linux_alias = "sqlite3_bug7_ad_3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug7_ad_3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-33"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug7_ad_3/", "--log", "${TARGET_DIR}/output/sqlite3_bug7_ad_3/log.txt", "--cores", "32", "--asan-cores", "32", "--verbose",
+# "--cmplog-cores", "32",
+"--port", "1369", "--duration", "36000", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_7"]
+
+[tasks.sqlite3_bug7_ad_4]
+linux_alias = "sqlite3_bug7_ad_4_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug7_ad_4_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-34"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug7_ad_4/", "--log", "${TARGET_DIR}/output/sqlite3_bug7_ad_4/log.txt", "--cores", "33", "--asan-cores", "33", "--verbose",
+# "--cmplog-cores", "33",
+"--port", "1370", "--duration", "36000", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_7"]
+
+[tasks.sqlite3_bug7_ad_5]
+linux_alias = "sqlite3_bug7_ad_5_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug7_ad_5_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-35"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug7_ad_5/", "--log", "${TARGET_DIR}/output/sqlite3_bug7_ad_5/log.txt", "--cores", "34", "--asan-cores", "34", "--verbose",
+# "--cmplog-cores", "34",
+"--port", "1371", "--duration", "36000", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "10", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_7"]
+
+[tasks.sqlite3_bug2_normal_1]
+linux_alias = "sqlite3_bug2_normal_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug2_normal_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-16"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug2_normal_1/", "--log", "${TARGET_DIR}/output/sqlite3_bug2_normal_1/log.txt", "--cores", "15", "--verbose",
+# "--cmplog-cores", "15", 
+"--port", "1352", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_2"]
+
+[tasks.sqlite3_bug2_normal_2]
+linux_alias = "sqlite3_bug2_normal_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug2_normal_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-17"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug2_normal_2/", "--log", "${TARGET_DIR}/output/sqlite3_bug2_normal_2/log.txt", "--cores", "16", "--verbose",
+# "--cmplog-cores", "16",
+"--port", "1353", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_2"]
+
+[tasks.sqlite3_bug2_normal_3]
+linux_alias = "sqlite3_bug2_normal_3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug2_normal_3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-18"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug2_normal_3/", "--log", "${TARGET_DIR}/output/sqlite3_bug2_normal_3/log.txt", "--cores", "17", "--verbose",
+# "--cmplog-cores", "17",
+"--port", "1354", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_2"]
+
+[tasks.sqlite3_bug2_normal_4]
+linux_alias = "sqlite3_bug2_normal_4_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug2_normal_4_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-19"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug2_normal_4/", "--log", "${TARGET_DIR}/output/sqlite3_bug2_normal_4/log.txt", "--cores", "18", "--verbose",
+# "--cmplog-cores", "18",
+"--port", "1355", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_2"]
+
+[tasks.sqlite3_bug2_normal_5]
+linux_alias = "sqlite3_bug2_normal_5_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug2_normal_5_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-20"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug2_normal_5/", "--log", "${TARGET_DIR}/output/sqlite3_bug2_normal_5/log.txt", "--cores", "19", "--verbose",
+# "--cmplog-cores", "19",
+"--port", "1356", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_2"]
+
+[tasks.sqlite3_bug3_normal_1]
+linux_alias = "sqlite3_bug3_normal_1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug3_normal_1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-16"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug3_normal_1/", "--log", "${TARGET_DIR}/output/sqlite3_bug3_normal_1/log.txt", "--cores", "25", "--verbose",
+# "--cmplog-cores", "15", 
+"--port", "1362", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_3"]
+
+[tasks.sqlite3_bug3_normal_2]
+linux_alias = "sqlite3_bug3_normal_2_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug3_normal_2_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-17"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug3_normal_2/", "--log", "${TARGET_DIR}/output/sqlite3_bug3_normal_2/log.txt", "--cores", "26", "--verbose",
+# "--cmplog-cores", "16",
+"--port", "1363", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_3"]
+
+[tasks.sqlite3_bug3_normal_3]
+linux_alias = "sqlite3_bug3_normal_3_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug3_normal_3_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-18"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug3_normal_3/", "--log", "${TARGET_DIR}/output/sqlite3_bug3_normal_3/log.txt", "--cores", "27", "--verbose",
+# "--cmplog-cores", "17",
+"--port", "1364", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_3"]
+
+[tasks.sqlite3_bug3_normal_4]
+linux_alias = "sqlite3_bug3_normal_4_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug3_normal_4_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-19"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug3_normal_4/", "--log", "${TARGET_DIR}/output/sqlite3_bug3_normal_4/log.txt", "--cores", "28", "--verbose",
+# "--cmplog-cores", "18",
+"--port", "1365", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_3"]
+
+[tasks.sqlite3_bug3_normal_5]
+linux_alias = "sqlite3_bug3_normal_5_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.sqlite3_bug3_normal_5_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-20"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/corpus/sqlite3_fuzz", "--output", "${TARGET_DIR}/output/sqlite3_bug3_normal_5/", "--log", "${TARGET_DIR}/output/sqlite3_bug3_normal_5/log.txt", "--cores", "29", "--verbose",
+# "--cmplog-cores", "19",
+"--port", "1366", "--duration", "36000", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/sqlite3/artifacts/sqlite3_fuzz_3"]
+
+##
+##
+##
+## Openssl Campaigns, one for each fuzzer harness
+##
+##
+##
+[tasks.conf]
+linux_alias = "conf_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.conf_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-16"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/corpus/conf", "--output", "${TARGET_DIR}/output/conf/", "--log", "${TARGET_DIR}/output/conf/log.txt", "--cores", "15", "--verbose", "--asan-cores", "15",
+# "--cmplog-cores", "15", 
+"--port", "1352", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/artifacts/conf"]
+
+[tasks.asn1]
+linux_alias = "asn1_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asn1_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-17"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/corpus/asn1", "--output", "${TARGET_DIR}/output/asn1/", "--log", "${TARGET_DIR}/output/asn1/log.txt", "--cores", "16", "--verbose", "--asan-cores", "16",
+# "--cmplog-cores", "16",
+"--port", "1353", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/artifacts/asn1"]
+
+[tasks.asn1parse]
+linux_alias = "asn1parse_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.asn1parse_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-18"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/corpus/asn1parse", "--output", "${TARGET_DIR}/output/asn1parse/", "--log", "${TARGET_DIR}/output/asn1parse/log.txt", "--cores", "17", "--verbose", "--asan-cores", "17",
+# "--cmplog-cores", "17",
+"--port", "1354", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/artifacts/asn1parse"]
+
+[tasks.bignum]
+linux_alias = "bignum_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.bignum_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-19"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/corpus/bignum", "--output", "${TARGET_DIR}/output/bignum/", "--log", "${TARGET_DIR}/output/bignum/log.txt", "--cores", "18", "--verbose", "--asan-cores", "18",
+# "--cmplog-cores", "18",
+"--port", "1355", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/artifacts/bignum"]
+
+[tasks.client]
+linux_alias = "client_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.client_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-21"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/corpus/client", "--output", "${TARGET_DIR}/output/client/", "--log", "${TARGET_DIR}/output/client/log.txt", "--cores", "20", "--verbose", "--asan-cores", "20",
+# "--cmplog-cores", "20",
+"--port", "1357", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/artifacts/client"]
+
+[tasks.cms]
+linux_alias = "cms_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.cms_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-22"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/corpus/cms", "--output", "${TARGET_DIR}/output/cms/", "--log", "${TARGET_DIR}/output/cms/log.txt", "--cores", "21", "--verbose", "--asan-cores", "21",
+# "--cmplog-cores", "21",
+"--port", "1358", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/artifacts/cms"]
+
+[tasks.crl]
+linux_alias = "crl_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.crl_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-23"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/corpus/crl", "--output", "${TARGET_DIR}/output/crl/", "--log", "${TARGET_DIR}/output/crl/log.txt", "--cores", "22", "--verbose", "--asan-cores", "22",
+# "--cmplog-cores", "22",
+"--port", "1359", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/artifacts/crl"]
+
+[tasks.ct]
+linux_alias = "ct_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.ct_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-24"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/corpus/ct", "--output", "${TARGET_DIR}/output/ct/", "--log", "${TARGET_DIR}/output/ct/log.txt", "--cores", "23", "--verbose", "--asan-cores", "23",
+# "--cmplog-cores", "23",
+"--port", "1360", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/artifacts/ct"]
+
+[tasks.server]
+linux_alias = "server_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.server_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-25"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/corpus/server", "--output", "${TARGET_DIR}/output/server/", "--log", "${TARGET_DIR}/output/server/log.txt", "--cores", "24", "--verbose", "--asan-cores", "24",
+# "--cmplog-cores", "24",
+"--port", "1361", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/artifacts/server"]
+
+[tasks.x509]
+linux_alias = "x509_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.x509_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-26"
+args = ["--input", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/corpus/x509", "--output", "${TARGET_DIR}/output/x509/", "--log", "${TARGET_DIR}/output/x509/log.txt", "--cores", "25", "--verbose", "--asan-cores", "25",
+# "--cmplog-cores", "25",
+"--port", "1362", "--duration", "86400", "--iterations", "3000", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/openssl/artifacts/x509"]
+
 
 ##
 ##
@@ -1458,3 +2422,53 @@ script = '''
 rm -rf ${CARGO_MAKE_CRATE_TARGET_DIRECTORY}
 cargo clean
 '''
+
+
+[tasks.normal_libpng_campaign]
+command = "qemu_launcher"
+args = ["--input", "./corpus",
+        "--output", "normal_libpng_campaign/",
+        "--cores", "15",
+        "--port", "1352",
+        "--duration", "86400",
+        "--iterations", "3000",
+        "--", "libpng_read_fuzzer"]
+
+[tasks.asan_libpng_campaign]
+command = "qemu_launcher"
+args = ["--input", "./corpus",
+        "--output", "asan_libpng_campaign/",
+        "--cores", "26",
+        "--asan-cores", "26",
+        "--port", "1363",
+        "--duration", "86400",
+        "--iterations", "3000",
+        "--", "libpng_read_fuzzer"]
+dependencies = ["harness", "fuzzer"]
+
+[tasks.dynamic_libpng_campaign]
+command = "qemu_launcher"
+args = ["--input", "./corpus",
+        "--output", "dynamic_libpng_campaign/",
+        "--cores", "39",
+        "--asan-cores", "39",
+        "--port", "1376",
+        "--duration", "86400",
+        "--iterations", "3000",
+        "--dynamic_sanitizer",
+        "--dynamic_sanitizer_cutoff", "0",
+        "--dynamic_sanitizer_ratio", "10",
+        "--ratio_start", "0",
+        "--", "libpng_read_fuzzer"]
+
+
+[tasks.libpng_0_ratio]
+linux_alias = "libpng_0_ratio_unix"
+mac_alias = "unsupported"
+windows_alias = "unsupported"
+
+[tasks.libpng_0_ratio_unix]
+command = "${TARGET_DIR}/${PROFILE_DIR}/qemu_launcher-${CARGO_MAKE_PROFILE}-31"
+args = ["--input", "./corpus", "--output", "${TARGET_DIR}/output/libpng_0_ratio/", "--log", "${TARGET_DIR}/output/libpng_0_ratio/log.txt", "--cores", "1", "--asan-cores", "1", "--verbose",
+# "--cmplog-cores", "30", 
+"--port", "1351", "--duration", "86400", "--iterations", "3000", "--dynamic_sanitizer", "--dynamic_sanitizer_cutoff", "0", "--dynamic_sanitizer_ratio", "1", "--ratio_start", "0", "--", "${LIBAFL_LOCATION}/LibAFL/fuzzers/binary_only/qemu_launcher/magma/targets/libpng/artifacts/libpng_read_fuzzer"]

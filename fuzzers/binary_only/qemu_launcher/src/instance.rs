@@ -11,8 +11,8 @@ use libafl::{
     corpus::{Corpus, InMemoryOnDiskCorpus, OnDiskCorpus},
     events::{EventRestarter, NopEventManager},
     executors::{Executor, ShadowExecutor, write_to_file},
-    feedback_or, feedback_or_fast,
-    feedbacks::{CrashFeedback, MaxMapFeedback, TimeFeedback, TimeoutFeedback},
+    feedback_or, feedback_or_fast, feedback_and_fast,
+    feedbacks::{CrashFeedback, MaxMapFeedback, TimeFeedback, TimeoutFeedback, NewHashFeedback},
     fuzzer::{Evaluator, Fuzzer, StdFuzzer},
     inputs::BytesInput,
     monitors::Monitor,
@@ -20,7 +20,7 @@ use libafl::{
         havoc_mutations, token_mutations::I2SRandReplace, tokens_mutations, StdMOptMutator,
         StdScheduledMutator, Tokens,
     },
-    observers::{CanTrack, HitcountsMapObserver, TimeObserver, VariableMapObserver},
+    observers::{CanTrack, HitcountsMapObserver, TimeObserver, VariableMapObserver, BacktraceObserver},
     schedulers::{
         powersched::PowerSchedule, IndexesLenTimeMinimizerScheduler, PowerQueueScheduler,
     },
@@ -34,10 +34,7 @@ use libafl::{
 #[cfg(not(feature = "simplemgr"))]
 use libafl_bolts::shmem::StdShMemProvider;
 use libafl_bolts::{
-    core_affinity::CoreId,
-    ownedref::OwnedMutSlice,
-    rands::StdRand,
-    tuples::{tuple_list, Merge, Prepend},
+    core_affinity::CoreId, ownedref::{OwnedMutSlice, OwnedRefMut}, rands::StdRand, shmem::ShMemProvider, tuples::{tuple_list, Merge, Prepend}
 };
 use libafl_qemu::{
     elf::EasyElf,
@@ -125,13 +122,46 @@ impl<M: Monitor> Instance<'_, M> {
         if (options.ratio_start == 0) || (u64::from(options.ratio_start) <= ratio_elapsed) {
             let hitcounts = edge_module.get_rolling_hitcounts();
 
-            if options.dynamic_sanitizer_ratio != 0 {
+            let mut dynamic_sanitizer_ratio = options.dynamic_sanitizer_ratio;
+
+            if options.reverse_mode {
+                // After ratio_elapsed passes 10, set dynamic_sanitizer_ratio to 80, after 20 set to 70, etc.
+                if ratio_elapsed >= 10 {
+                    dynamic_sanitizer_ratio = 80;
+                }
+                if ratio_elapsed >= 20 {
+                    dynamic_sanitizer_ratio = 70;
+                }
+                if ratio_elapsed >= 30 {
+                    dynamic_sanitizer_ratio = 60;
+                }
+                if ratio_elapsed >= 40 {
+                    dynamic_sanitizer_ratio = 50;
+                }
+                if ratio_elapsed >= 50 {
+                    dynamic_sanitizer_ratio = 40;
+                }
+                if ratio_elapsed >= 60 {
+                    dynamic_sanitizer_ratio = 30;
+                }
+                if ratio_elapsed >= 70 {
+                    dynamic_sanitizer_ratio = 20;
+                }
+                if ratio_elapsed >= 80 {
+                    dynamic_sanitizer_ratio = 10;
+                }
+                if ratio_elapsed >= 90 {
+                    dynamic_sanitizer_ratio = 0;
+                }
+            }
+
+            if dynamic_sanitizer_ratio != 0 {
                 // Sort the hitcounts by value
                 let mut hitcounts: Vec<_> = hitcounts.iter().collect();
                 hitcounts.sort_by(|a, b| b.1.cmp(a.1));
 
-                // Get only top options.dynamic_sanitizer_ratio% of the hitcounts
-                let cutoff = hitcounts.len() * options.dynamic_sanitizer_ratio as usize / 100;
+                // Get only top dynamic_sanitizer_ratio% of the hitcounts
+                let cutoff = hitcounts.len() * dynamic_sanitizer_ratio as usize / 100;
                 let hitcounts = hitcounts.iter().take(cutoff).collect::<Vec<_>>();
 
                 for (key, value) in hitcounts.iter() {
@@ -205,8 +235,11 @@ impl<M: Monitor> Instance<'_, M> {
             let filter_file = format!("resulting_filter{}", core_id.0);
             write_to_file("./tmp", &filter_file, &filter_string);
 
-            let asan_module: &mut AsanModule = modules.match_first_type_mut().unwrap();
-            asan_module.set_filter(asan_filter);
+            if (self.options.reverse_mode && ratio_elapsed > 10) || !self.options.reverse_mode  {
+                let asan_module: &mut AsanModule = modules.match_first_type_mut().unwrap();
+                asan_module.set_filter(asan_filter);
+            }
+            
         }
         
         let modules = modules.prepend(edge_coverage_module);
@@ -232,8 +265,16 @@ impl<M: Monitor> Instance<'_, M> {
             TimeFeedback::new(&time_observer)
         );
 
+        let mut shmem_provider = StdShMemProvider::new().unwrap();
+        let mut bt = shmem_provider.new_on_shmem::<Option<u64>>(None).unwrap();
+        let bt_observer = BacktraceObserver::new(
+            "BacktraceObserver",
+            unsafe { OwnedRefMut::from_shmem(&mut bt) },
+            libafl::observers::HarnessType::InProcess,
+        );
+
         // A feedback to choose if an input is a solution or not
-        let mut objective = feedback_or_fast!(CrashFeedback::new());
+        let mut objective = feedback_and_fast!(CrashFeedback::new());
 
         // // If not restarting, create a State from scratch
         let mut state = match state {
